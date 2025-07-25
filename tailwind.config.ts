@@ -52,6 +52,25 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
+				info: {
+					DEFAULT: 'hsl(var(--info))',
+					foreground: 'hsl(var(--info-foreground))'
+				},
+				banking: {
+					gold: 'hsl(var(--banking-gold))',
+					'gold-light': 'hsl(var(--banking-gold-light))',
+					dark: 'hsl(var(--banking-dark))',
+					gray: 'hsl(var(--banking-gray))',
+					bg: 'hsl(var(--banking-bg))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -67,6 +86,16 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			backgroundImage: {
+				'gradient-banking': 'var(--gradient-banking)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'banking': 'var(--shadow-banking)',
+				'card-banking': 'var(--shadow-card)',
+				'elegant': 'var(--shadow-elegant)'
 			},
 			keyframes: {
 				'accordion-down': {
