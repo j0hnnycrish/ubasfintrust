@@ -1,9 +1,12 @@
+import { AccountType } from './accountTypes';
+
 export interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  accountType: AccountType;
   createdAt: Date;
   avatar?: string;
 }
@@ -39,6 +42,7 @@ export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   accounts: Account[];
+  userAccountType: AccountType | null;
 }
 
 export interface TransferRequest {

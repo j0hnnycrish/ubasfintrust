@@ -12,10 +12,11 @@ interface DashboardProps {
   onTransfer: () => void;
   onViewTransactions: () => void;
   onAIChat: () => void;
+  onLogout: () => void;
 }
 
-export function Dashboard({ onTransfer, onViewTransactions, onAIChat }: DashboardProps) {
-  const { user, accounts, logout, formatCurrency } = useBankingStore();
+export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onLogout }: DashboardProps) {
+  const { user, accounts, formatCurrency } = useBankingStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
@@ -35,7 +36,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat }: Dashboar
               />
               <div>
                 <h1 className="text-xl font-bold text-banking-dark">Providus Bank</h1>
-                <p className="text-xs text-banking-gray">AI Banking Simulation</p>
+                <p className="text-xs text-banking-gray">Professional Banking Services</p>
               </div>
             </div>
 
@@ -70,7 +71,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat }: Dashboar
                 <Button
                   variant="banking-outline"
                   size="sm"
-                  onClick={logout}
+                  onClick={onLogout}
                   className="flex items-center space-x-2"
                 >
                   <LogOut className="h-4 w-4" />
@@ -94,7 +95,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat }: Dashboar
               Your total balance: <span className="font-bold">{formatCurrency(totalBalance)}</span>
             </p>
             <p className="text-sm opacity-75 mt-2">
-              Last login: {new Date().toLocaleDateString()} • All systems operational
+              Last login: {new Date().toLocaleDateString()} • Secure banking environment
             </p>
           </div>
         </div>

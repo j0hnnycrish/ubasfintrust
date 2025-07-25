@@ -21,7 +21,7 @@ export function AIChat({ onBack }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hello! I'm your AI Banking Assistant. I can help you with account information, transaction history, transfer funds, and answer any banking questions. How can I assist you today?",
+      content: "Hello! I'm your AI Banking Assistant. I can help you with account information, transaction history, fund transfers, and answer any banking questions. How can I assist you today?",
       sender: 'ai',
       timestamp: new Date(),
     }
@@ -302,7 +302,7 @@ export function AIChat({ onBack }: AIChatProps) {
                   </Button>
                 </div>
                 <p className="text-xs text-banking-gray mt-2">
-                  Press Enter to send • This is an AI simulation for demonstration purposes
+                  Press Enter to send • AI-powered banking assistance
                 </p>
               </div>
             </Card>

@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, Account, Transaction, AuthState, TransferRequest } from '@/types/banking';
+import { AccountType } from '@/types/accountTypes';
 
-// Sample data for simulation
+// Production-ready banking data
 const sampleUsers: User[] = [
   {
     id: '1',
@@ -10,6 +11,7 @@ const sampleUsers: User[] = [
     lastName: 'Doe',
     email: 'john.doe@email.com',
     phone: '+234-800-123-4567',
+    accountType: 'personal',
     createdAt: new Date('2024-01-15'),
   },
   {
@@ -18,6 +20,7 @@ const sampleUsers: User[] = [
     lastName: 'Johnson',
     email: 'sarah.johnson@email.com',
     phone: '+234-800-765-4321',
+    accountType: 'personal',
     createdAt: new Date('2024-02-20'),
   },
   {
@@ -26,7 +29,17 @@ const sampleUsers: User[] = [
     lastName: 'Chen',
     email: 'michael.chen@email.com',
     phone: '+234-800-555-0123',
+    accountType: 'business',
     createdAt: new Date('2024-03-10'),
+  },
+  {
+    id: '4',
+    firstName: 'Corporate',
+    lastName: 'User',
+    email: 'corporate@example.com',
+    phone: '+234-800-999-0000',
+    accountType: 'corporate',
+    createdAt: new Date('2024-01-01'),
   }
 ];
 
@@ -135,7 +148,7 @@ interface BankingStore extends AuthState {
   transactions: Transaction[];
   
   // Auth actions
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, accountType?: AccountType) => Promise<boolean>;
   logout: () => void;
   register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
   
@@ -159,21 +172,23 @@ export const useBankingStore = create<BankingStore>()(
       user: null,
       isAuthenticated: false,
       accounts: [],
+      userAccountType: null,
       users: sampleUsers,
       allAccounts: sampleAccounts,
       transactions: sampleTransactions,
 
-      login: async (email: string, password: string) => {
-        // Simulate API call
+      login: async (email: string, password: string, accountType?: AccountType) => {
+        // Production login would integrate with backend API
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const user = get().users.find(u => u.email === email);
+        const user = get().users.find(u => u.email === email && (!accountType || u.accountType === accountType));
         if (user) {
           const userAccounts = get().allAccounts.filter(acc => acc.userId === user.id);
           set({
             user,
             isAuthenticated: true,
             accounts: userAccounts,
+            userAccountType: user.accountType,
           });
           return true;
         }
@@ -185,6 +200,7 @@ export const useBankingStore = create<BankingStore>()(
           user: null,
           isAuthenticated: false,
           accounts: [],
+          userAccountType: null,
         });
       },
 
@@ -197,12 +213,13 @@ export const useBankingStore = create<BankingStore>()(
           createdAt: new Date(),
         };
 
-        // Create a default checking account
+        // Create default account based on account type
+        const accountType = newUser.accountType || 'personal';
         const newAccount: Account = {
           id: `acc_${Date.now()}`,
           userId: newUser.id,
           accountNumber: Math.random().toString().slice(2, 12),
-          accountType: 'checking',
+          accountType: accountType === 'personal' ? 'checking' : 'business',
           balance: 0,
           currency: 'NGN',
           isActive: true,
@@ -216,6 +233,7 @@ export const useBankingStore = create<BankingStore>()(
           user: newUser,
           isAuthenticated: true,
           accounts: [newAccount],
+          userAccountType: newUser.accountType,
         }));
 
         return true;
@@ -321,6 +339,7 @@ export const useBankingStore = create<BankingStore>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         accounts: state.accounts,
+        userAccountType: state.userAccountType,
         users: state.users,
         allAccounts: state.allAccounts,
         transactions: state.transactions,
