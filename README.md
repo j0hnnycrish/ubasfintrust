@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://.dev/projects/a5f7da1f-f2cf-4f0c-a905-6dc31ecb1e36
+**URL**: h
 
 ## How can I edit this code?
 
@@ -10,7 +10,7 @@ There are several ways of editing your application.
 
 **Use **
 
-Simply visit the [ Project](https://.dev/projects/a5f7da1f-f2cf-4f0c-a905-6dc31ecb1e36) and start .
+Simply visit the [ Project]) and start .
 
 Changes made via  will be committed automatically to this repo.
 
