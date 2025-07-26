@@ -18,12 +18,12 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
                 Experience
-                <span className="block text-banking-gold">Future Forward</span>
-                Banking
+                <span className="block text-banking-gold">Global Excellence</span>
+                in Banking
               </h1>
               <p className="text-xl text-gray-300 leading-relaxed">
-                Join over 2 million customers who trust Providus Bank for their financial journey. 
-                From personal banking to corporate solutions, we deliver excellence at every touchpoint.
+                Join millions of customers worldwide who trust UBAS Financial Trust for their financial journey.
+                From personal banking to private equity and investment solutions, we deliver excellence at every touchpoint.
               </p>
             </div>
 
@@ -59,7 +59,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
                 <div className="flex justify-center mb-2">
                   <TrendingUp className="h-8 w-8 text-banking-gold" />
                 </div>
-                <div className="text-2xl font-bold text-white">₦2.5T</div>
+                <div className="text-2xl font-bold text-white">$25B</div>
                 <div className="text-sm text-gray-300">Assets</div>
               </div>
               <div className="text-center">
@@ -82,7 +82,7 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
           {/* Right Content - Features */}
           <div className="relative">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-2xl font-bold text-white mb-6">Why Choose Providus Bank?</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">Why Choose UBAS Financial Trust?</h3>
               <div className="space-y-4">
                 {[
                   {
@@ -92,13 +92,13 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
                   },
                   {
                     icon: <TrendingUp className="h-6 w-6" />,
-                    title: 'High Returns',
-                    description: 'Earn up to 16% per annum on fixed deposits and competitive rates on savings.'
+                    title: 'Investment Excellence',
+                    description: 'Access global markets with our private banking and investment management services.'
                   },
                   {
                     icon: <Zap className="h-6 w-6" />,
-                    title: 'Instant Transfers',
-                    description: 'Send money anywhere in Nigeria instantly with our advanced payment infrastructure.'
+                    title: 'Global Transfers',
+                    description: 'Send money anywhere in the world instantly with our advanced payment infrastructure.'
                   }
                 ].map((feature, index) => (
                   <div key={index} className="flex items-start space-x-4">

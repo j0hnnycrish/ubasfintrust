@@ -19,12 +19,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const { toast } = useToast();
   const login = useBankingStore((state) => state.login);
 
-  // Demo accounts for easy testing
-  const demoAccounts = [
-    { email: 'john.doe@email.com', label: 'John Doe (Demo)' },
-    { email: 'sarah.johnson@email.com', label: 'Sarah Johnson (Demo)' },
-    { email: 'michael.chen@email.com', label: 'Michael Chen (Demo)' },
-  ];
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +30,12 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       if (success) {
         toast({
           title: 'Login Successful',
-          description: 'Welcome back to Providus Bank!',
+          description: 'Welcome back to UBAS Financial Trust!',
         });
       } else {
         toast({
           title: 'Login Failed',
-          description: 'Invalid email or password. Try a demo account.',
+          description: 'Invalid email or password. Please check your credentials.',
           variant: 'destructive',
         });
       }
@@ -55,10 +50,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     }
   };
 
-  const handleDemoLogin = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('demo123');
-  };
+
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-elegant bg-gradient-card">
@@ -135,22 +127,21 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               <span className="w-full border-t border-banking-gold/20" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-banking-gray">Demo Accounts</span>
+              <span className="bg-card px-2 text-banking-gray">Need Help?</span>
             </div>
           </div>
-          
-          <div className="space-y-2">
-            {demoAccounts.map((account) => (
-              <Button
-                key={account.email}
-                variant="banking-outline"
-                size="sm"
-                className="w-full text-xs"
-                onClick={() => handleDemoLogin(account.email)}
-              >
-                {account.label}
-              </Button>
-            ))}
+
+          <div className="text-center space-y-2">
+            <p className="text-sm text-banking-gray">
+              Forgot your login credentials?
+            </p>
+            <Button
+              variant="banking-outline"
+              size="sm"
+              className="w-full text-xs"
+            >
+              Contact Customer Support
+            </Button>
           </div>
         </div>
 

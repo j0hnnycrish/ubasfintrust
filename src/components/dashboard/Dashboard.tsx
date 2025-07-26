@@ -3,8 +3,9 @@ import { useBankingStore } from '@/lib/bankingStore';
 import { AccountCard } from './AccountCard';
 import { QuickActions } from './QuickActions';
 import { TransactionHistory } from './TransactionHistory';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, Bell, Search } from 'lucide-react';
+import { LogOut, Settings, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import bankingLogo from '@/assets/banking-logo.jpg';
 
@@ -29,14 +30,14 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onLogout }
           <div className="flex items-center justify-between h-16">
             {/* Logo and Brand */}
             <div className="flex items-center space-x-4">
-              <img 
-                src={bankingLogo} 
-                alt="Providus Bank" 
+              <img
+                src={bankingLogo}
+                alt="UBAS Financial Trust"
                 className="w-10 h-10 rounded-full shadow-md"
               />
               <div>
-                <h1 className="text-xl font-bold text-banking-dark">Providus Bank</h1>
-                <p className="text-xs text-banking-gray">Professional Banking Services</p>
+                <h1 className="text-xl font-bold text-banking-dark">UBAS Financial Trust</h1>
+                <p className="text-xs text-banking-gray">Global Excellence in Banking</p>
               </div>
             </div>
 
@@ -55,9 +56,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onLogout }
 
             {/* User menu */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-              </Button>
+              <NotificationBell />
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>

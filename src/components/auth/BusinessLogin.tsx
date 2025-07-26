@@ -215,16 +215,16 @@ export function BusinessLogin({ onBack, onSwitchToRegister }: BusinessLoginProps
                     <span className="w-full border-t border-green-200" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-green-600">Demo Business Account</span>
+                    <span className="bg-white px-2 text-green-600">Business Support</span>
                   </div>
                 </div>
-                
+
                 <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-xs text-green-700 mb-2">Try the demo business account:</p>
+                  <p className="text-xs text-green-700 mb-2">Business Banking Support:</p>
                   <div className="space-y-1 text-xs">
-                    <p><strong>Email:</strong> michael.chen@email.com</p>
-                    <p><strong>Password:</strong> demo123</p>
-                    <p className="text-green-600">Business Account with ₦1.25M balance</p>
+                    <p>• Dedicated business relationship manager</p>
+                    <p>• 24/7 business support hotline</p>
+                    <p>• Secure business account recovery</p>
                   </div>
                 </div>
               </div>

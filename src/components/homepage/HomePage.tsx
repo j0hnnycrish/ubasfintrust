@@ -1,4 +1,5 @@
 import { Navigation } from './Navigation';
+import { ForexTicker } from './ForexTicker';
 import { HeroSection } from './HeroSection';
 import { ServicesSection } from './ServicesSection';
 import { ProductsSection } from './ProductsSection';
@@ -17,6 +18,7 @@ export function HomePage({ onAccountLogin }: HomePageProps) {
   return (
     <div className="min-h-screen bg-white">
       <Navigation onAccountLogin={onAccountLogin} />
+      <ForexTicker />
       <HeroSection onGetStarted={handleGetStarted} />
       <ServicesSection onSelectService={onAccountLogin} />
       <ProductsSection />

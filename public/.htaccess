@@ -1,0 +1,90 @@
+# Comprehensive Bot Blocking and Security Configuration
+# This file blocks all bots, crawlers, and automated access
+
+# Enable RewriteEngine
+RewriteEngine On
+
+# Block all known bots and crawlers by User-Agent
+RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (semrushbot|ahrefsbot|mj12bot|dotbot|blexbot|screaming.frog) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (chatgpt|gptbot|claude|anthropic|bard|openai|ccbot) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (scrapy|beautifulsoup|python-requests|curl|wget|httpclient) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|scraper|fetcher|parser|extractor) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# Block headless browsers and automation tools
+RewriteCond %{HTTP_USER_AGENT} (headlesschrome|phantomjs|selenium|webdriver|puppeteer|playwright) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# Block requests without proper User-Agent
+RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
+RewriteCond %{HTTP_USER_AGENT} ^.{1,9}$
+RewriteRule ^(.*)$ - [F,L]
+
+# Block suspicious paths
+RewriteRule ^(wp-admin|wp-login|admin|phpmyadmin|xmlrpc\.php|sitemap\.xml)$ - [F,L]
+RewriteRule ^.*\.(env|git|svn|htaccess|htpasswd)$ - [F,L]
+RewriteRule ^.*(backup|config|database|sql|dump).*$ - [F,L]
+
+# Set comprehensive no-index headers
+Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, noydir"
+Header always set Cache-Control "no-cache, no-store, must-revalidate, private, no-transform"
+Header always set Pragma "no-cache"
+Header always set Expires "0"
+Header always set X-Frame-Options "DENY"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "no-referrer"
+
+# Prevent access to sensitive files
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ~ "\.(env|log|sql|bak|backup|config)$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to common bot targets
+RedirectMatch 403 /\..*$
+RedirectMatch 403 /wp-.*$
+RedirectMatch 403 /admin.*$
+RedirectMatch 403 /backup.*$
+RedirectMatch 403 /config.*$
+RedirectMatch 403 /database.*$
+
+# Additional security measures
+ServerTokens Prod
+ServerSignature Off
+
+# Prevent MIME type sniffing
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';"
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect against DDoS
+<IfModule mod_evasive24.c>
+    DOSHashTableSize    2048
+    DOSPageCount        10
+    DOSPageInterval     1
+    DOSSiteCount        50
+    DOSSiteInterval     1
+    DOSBlockingPeriod   600
+</IfModule>
+
+# Rate limiting (if mod_evasive is available)
+<IfModule mod_limitipconn.c>
+    MaxConnPerIP 10
+</IfModule>

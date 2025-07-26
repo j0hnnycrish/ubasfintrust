@@ -1,0 +1,38 @@
+name: ubas-financial-trust
+services:
+- name: frontend
+  source_dir: /
+  github:
+    repo: your-username/ubas-financial-trust
+    branch: main
+  build_command: npm run build
+  output_dir: dist
+  routes:
+  - path: /
+  environment_slug: static-site
+  
+- name: backend
+  source_dir: /server
+  github:
+    repo: your-username/ubas-financial-trust
+    branch: main
+  build_command: npm install
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8080"
+  routes:
+  - path: /api
+  health_check:
+    http_path: /health
+
+databases:
+- name: postgres-db
+  engine: PG
+  version: "13"
+  size: db-s-dev-database

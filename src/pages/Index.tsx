@@ -1,60 +1,64 @@
 import { useState } from 'react';
 import { useBankingStore } from '@/lib/bankingStore';
 import { HomePage } from '@/components/homepage/HomePage';
-import { PersonalLogin } from '@/components/auth/PersonalLogin';
-import { BusinessLogin } from '@/components/auth/BusinessLogin';
-import { CorporateLogin } from '@/components/auth/CorporateLogin';
+import { ProfessionalLogin } from '@/components/auth/ProfessionalLogin';
+import { KYCRegistration } from '@/components/auth/KYCRegistration';
 import { Dashboard } from '@/components/dashboard/Dashboard';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { TransactionsPage } from '@/components/transactions/TransactionsPage';
 import { AIChat } from '@/components/ai/AIChat';
 import { AccountType } from '@/types/accountTypes';
 
-type AppView = 'home' | 'login' | 'dashboard' | 'transfer' | 'transactions' | 'ai-chat';
-type LoginType = AccountType | null;
+type AppView = 'home' | 'login' | 'register' | 'dashboard' | 'transfer' | 'transactions' | 'ai-chat';
 
 const Index = () => {
   const isAuthenticated = useBankingStore((state) => state.isAuthenticated);
   const [currentView, setCurrentView] = useState<AppView>('home');
-  const [loginType, setLoginType] = useState<LoginType>(null);
 
-  const handleAccountLogin = (accountType: string) => {
-    setLoginType(accountType as AccountType);
+  const handleAccountLogin = () => {
     setCurrentView('login');
+  };
+
+  const handleSwitchToRegister = () => {
+    setCurrentView('register');
   };
 
   const handleLoginSuccess = () => {
     setCurrentView('dashboard');
-    setLoginType(null);
+  };
+
+  const handleRegistrationComplete = () => {
+    setCurrentView('home');
   };
 
   const handleBackToHome = () => {
     setCurrentView('home');
-    setLoginType(null);
   };
 
-  // If not authenticated, show homepage or login
+  // If not authenticated, show homepage, login, or registration
   if (!isAuthenticated) {
     if (currentView === 'home') {
       return <HomePage onAccountLogin={handleAccountLogin} />;
     }
-    
-    if (currentView === 'login' && loginType) {
-      const LoginComponent = {
-        personal: PersonalLogin,
-        business: BusinessLogin,
-        corporate: CorporateLogin,
-        private: CorporateLogin, // Use corporate login for private banking
-      }[loginType];
 
+    if (currentView === 'login') {
       return (
-        <LoginComponent
+        <ProfessionalLogin
           onBack={handleBackToHome}
-          onSwitchToRegister={() => {}}
+          onSwitchToRegister={handleSwitchToRegister}
         />
       );
     }
-    
+
+    if (currentView === 'register') {
+      return (
+        <KYCRegistration
+          onBack={handleBackToHome}
+          onComplete={handleRegistrationComplete}
+        />
+      );
+    }
+
     return <HomePage onAccountLogin={handleAccountLogin} />;
   }
 

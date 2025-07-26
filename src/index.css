@@ -45,22 +45,27 @@ All colors MUST be HSL.
     --info: 221 83% 53%;
     --info-foreground: 0 0% 98%;
 
-    /* Banking specific colors */
-    --banking-gold: 45 90% 55%;
-    --banking-gold-light: 45 90% 75%;
-    --banking-dark: 220 20% 14%;
-    --banking-gray: 220 9% 46%;
-    --banking-bg: 220 14% 98%;
+    /* UBAS Financial Trust Brand Colors */
+    --banking-gold: 38 92% 50%; /* Professional gold */
+    --banking-gold-light: 38 92% 70%;
+    --banking-dark: 210 40% 8%; /* Deep navy blue */
+    --banking-gray: 210 15% 46%;
+    --banking-bg: 210 20% 98%;
+    --banking-accent: 210 100% 50%; /* Trust blue */
+    --banking-success: 142 71% 45%;
+    --banking-warning: 25 95% 53%;
+    --banking-error: 0 84% 60%;
 
-    /* Gradients */
-    --gradient-banking: linear-gradient(135deg, hsl(45, 90%, 55%), hsl(45, 90%, 65%));
-    --gradient-hero: linear-gradient(135deg, hsl(220, 20%, 14%), hsl(220, 15%, 20%));
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsl(220, 14%, 98%));
+    /* Professional Gradients */
+    --gradient-banking: linear-gradient(135deg, hsl(210, 40%, 8%), hsl(210, 35%, 15%));
+    --gradient-hero: linear-gradient(135deg, hsl(210, 40%, 8%), hsl(210, 35%, 12%), hsl(210, 30%, 18%));
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsl(210, 20%, 98%));
+    --gradient-accent: linear-gradient(135deg, hsl(210, 100%, 50%), hsl(210, 100%, 60%));
 
-    /* Shadows */
-    --shadow-banking: 0 10px 30px -5px hsla(45, 90%, 55%, 0.2);
-    --shadow-card: 0 4px 20px -2px hsla(220, 20%, 14%, 0.1);
-    --shadow-elegant: 0 8px 32px -4px hsla(220, 20%, 14%, 0.15);
+    /* Sophisticated Shadows */
+    --shadow-banking: 0 20px 40px -8px hsla(210, 40%, 8%, 0.15);
+    --shadow-card: 0 8px 25px -5px hsla(210, 40%, 8%, 0.08);
+    --shadow-elegant: 0 12px 35px -8px hsla(210, 40%, 8%, 0.12);
 
     --radius: 0.5rem;
 
@@ -119,22 +124,27 @@ All colors MUST be HSL.
     --info: 221 83% 53%;
     --info-foreground: 0 0% 98%;
 
-    /* Banking specific colors for dark mode */
-    --banking-gold: 45 90% 55%;
-    --banking-gold-light: 45 90% 65%;
+    /* UBAS Financial Trust Dark Mode Colors */
+    --banking-gold: 38 92% 60%;
+    --banking-gold-light: 38 92% 75%;
     --banking-dark: 0 0% 98%;
-    --banking-gray: 220 9% 65%;
-    --banking-bg: 220 15% 18%;
+    --banking-gray: 210 15% 65%;
+    --banking-bg: 210 40% 8%;
+    --banking-accent: 210 100% 60%;
+    --banking-success: 142 71% 55%;
+    --banking-warning: 25 95% 63%;
+    --banking-error: 0 84% 70%;
 
     /* Dark mode gradients */
-    --gradient-banking: linear-gradient(135deg, hsl(45, 90%, 55%), hsl(45, 90%, 65%));
-    --gradient-hero: linear-gradient(135deg, hsl(220, 20%, 14%), hsl(220, 15%, 8%));
-    --gradient-card: linear-gradient(145deg, hsl(220, 20%, 16%), hsl(220, 15%, 18%));
+    --gradient-banking: linear-gradient(135deg, hsl(38, 92%, 50%), hsl(38, 92%, 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(210, 40%, 8%), hsl(210, 35%, 5%));
+    --gradient-card: linear-gradient(145deg, hsl(210, 35%, 12%), hsl(210, 30%, 15%));
+    --gradient-accent: linear-gradient(135deg, hsl(210, 100%, 50%), hsl(210, 100%, 60%));
 
     /* Dark mode shadows */
-    --shadow-banking: 0 10px 30px -5px hsla(45, 90%, 55%, 0.3);
-    --shadow-card: 0 4px 20px -2px hsla(0, 0%, 0%, 0.3);
-    --shadow-elegant: 0 8px 32px -4px hsla(0, 0%, 0%, 0.4);
+    --shadow-banking: 0 20px 40px -8px hsla(0, 0%, 0%, 0.4);
+    --shadow-card: 0 8px 25px -5px hsla(0, 0%, 0%, 0.3);
+    --shadow-elegant: 0 12px 35px -8px hsla(0, 0%, 0%, 0.5);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -153,5 +163,85 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Enhanced typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  /* Professional button styles */
+  .btn-banking {
+    @apply bg-gradient-banking text-white font-medium px-6 py-3 rounded-lg shadow-banking hover:shadow-elegant transition-all duration-300;
+  }
+
+  .btn-banking-outline {
+    @apply border-2 border-banking-gold text-banking-gold font-medium px-6 py-3 rounded-lg hover:bg-banking-gold hover:text-white transition-all duration-300;
+  }
+
+  /* Card enhancements */
+  .card-banking {
+    @apply bg-white rounded-xl shadow-card border border-gray-100 hover:shadow-elegant transition-all duration-300;
+  }
+
+  /* Professional animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-banking-gray rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-banking-dark;
   }
 }

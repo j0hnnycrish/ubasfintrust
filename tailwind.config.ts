@@ -69,7 +69,11 @@ export default {
 					'gold-light': 'hsl(var(--banking-gold-light))',
 					dark: 'hsl(var(--banking-dark))',
 					gray: 'hsl(var(--banking-gray))',
-					bg: 'hsl(var(--banking-bg))'
+					bg: 'hsl(var(--banking-bg))',
+					accent: 'hsl(var(--banking-accent))',
+					success: 'hsl(var(--banking-success))',
+					warning: 'hsl(var(--banking-warning))',
+					error: 'hsl(var(--banking-error))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -90,7 +94,8 @@ export default {
 			backgroundImage: {
 				'gradient-banking': 'var(--gradient-banking)',
 				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)'
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-accent': 'var(--gradient-accent)'
 			},
 			boxShadow: {
 				'banking': 'var(--shadow-banking)',

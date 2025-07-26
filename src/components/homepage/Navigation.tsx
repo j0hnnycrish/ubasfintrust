@@ -28,11 +28,11 @@ export function Navigation({ onAccountLogin }: NavigationProps) {
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <Phone className="h-3 w-3" />
-                <span>+234-700-PROVIDUS</span>
+                <span>+1-800-UBAS-FIN</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-3 w-3" />
-                <span>info@providusbank.com</span>
+                <span>info@ubasfintrust.com</span>
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-4">
@@ -52,14 +52,14 @@ export function Navigation({ onAccountLogin }: NavigationProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <img 
-              src={bankingLogo} 
-              alt="Providus Bank" 
+            <img
+              src={bankingLogo}
+              alt="UBAS Financial Trust"
               className="w-10 h-10 rounded-full shadow-md"
             />
             <div>
-              <h1 className="text-xl font-bold text-banking-dark">PROVIDUS BANK</h1>
-              <p className="text-xs text-banking-gray">Future Forward Banking</p>
+              <h1 className="text-xl font-bold text-banking-dark">UBAS FINANCIAL TRUST</h1>
+              <p className="text-xs text-banking-gray">Global Excellence in Banking</p>
             </div>
           </div>
 

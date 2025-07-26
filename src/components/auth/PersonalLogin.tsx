@@ -198,16 +198,16 @@ export function PersonalLogin({ onBack, onSwitchToRegister }: PersonalLoginProps
                     <span className="w-full border-t border-blue-200" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-blue-600">Demo Credentials</span>
+                    <span className="bg-white px-2 text-blue-600">Need Assistance?</span>
                   </div>
                 </div>
-                
+
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-xs text-blue-700 mb-2">Try these demo accounts:</p>
+                  <p className="text-xs text-blue-700 mb-2">Having trouble accessing your account?</p>
                   <div className="space-y-1 text-xs">
-                    <p><strong>Email:</strong> john.doe@email.com</p>
-                    <p><strong>Email:</strong> sarah.johnson@email.com</p>
-                    <p><strong>Password:</strong> demo123</p>
+                    <p>• Call us at 1-800-UBAS-FIN</p>
+                    <p>• Visit your nearest branch</p>
+                    <p>• Use our online account recovery</p>
                   </div>
                 </div>
               </div>
