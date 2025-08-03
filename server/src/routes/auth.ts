@@ -2,13 +2,22 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
-import { AuthMiddleware } from '@/middleware/auth';
-import { authRateLimit } from '@/middleware/security';
-import { db } from '@/config/db';
-import { CacheService } from '@/config/redis';
-import { logger, logSecurity, logAudit } from '@/utils/logger';
-import { AuthRequest, User } from '@/types';
+import { AuthMiddleware } from '../middleware/auth';
+import { authRateLimit } from '../middleware/security';
+import { db } from '../config/db';
+import { CacheService } from '../config/redis';
+import { logger, logSecurity, logAudit } from '../utils/logger';
+import { AuthRequest, User } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { notificationService } from '../services/notificationService';
+import { securityService } from '../services/securityService';
+import {
+  authRateLimit,
+  validateInput,
+  commonValidations,
+  securityAnalysis,
+  suspiciousActivityDetection
+} from '../middleware/securityMiddleware';
 
 const router = Router();
 
@@ -120,8 +129,13 @@ router.post('/register', authRateLimit, registerValidation, async (req: Request,
   }
 });
 
-// Login user
-router.post('/login', authRateLimit, loginValidation, async (req: Request, res: Response) => {
+// Login user with enhanced security
+router.post('/login',
+  authRateLimit,
+  securityAnalysis,
+  suspiciousActivityDetection,
+  loginValidation,
+  async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -166,8 +180,18 @@ router.post('/login', authRateLimit, loginValidation, async (req: Request, res: 
       }
 
       await db('users').where({ id: user.id }).update(updateData);
-      
+
       logSecurity('LOGIN_ATTEMPT_INVALID_PASSWORD', user.id, req.ip, { failedAttempts });
+
+      // Send failed login notification
+      notificationService.emit('security:login', {
+        userId: user.id,
+        success: false,
+        device: req.headers['user-agent'] || 'Unknown Device',
+        location: req.ip,
+        failedAttempts,
+        timestamp: new Date()
+      });
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -212,6 +236,15 @@ router.post('/login', authRateLimit, loginValidation, async (req: Request, res: 
 
     logAudit('USER_LOGIN', user.id, 'user');
     logSecurity('USER_LOGIN_SUCCESS', user.id, req.ip);
+
+    // Send login notification
+    notificationService.emit('security:login', {
+      userId: user.id,
+      success: true,
+      device: req.headers['user-agent'] || 'Unknown Device',
+      location: req.ip,
+      timestamp: new Date()
+    });
 
     res.json({
       success: true,

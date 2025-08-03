@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { AuthMiddleware } from '@/middleware/auth';
-import { transferRateLimit } from '@/middleware/security';
-import { PaymentService } from '@/services/paymentService';
-import { logger, logAudit } from '@/utils/logger';
-import { AuthRequest } from '@/types';
+import { AuthMiddleware } from '../middleware/auth';
+import { transferRateLimit } from '../middleware/security';
+import { PaymentService } from '../services/paymentService';
+import { logger, logAudit } from '../utils/logger';
+import { AuthRequest } from '../types';
+import { externalBankingService } from '../services/externalBankingService';
 
 const router = Router();
 
@@ -293,15 +294,21 @@ router.post('/verify-account', [
 
     const { accountNumber, bankCode } = req.body;
 
-    // In a real implementation, you would call bank verification APIs
-    // like Paystack's resolve account endpoint
-    
-    // Simulated response
+    // Use external banking service for account verification
+    const verificationResult = await externalBankingService.verifyBankAccount(accountNumber, bankCode);
+
+    if (!verificationResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: verificationResult.message
+      });
+    }
+
     const accountDetails = {
       accountNumber,
-      accountName: 'John Doe', // This would come from the bank API
+      accountName: verificationResult.accountName,
       bankCode,
-      bankName: 'Access Bank' // This would be resolved from bankCode
+      bankName: verificationResult.bankName
     };
 
     res.json({

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Globe } from 'lucide-react';
+// import { useCurrency } from '@/contexts/CurrencyContext';
+// import { GLOBAL_CURRENCIES } from '@/components/global/CurrencySelector';
 
 interface ForexRate {
   pair: string;
@@ -8,11 +10,14 @@ interface ForexRate {
   changePercent: number;
   high: number;
   low: number;
+  flag?: string;
 }
 
 export function ForexTicker() {
   const [rates, setRates] = useState<ForexRate[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // const { selectedCurrency, exchangeRates } = useCurrency();
+  const selectedCurrency = { code: 'USD', flag: '🇺🇸' };
 
   // Simulate real-time forex data
   useEffect(() => {
@@ -22,34 +27,36 @@ export function ForexTicker() {
     };
 
     const updateRates = () => {
+      // Global currency pairs with flags
       const baseRates = [
-        { pair: 'EUR/USD', base: 1.0850, high: 1.0890, low: 1.0820 },
-        { pair: 'GBP/USD', base: 1.2650, high: 1.2680, low: 1.2620 },
-        { pair: 'USD/JPY', base: 149.50, high: 150.20, low: 149.10 },
-        { pair: 'USD/CHF', base: 0.8920, high: 0.8950, low: 0.8890 },
-        { pair: 'AUD/USD', base: 0.6580, high: 0.6610, low: 0.6550 },
-        { pair: 'USD/CAD', base: 1.3720, high: 1.3750, low: 1.3690 },
-        { pair: 'NZD/USD', base: 0.6120, high: 0.6150, low: 0.6090 },
-        { pair: 'EUR/GBP', base: 0.8580, high: 0.8610, low: 0.8550 },
+        { pair: 'EUR/USD', base: 1.0850, high: 1.0890, low: 1.0820, flag: '🇪🇺' },
+        { pair: 'GBP/USD', base: 1.2650, high: 1.2680, low: 1.2620, flag: '🇬🇧' },
+        { pair: 'USD/JPY', base: 149.50, high: 150.20, low: 149.10, flag: '🇯🇵' },
+        { pair: 'USD/CHF', base: 0.8920, high: 0.8950, low: 0.8890, flag: '🇨🇭' },
+        { pair: 'AUD/USD', base: 0.6580, high: 0.6610, low: 0.6550, flag: '🇦🇺' },
+        { pair: 'USD/CAD', base: 1.3720, high: 1.3750, low: 1.3690, flag: '🇨🇦' },
       ];
 
-      const newRates = baseRates.map(({ pair, base, high, low }) => {
-        const previousRate = rates.find(r => r.pair === pair)?.rate || base;
-        const newRate = generateRandomRate(base, 0.002);
-        const change = newRate - previousRate;
-        const changePercent = (change / previousRate) * 100;
+      setRates(prevRates => {
+        const newRates = baseRates.map(({ pair, base, high, low, flag }) => {
+          const previousRate = prevRates.find(r => r.pair === pair)?.rate || base;
+          const newRate = generateRandomRate(base, 0.002);
+          const change = newRate - previousRate;
+          const changePercent = (change / previousRate) * 100;
 
-        return {
-          pair,
-          rate: newRate,
-          change,
-          changePercent,
-          high,
-          low,
-        };
+          return {
+            pair,
+            rate: newRate,
+            change,
+            changePercent,
+            high,
+            low,
+            flag
+          };
+        });
+
+        return newRates;
       });
-
-      setRates(newRates);
     };
 
     // Initial load
@@ -59,7 +66,7 @@ export function ForexTicker() {
     const interval = setInterval(updateRates, 3000);
 
     return () => clearInterval(interval);
-  }, [rates]);
+  }, []); // Remove rates dependency to prevent infinite loop
 
   // Auto-scroll through rates
   useEffect(() => {
@@ -92,8 +99,10 @@ export function ForexTicker() {
         <div className="flex items-center justify-between">
           {/* Live Market Data Label */}
           <div className="flex items-center space-x-2">
+            <Globe className="h-4 w-4 text-banking-gold" />
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">LIVE MARKET DATA</span>
+            <span className="text-sm font-medium">GLOBAL MARKETS</span>
+            <span className="text-xs text-banking-gold">({selectedCurrency.code} Base)</span>
           </div>
 
           {/* Scrolling Ticker */}
@@ -103,6 +112,7 @@ export function ForexTicker() {
               <div className="hidden lg:flex items-center space-x-8">
                 {rates.slice(0, 4).map((rate) => (
                   <div key={rate.pair} className="flex items-center space-x-2 text-sm">
+                    {rate.flag && <span className="text-base">{rate.flag}</span>}
                     <span className="font-medium">{rate.pair}</span>
                     <span className="text-banking-gold">{rate.rate.toFixed(4)}</span>
                     <div className={`flex items-center space-x-1 ${
@@ -121,6 +131,7 @@ export function ForexTicker() {
 
               {/* Mobile: Show single rate with animation */}
               <div className="lg:hidden flex items-center space-x-2 text-sm">
+                {currentRate.flag && <span className="text-base">{currentRate.flag}</span>}
                 <span className="font-medium">{currentRate.pair}</span>
                 <span className="text-banking-gold">{currentRate.rate.toFixed(4)}</span>
                 <div className={`flex items-center space-x-1 ${

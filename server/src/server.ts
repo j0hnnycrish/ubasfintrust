@@ -10,9 +10,9 @@ import { Server as SocketIOServer } from 'socket.io';
 dotenv.config();
 
 // Import configurations and middleware
-import { testConnection, closeConnection } from '@/config/db';
-import { connectRedis, disconnectRedis } from '@/config/redis';
-import { logger, logInfo, logError } from '@/utils/logger';
+import { testConnection, closeConnection } from './config/db';
+import { connectRedis, disconnectRedis } from './config/redis';
+import { logger, logInfo, logError } from './utils/logger';
 import {
   securityHeaders,
   generalRateLimit,
@@ -20,23 +20,27 @@ import {
   requestLogger,
   corsOptions,
   securityAudit
-} from '@/middleware/security';
+} from './middleware/security';
 import {
   botBlockingMiddleware,
   noIndexMiddleware,
   advancedBotDetection
-} from '@/middleware/botBlocking';
+} from './middleware/botBlocking';
 
 // Import routes
-import authRoutes from '@/routes/auth';
-import userRoutes from '@/routes/users';
-import accountRoutes from '@/routes/accounts';
-import transactionRoutes from '@/routes/transactions';
-import cardRoutes from '@/routes/cards';
-import loanRoutes from '@/routes/loans';
-import adminRoutes from '@/routes/admin';
-import healthRoutes from '@/routes/health';
-import paymentRoutes from '@/routes/payments';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import accountRoutes from './routes/accounts';
+import transactionRoutes from './routes/transactions';
+import cardRoutes from './routes/cards';
+import loanRoutes from './routes/loans';
+import adminRoutes from './routes/admin';
+import healthRoutes from './routes/health';
+import paymentRoutes from './routes/payments';
+import notificationRoutes from './routes/notifications';
+import kycRoutes from './routes/kyc';
+import bankingRoutes from './routes/banking';
+import { notificationService } from './services/notificationService';
 
 const app = express();
 const server = createServer(app);
@@ -97,6 +101,9 @@ app.use(`/api/${API_VERSION}/transactions`, transactionRoutes);
 app.use(`/api/${API_VERSION}/cards`, cardRoutes);
 app.use(`/api/${API_VERSION}/loans`, loanRoutes);
 app.use(`/api/${API_VERSION}/payments`, paymentRoutes);
+app.use(`/api/${API_VERSION}/notifications`, notificationRoutes);
+app.use(`/api/${API_VERSION}/kyc`, kycRoutes);
+app.use(`/api/${API_VERSION}/banking`, bankingRoutes);
 app.use(`/api/${API_VERSION}/admin`, adminRoutes);
 
 // Root endpoint

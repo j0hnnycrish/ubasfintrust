@@ -98,19 +98,19 @@ class SocketService {
     }
   }
 
-  emit(event: string, data: any): void {
+  emit(event: string, data: unknown): void {
     if (this.socket?.connected) {
       this.socket.emit(event, data);
     }
   }
 
-  on(event: string, callback: (data: any) => void): void {
+  on(event: string, callback: (data: unknown) => void): void {
     if (this.socket) {
       this.socket.on(event, callback);
     }
   }
 
-  off(event: string, callback?: (data: any) => void): void {
+  off(event: string, callback?: (data: unknown) => void): void {
     if (this.socket) {
       this.socket.off(event, callback);
     }

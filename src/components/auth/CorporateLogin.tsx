@@ -222,25 +222,7 @@ export function CorporateLogin({ onBack, onSwitchToRegister }: CorporateLoginPro
                 </Button>
               </form>
 
-              <div className="space-y-4">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-purple-200" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-purple-600">Demo Corporate Access</span>
-                  </div>
-                </div>
-                
-                <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <p className="text-xs text-purple-700 mb-2">Demo corporate credentials:</p>
-                  <div className="space-y-1 text-xs">
-                    <p><strong>Email:</strong> corporate@example.com</p>
-                    <p><strong>Password:</strong> demo123</p>
-                    <p className="text-purple-600">Corporate Treasury Dashboard</p>
-                  </div>
-                </div>
-              </div>
+
 
               <div className="text-center">
                 <p className="text-sm text-purple-700">

@@ -1,13 +1,15 @@
 import { Router, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { AuthMiddleware } from '@/middleware/auth';
-import { transferRateLimit } from '@/middleware/security';
-import { db } from '@/config/db';
-import { CacheService } from '@/config/redis';
-import { logger, logTransaction, logAudit } from '@/utils/logger';
-import { AuthRequest } from '@/types';
+import { AuthMiddleware } from '../middleware/auth';
+import { transferRateLimit } from '../middleware/security';
+import { db } from '../config/db';
+import { CacheService } from '../config/redis';
+import { logger, logTransaction, logAudit } from '../utils/logger';
+import { AuthRequest } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { io } from '@/server';
+import { io } from '../server';
+import { notificationService } from '../services/notificationService';
+import { fraudDetectionService } from '../services/fraudDetectionService';
 
 const router = Router();
 
@@ -89,6 +91,24 @@ router.post('/transfer', transferRateLimit, [
 
         if (fromAccount.available_balance < totalDeduction) {
           throw new Error('Insufficient funds including fees');
+        }
+
+        // Fraud detection analysis
+        const fraudAnalysis = await fraudDetectionService.analyzeTransaction({
+          userId: user.id,
+          amount,
+          currency: fromAccount.currency,
+          type: 'transfer',
+          fromAccountId: fromAccount.id,
+          toAccountNumber,
+          ipAddress: req.ip || 'unknown',
+          userAgent: req.headers['user-agent'] || 'unknown',
+          timestamp: new Date()
+        });
+
+        // Block transaction if high risk
+        if (fraudAnalysis.shouldBlock) {
+          throw new Error(`Transaction blocked due to security concerns: ${fraudAnalysis.reasons.join(', ')}`);
         }
 
         // Generate transaction reference
@@ -185,6 +205,21 @@ router.post('/transfer', transferRateLimit, [
           reference
         });
 
+        // Send notification event for sender
+        try {
+          notificationService.emit('transaction:completed', {
+            userId: user.id,
+            type: 'transfer',
+            amount,
+            currency: 'NGN',
+            reference,
+            toAccountNumber,
+            transactionId
+          });
+        } catch (error) {
+          console.error('Failed to send transaction notification:', error);
+        }
+
         // Send notification to recipient if they're online
         const recipientUser = await trx('users')
           .join('accounts', 'users.id', 'accounts.user_id')
@@ -201,6 +236,21 @@ router.post('/transfer', transferRateLimit, [
             reference,
             from: `${user.first_name} ${user.last_name}`
           });
+
+          // Send notification event for recipient
+          try {
+            notificationService.emit('transaction:completed', {
+              userId: recipientUser.id,
+              type: 'transfer_received',
+              amount,
+              currency: 'NGN',
+              reference,
+              fromUser: `${user.first_name} ${user.last_name}`,
+              transactionId
+            });
+          } catch (error) {
+            console.error('Failed to send recipient notification:', error);
+          }
         }
 
         return transaction;

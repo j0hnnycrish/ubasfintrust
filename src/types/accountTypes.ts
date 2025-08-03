@@ -5,157 +5,229 @@ export interface AccountTypeConfig {
   name: string;
   description: string;
   features: string[];
-  minimumBalance: number;
-  currency: string;
+  minimumBalance: {
+    USD: number;
+    EUR: number;
+    GBP: number;
+    JPY: number;
+    CAD: number;
+    AUD: number;
+    CHF: number;
+    SGD: number;
+  };
+  supportedCurrencies: string[];
   interestRate?: number;
   mainColor: string;
   loginPath: string;
+  tier: 'standard' | 'premium' | 'platinum' | 'diamond';
 }
 
 export const ACCOUNT_TYPES: Record<AccountType, AccountTypeConfig> = {
   personal: {
     id: 'personal',
-    name: 'Personal Banking',
-    description: 'Individual banking solutions for your everyday needs',
+    name: 'Global Personal Banking',
+    description: 'Multi-currency banking solutions for global individuals',
     features: [
-      'Savings & Current Accounts',
-      'Debit & Credit Cards',
-      'Personal Loans',
-      'Investment Products',
-      'Mobile Banking',
-      '24/7 Customer Support'
+      'Multi-Currency Wallets (8 Major Currencies)',
+      'Global Debit & Credit Cards',
+      'International Wire Transfers',
+      'Personal Investment Portfolio',
+      'Mobile & Web Banking',
+      '24/7 Global Customer Support',
+      'Real-time Exchange Rates',
+      'Contactless Payments Worldwide'
     ],
-    minimumBalance: 1000,
-    currency: 'NGN',
+    minimumBalance: {
+      USD: 1000,
+      EUR: 900,
+      GBP: 800,
+      JPY: 150000,
+      CAD: 1300,
+      AUD: 1500,
+      CHF: 950,
+      SGD: 1400
+    },
+    supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 5.5,
     mainColor: '#3B82F6',
-    loginPath: '/login/personal'
+    loginPath: '/login/personal',
+    tier: 'standard'
   },
   business: {
     id: 'business',
-    name: 'Business Banking',
-    description: 'Comprehensive banking solutions for growing businesses',
+    name: 'Global Business Banking',
+    description: 'Comprehensive multi-currency solutions for growing businesses worldwide',
     features: [
-      'Business Current Accounts',
-      'Trade Finance',
-      'Equipment Financing',
-      'Cash Management',
-      'Payroll Services',
-      'Business Credit Cards'
+      'Multi-Currency Business Accounts',
+      'International Trade Finance',
+      'Global Equipment Financing',
+      'Cross-Border Cash Management',
+      'International Payroll Services',
+      'Corporate Credit Cards',
+      'FX Risk Management',
+      'API Banking Integration',
+      'Bulk Payment Processing'
     ],
-    minimumBalance: 50000,
-    currency: 'NGN',
+    minimumBalance: {
+      USD: 50000,
+      EUR: 45000,
+      GBP: 40000,
+      JPY: 7500000,
+      CAD: 65000,
+      AUD: 75000,
+      CHF: 47500,
+      SGD: 70000
+    },
+    supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 6.0,
     mainColor: '#10B981',
-    loginPath: '/login/business'
+    loginPath: '/login/business',
+    tier: 'premium'
   },
   corporate: {
     id: 'corporate',
-    name: 'Corporate Banking',
-    description: 'Advanced financial solutions for large enterprises',
+    name: 'Global Corporate Banking',
+    description: 'Advanced multi-currency financial solutions for multinational enterprises',
     features: [
-      'Corporate Accounts',
-      'Treasury Management',
-      'Foreign Exchange',
-      'Structured Finance',
-      'Corporate Advisory',
-      'Capital Markets'
+      'Global Corporate Accounts',
+      'Multi-Currency Treasury Management',
+      'International Foreign Exchange',
+      'Structured Finance Solutions',
+      'Corporate Advisory Services',
+      'Capital Markets Access',
+      'Global Cash Pooling',
+      'Trade Finance & Letters of Credit',
+      'Derivatives & Hedging',
+      'ESG Financing Solutions'
     ],
-    minimumBalance: 5000000,
-    currency: 'NGN',
+    minimumBalance: {
+      USD: 5000000,
+      EUR: 4500000,
+      GBP: 4000000,
+      JPY: 750000000,
+      CAD: 6500000,
+      AUD: 7500000,
+      CHF: 4750000,
+      SGD: 7000000
+    },
+    supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 7.0,
     mainColor: '#8B5CF6',
-    loginPath: '/login/corporate'
+    loginPath: '/login/corporate',
+    tier: 'platinum'
   },
   private: {
     id: 'private',
-    name: 'Private Banking',
-    description: 'Exclusive wealth management for high-net-worth individuals',
+    name: 'Global Private Banking',
+    description: 'Exclusive multi-currency wealth management for ultra-high-net-worth individuals',
     features: [
-      'Private Wealth Management',
-      'Investment Advisory',
-      'Estate Planning',
-      'Exclusive Banking Services',
-      'Dedicated Relationship Manager',
-      'Premium Investment Products'
+      'Global Private Wealth Management',
+      'Multi-Currency Investment Advisory',
+      'International Estate Planning',
+      'Exclusive Concierge Banking Services',
+      'Dedicated Global Relationship Manager',
+      'Premium Alternative Investments',
+      'Art & Collectibles Financing',
+      'Yacht & Aircraft Financing',
+      'Family Office Services',
+      'Cross-Border Tax Planning',
+      'Philanthropic Advisory'
     ],
-    minimumBalance: 10000000,
-    currency: 'NGN',
+    minimumBalance: {
+      USD: 10000000,
+      EUR: 9000000,
+      GBP: 8000000,
+      JPY: 1500000000,
+      CAD: 13000000,
+      AUD: 15000000,
+      CHF: 9500000,
+      SGD: 14000000
+    },
+    supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 8.0,
     mainColor: '#D4AF37',
-    loginPath: '/login/private'
+    loginPath: '/login/private',
+    tier: 'diamond'
   }
 };
 
 export const BANKING_PRODUCTS = [
   {
-    category: 'Accounts',
+    category: 'Global Accounts',
     items: [
-      { name: 'Savings Account', description: 'High-yield savings with competitive rates' },
-      { name: 'Current Account', description: 'Perfect for everyday transactions' },
-      { name: 'Fixed Deposit', description: 'Earn up to 16% per annum' },
-      { name: 'Domiciliary Account', description: 'Multi-currency account solutions' }
+      { name: 'Multi-Currency Savings', description: 'High-yield savings in 8 major currencies' },
+      { name: 'Global Current Account', description: 'Seamless worldwide transactions' },
+      { name: 'International Fixed Deposits', description: 'Competitive rates across currencies' },
+      { name: 'Currency Exchange Wallets', description: 'Real-time FX with optimal rates' }
     ]
   },
   {
-    category: 'Cards',
+    category: 'Global Cards',
     items: [
-      { name: 'Debit Cards', description: 'Global access to your funds' },
-      { name: 'Credit Cards', description: 'Flexible payment solutions' },
-      { name: 'Prepaid Cards', description: 'Convenient spending control' }
+      { name: 'World Elite Debit Cards', description: 'Global access with premium benefits' },
+      { name: 'International Credit Cards', description: 'Multi-currency spending worldwide' },
+      { name: 'Travel Prepaid Cards', description: 'Secure international travel companion' },
+      { name: 'Corporate Cards', description: 'Global business expense management' }
     ]
   },
   {
-    category: 'Loans',
+    category: 'International Financing',
     items: [
-      { name: 'Personal Loans', description: 'Quick access to funds' },
-      { name: 'Auto Loans', description: 'Drive your dream car today' },
-      { name: 'Mortgage', description: 'Own your home with ease' },
-      { name: 'Business Loans', description: 'Fuel your business growth' }
+      { name: 'Global Personal Loans', description: 'Flexible financing in multiple currencies' },
+      { name: 'International Auto Finance', description: 'Vehicle financing worldwide' },
+      { name: 'Global Mortgage Solutions', description: 'International property financing' },
+      { name: 'Cross-Border Business Loans', description: 'Fuel international business growth' }
     ]
   },
   {
-    category: 'Digital Banking',
+    category: 'Digital Banking Excellence',
     items: [
-      { name: 'Mobile Banking', description: 'Bank on the go' },
-      { name: 'Internet Banking', description: 'Secure online banking' },
-      { name: 'USSD Banking', description: 'Banking via phone codes' }
+      { name: 'Global Mobile Banking', description: 'Award-winning app with multi-currency support' },
+      { name: 'Web Banking Platform', description: 'Secure online banking with real-time FX' },
+      { name: 'API Banking Solutions', description: 'Enterprise-grade banking integration' },
+      { name: 'Instant Global Transfers', description: 'Real-time international money movement' }
     ]
   }
 ];
 
 export const BANKING_SERVICES = [
   {
-    category: 'Personal Services',
+    category: 'Global Personal Services',
     items: [
-      'Account Opening',
-      'Fund Transfers',
-      'Bill Payments',
-      'Investment Advisory',
-      'Financial Planning',
-      'Insurance Services'
+      'Multi-Currency Account Opening',
+      'International Wire Transfers',
+      'Global Bill Payment Solutions',
+      'Cross-Border Investment Advisory',
+      'International Financial Planning',
+      'Global Insurance & Protection',
+      'Currency Exchange Services',
+      'Travel Banking Solutions'
     ]
   },
   {
-    category: 'Business Services',
+    category: 'International Business Services',
     items: [
-      'Cash Management',
-      'Payroll Services',
-      'Trade Finance',
-      'Equipment Financing',
-      'Working Capital',
-      'Business Advisory'
+      'Global Cash Management',
+      'International Payroll Services',
+      'Cross-Border Trade Finance',
+      'Global Equipment Financing',
+      'Multi-Currency Working Capital',
+      'International Business Advisory',
+      'FX Risk Management',
+      'Supply Chain Financing'
     ]
   },
   {
-    category: 'Digital Services',
+    category: 'Digital Excellence Services',
     items: [
-      'Mobile Banking',
-      'Internet Banking',
-      'API Banking',
-      'Bulk Payments',
-      'Collection Services',
-      'Point of Sale'
+      'Global Mobile Banking Platform',
+      'Multi-Currency Internet Banking',
+      'Enterprise API Banking',
+      'International Bulk Payments',
+      'Global Collection Services',
+      'Worldwide Point of Sale',
+      'Real-Time FX Trading',
+      'Blockchain Settlement Services'
     ]
   }
 ];

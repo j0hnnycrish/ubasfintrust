@@ -1,34 +1,44 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeftRight, Download, CreditCard, MessageSquare, Plus, Send } from 'lucide-react';
+import { ArrowLeftRight, Download, CreditCard, MessageSquare, Plus, Send, Receipt, Wallet, TrendingUp } from 'lucide-react';
 
 interface QuickActionsProps {
   onTransfer: () => void;
   onViewTransactions: () => void;
   onAIChat: () => void;
+  onBillPay: () => void;
+  onDeposit: () => void;
+  onInvest: () => void;
 }
 
-export function QuickActions({ onTransfer, onViewTransactions, onAIChat }: QuickActionsProps) {
+export function QuickActions({ onTransfer, onViewTransactions, onAIChat, onBillPay, onDeposit, onInvest }: QuickActionsProps) {
   const actions = [
     {
       icon: <Send className="h-5 w-5" />,
-      label: 'Transfer Funds',
+      label: 'Transfer',
       description: 'Send money to another account',
       onClick: onTransfer,
       variant: 'banking' as const,
     },
     {
-      icon: <ArrowLeftRight className="h-5 w-5" />,
-      label: 'View Transactions',
-      description: 'Check your transaction history',
-      onClick: onViewTransactions,
+      icon: <Receipt className="h-5 w-5" />,
+      label: 'Pay Bills',
+      description: 'Pay utilities and other bills',
+      onClick: onBillPay,
       variant: 'banking-outline' as const,
     },
     {
-      icon: <MessageSquare className="h-5 w-5" />,
-      label: 'AI Assistant',
-      description: 'Chat with our AI customer service',
-      onClick: onAIChat,
+      icon: <Wallet className="h-5 w-5" />,
+      label: 'Deposit',
+      description: 'Deposit checks or transfer money',
+      onClick: onDeposit,
+      variant: 'banking-outline' as const,
+    },
+    {
+      icon: <TrendingUp className="h-5 w-5" />,
+      label: 'Invest',
+      description: 'Start investing for your future',
+      onClick: onInvest,
       variant: 'banking-outline' as const,
     },
     {
@@ -49,7 +59,7 @@ export function QuickActions({ onTransfer, onViewTransactions, onAIChat }: Quick
       icon: <Plus className="h-5 w-5" />,
       label: 'Open Account',
       description: 'Open a new account',
-      onClick: () => {},
+      onClick: () => window.open('/open-account', '_blank'),
       variant: 'secondary' as const,
     },
   ];

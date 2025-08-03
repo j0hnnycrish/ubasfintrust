@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import speakeasy from 'speakeasy';
-import { User, JWTPayload, AuthRequest } from '@/types';
-import { CacheService } from '@/config/redis';
-import { logger, logSecurity } from '@/utils/logger';
-import { db } from '@/config/db';
+import { User, JWTPayload, AuthRequest } from '../types';
+import { CacheService } from '../config/redis';
+import { logger, logSecurity } from '../utils/logger';
+import { db } from '../config/db';
 
 export class AuthMiddleware {
   // Verify JWT token

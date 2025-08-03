@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { logger } from '@/utils/logger';
+import { logger } from '../utils/logger';
 
 const redisClient = createClient({
   host: process.env.REDIS_HOST || 'localhost',

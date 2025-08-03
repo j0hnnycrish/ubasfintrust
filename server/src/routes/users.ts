@@ -1,9 +1,9 @@
 import { Router, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { AuthMiddleware } from '@/middleware/auth';
-import { db } from '@/config/db';
-import { logger, logAudit } from '@/utils/logger';
-import { AuthRequest } from '@/types';
+import { AuthMiddleware } from '../middleware/auth';
+import { db } from '../config/db';
+import { logger, logAudit } from '../utils/logger';
+import { AuthRequest } from '../types';
 
 const router = Router();
 

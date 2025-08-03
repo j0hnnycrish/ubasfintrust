@@ -1,10 +1,10 @@
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, toast } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // For Vite React project, we'll use a simple theme detection
+  const theme = "light" // Default to light theme
 
   return (
     <Sonner

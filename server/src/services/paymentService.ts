@@ -1,5 +1,5 @@
-import { logger, logTransaction, logAudit } from '@/utils/logger';
-import { db } from '@/config/db';
+import { logger, logTransaction, logAudit } from '../utils/logger';
+import { db } from '../config/db';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface PaymentIntent {

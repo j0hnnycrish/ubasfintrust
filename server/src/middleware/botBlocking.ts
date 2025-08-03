@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger, logSecurity } from '@/utils/logger';
+import { logger, logSecurity } from '../utils/logger';
 
 // Comprehensive list of bot user agents to block
 const BLOCKED_BOTS = [

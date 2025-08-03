@@ -1,8 +1,8 @@
 import { Router, Response } from 'express';
-import { AuthMiddleware } from '@/middleware/auth';
-import { db } from '@/config/db';
-import { logger } from '@/utils/logger';
-import { AuthRequest } from '@/types';
+import { AuthMiddleware } from '../middleware/auth';
+import { db } from '../config/db';
+import { logger } from '../utils/logger';
+import { AuthRequest } from '../types';
 
 const router = Router();
 

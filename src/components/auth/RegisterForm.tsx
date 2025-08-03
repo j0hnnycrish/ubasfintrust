@@ -9,9 +9,11 @@ import { Eye, EyeOff, Lock, Mail, Phone, User } from 'lucide-react';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
+  onRegistrationComplete?: (user: any) => void;
+  accountType?: 'personal' | 'business' | 'corporate' | 'private';
 }
 
-export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+export function RegisterForm({ onSwitchToLogin, onRegistrationComplete, accountType = 'personal' }: RegisterFormProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

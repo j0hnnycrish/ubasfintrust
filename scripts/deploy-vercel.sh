@@ -33,8 +33,14 @@ echo "Setting up environment variables..."
 
 # Create .env.local for Vercel
 cat > .env.local << EOF
-VITE_API_URL=https://ubas-backend.herokuapp.com
+VITE_API_URL=https://ubas-backend-production.up.railway.app/api/v1
+VITE_SOCKET_URL=https://ubas-backend-production.up.railway.app
 VITE_APP_NAME=UBAS Financial Trust
+VITE_APP_VERSION=1.0.0
+VITE_NODE_ENV=production
+VITE_ENABLE_2FA=true
+VITE_ENABLE_BIOMETRIC_AUTH=false
+VITE_ENABLE_PUSH_NOTIFICATIONS=true
 VITE_MINIMUM_DEPOSIT=100
 VITE_MINIMUM_WITHDRAWAL=20
 VITE_MAXIMUM_DAILY_TRANSFER=50000

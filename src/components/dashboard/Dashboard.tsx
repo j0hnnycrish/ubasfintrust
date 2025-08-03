@@ -13,10 +13,13 @@ interface DashboardProps {
   onTransfer: () => void;
   onViewTransactions: () => void;
   onAIChat: () => void;
+  onBillPay: () => void;
+  onDeposit: () => void;
+  onInvest: () => void;
   onLogout: () => void;
 }
 
-export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onLogout }: DashboardProps) {
+export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay, onDeposit, onInvest, onLogout }: DashboardProps) {
   const { user, accounts, formatCurrency } = useBankingStore();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -115,6 +118,9 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onLogout }
             onTransfer={onTransfer}
             onViewTransactions={onViewTransactions}
             onAIChat={onAIChat}
+            onBillPay={onBillPay}
+            onDeposit={onDeposit}
+            onInvest={onInvest}
           />
         </div>
 

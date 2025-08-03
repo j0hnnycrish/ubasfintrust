@@ -67,13 +67,22 @@ export default {
 				banking: {
 					gold: 'hsl(var(--banking-gold))',
 					'gold-light': 'hsl(var(--banking-gold-light))',
+					'gold-dark': 'hsl(var(--banking-gold-dark))',
+					'gold-accent': 'hsl(var(--banking-gold-accent))',
 					dark: 'hsl(var(--banking-dark))',
+					'dark-light': 'hsl(var(--banking-dark-light))',
 					gray: 'hsl(var(--banking-gray))',
+					'gray-light': 'hsl(var(--banking-gray-light))',
 					bg: 'hsl(var(--banking-bg))',
 					accent: 'hsl(var(--banking-accent))',
+					'accent-light': 'hsl(var(--banking-accent-light))',
 					success: 'hsl(var(--banking-success))',
 					warning: 'hsl(var(--banking-warning))',
-					error: 'hsl(var(--banking-error))'
+					error: 'hsl(var(--banking-error))',
+					platinum: 'hsl(var(--banking-platinum))',
+					diamond: 'hsl(var(--banking-diamond))',
+					emerald: 'hsl(var(--banking-emerald))',
+					sapphire: 'hsl(var(--banking-sapphire))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

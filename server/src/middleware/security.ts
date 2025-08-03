@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { logger, logSecurity } from '@/utils/logger';
+import { logger, logSecurity } from '../utils/logger';
 
 // Security headers middleware
 export const securityHeaders = helmet({
