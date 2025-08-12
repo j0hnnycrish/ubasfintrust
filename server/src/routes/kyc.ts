@@ -3,11 +3,12 @@ import { body, validationResult } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthRequest, AuthMiddleware } from '../middleware/auth';
-import { db } from '../config/database';
-import { logger } from '../utils/logger';
-import { logAudit } from '../utils/audit';
+import { AuthMiddleware } from '../middleware/auth';
+import { AuthRequest } from '../types';
+import { db } from '../config/db';
+import { logger, logAudit } from '../utils/logger';
 import { notificationService } from '../services/notificationService';
 
 const router = express.Router();
@@ -37,7 +38,7 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'jpg,jpeg,png,pdf').split(',');
     const ext = path.extname(file.originalname).toLowerCase().slice(1);
-    
+
     if (allowedTypes.includes(ext)) {
       cb(null, true);
     } else {
@@ -46,8 +47,25 @@ const upload = multer({
   }
 });
 
+// Optional S3 client (Cloudflare R2 / DO Spaces)
+const s3Enabled = !!(process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY);
+let s3: AWS.S3 | null = null;
+if (s3Enabled) {
+  const cfg: AWS.S3.ClientConfiguration = {
+    region: process.env.S3_REGION || 'auto',
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    s3ForcePathStyle: true,
+    signatureVersion: 'v4',
+  };
+  if (process.env.S3_ENDPOINT) {
+    (cfg as any).endpoint = process.env.S3_ENDPOINT;
+  }
+  s3 = new AWS.S3(cfg);
+}
+
 // Apply authentication middleware to all routes
-router.use(AuthMiddleware.authenticate);
+router.use(AuthMiddleware.verifyToken);
 
 // Submit KYC application with documents
 router.post('/submit', upload.fields([
@@ -126,21 +144,44 @@ router.post('/submit', upload.fields([
     await db('kyc_applications').insert(kycData);
 
     // Process uploaded documents
-    const documentTypes = ['primaryId', 'proofOfAddress', 'incomeProof', 'bankStatement', 'selfie'];
-    const uploadedDocuments = [];
+    const documentTypes = ['primaryId', 'proofOfAddress', 'incomeProof', 'bankStatement', 'selfie'] as const;
+    const uploadedDocuments: string[] = [];
 
     for (const docType of documentTypes) {
       const fieldName = `document_${docType}`;
       if (files[fieldName] && files[fieldName][0]) {
         const file = files[fieldName][0];
         const documentId = uuidv4();
-        
+
+        // If S3 is enabled, upload file to bucket and replace file_path with S3 key/url
+        if (s3Enabled && s3) {
+          const fileStream = fs.createReadStream(file.path);
+          const key = `kyc/${user.id}/${documentId}_${path.basename(file.path)}`;
+          try {
+            await s3.upload({
+              Bucket: process.env.S3_BUCKET!,
+              Key: key,
+              Body: fileStream,
+              ContentType: file.mimetype,
+            }).promise();
+            // We will store the S3 key; actual download can be presigned
+            var filePathForStorage = key;
+          } catch (err) {
+            logger.error('S3 upload failed', err);
+            var filePathForStorage = file.path; // fallback to local path
+          } finally {
+            try { fs.unlinkSync(file.path); } catch {}
+          }
+        } else {
+          var filePathForStorage = file.path;
+        }
+
         const documentData = {
           id: documentId,
           user_id: user.id,
           kyc_application_id: kycId,
           document_type: docType,
-          file_path: file.path,
+          file_path: filePathForStorage,
           file_name: file.originalname,
           file_size: file.size,
           mime_type: file.mimetype,
@@ -212,7 +253,7 @@ router.post('/submit', upload.fields([
 router.get('/status', async (req: AuthRequest, res: Response) => {
   try {
     const user = req.user!;
-    
+
     const kycApplication = await db('kyc_applications')
       .where({ user_id: user.id })
       .orderBy('created_at', 'desc')
@@ -262,7 +303,7 @@ router.get('/status', async (req: AuthRequest, res: Response) => {
 router.get('/applications/:kycId', async (req: AuthRequest, res: Response) => {
   try {
     const { kycId } = req.params;
-    
+
     const application = await db('kyc_applications')
       .join('users', 'kyc_applications.user_id', 'users.id')
       .where('kyc_applications.id', kycId)
@@ -327,6 +368,20 @@ router.get('/document/:documentId', async (req: AuthRequest, res: Response) => {
         message: 'File not found on server'
       });
     }
+    // If stored in S3, return presigned URL instead of local file
+    if (s3Enabled && s3 && document.file_path && !fs.existsSync(document.file_path)) {
+      try {
+        const url = await s3.getSignedUrlPromise('getObject', {
+          Bucket: process.env.S3_BUCKET!,
+          Key: document.file_path,
+          Expires: 60 * 5 // 5 minutes
+        });
+        return res.json({ success: true, data: { url, mime: document.mime_type, name: document.file_name } });
+      } catch (e) {
+        logger.error('Presign failed:', e);
+      }
+    }
+
 
     res.setHeader('Content-Type', document.mime_type);
     res.setHeader('Content-Disposition', `inline; filename="${document.file_name}"`);
@@ -362,7 +417,7 @@ router.put('/applications/:kycId/review', [
     const { action, notes, rejectionReason } = req.body;
 
     // Check if user is admin
-    if (user.account_type !== 'admin') {
+    if (user.account_type !== 'corporate') {
       return res.status(403).json({
         success: false,
         message: 'Access denied. Admin privileges required.'

@@ -261,7 +261,8 @@ export class SecurityService {
           .countDistinct('user_id as count')
           .first();
 
-        if (userCount && userCount.count > 5) {
+        const countVal = Number((userCount as any)?.count || 0);
+        if (countVal > 5) {
           reasons.push('Device used by multiple users');
           risk += 40;
         }
@@ -546,11 +547,11 @@ export class SecurityService {
       });
 
       return {
-        totalEvents: parseInt(totalEvents?.count || '0'),
-        blockedRequests: parseInt(blockedRequests?.count || '0'),
+        totalEvents: parseInt(String((totalEvents as any)?.count || '0')),
+        blockedRequests: parseInt(String((blockedRequests as any)?.count || '0')),
         topThreats: topThreats.map((item: any) => ({
           type: item.event_type,
-          count: parseInt(item.count)
+          count: parseInt(String(item.count))
         })),
         riskDistribution: riskDist
       };

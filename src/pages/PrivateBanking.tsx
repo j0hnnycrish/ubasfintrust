@@ -49,7 +49,7 @@ export default function PrivateBanking() {
       features: ['Multi-Generational Planning', 'Governance Advisory', 'Philanthropy', 'Concierge Services'],
       minBalance: '$50,000,000',
       icon: Users,
-      color: 'bg-gradient-to-br from-blue-600 to-blue-700'
+      color: 'bg-gradient-to-br from-red-600 to-red-700'
     },
     {
       id: 'exclusive',
@@ -90,7 +90,7 @@ export default function PrivateBanking() {
       <ProfessionalNavigation />
 
       {/* Hero Section with Scrolling Background */}
-      <section className="relative bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
         <ScrollingBackground
           images={privateBankingImages}
           speed={50}
@@ -124,8 +124,8 @@ export default function PrivateBanking() {
                   Explore Private Banking
                   <Crown className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-purple-900 px-8 py-3 text-lg">
-                  Meet Your Team
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 px-8 py-3 text-lg" onClick={() => navigate('/private/banking')}>
+                  Learn More
                 </Button>
               </div>
             </div>

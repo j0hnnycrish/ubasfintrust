@@ -1,6 +1,6 @@
 import { db } from '../config/db';
 import { logger } from '../utils/logger';
-import { logAudit } from '../utils/audit';
+import { logAudit } from '../utils/logger';
 import { notificationService } from './notificationService';
 import { externalBankingService } from './externalBankingService';
 import { v4 as uuidv4 } from 'uuid';

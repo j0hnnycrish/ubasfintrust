@@ -121,7 +121,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
   const recipientAccount = formData.toAccountNumber ? getAccountByNumber(formData.toAccountNumber) : null;
 
   return (
-    <div className="min-h-screen bg-banking-bg p-4">
+  <div className="min-h-screen bg-gradient-to-b from-brand-50 via-white to-brand-50 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
           <Button
@@ -133,14 +133,14 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
             Back to Dashboard
           </Button>
           
-          <h1 className="text-3xl font-bold text-banking-dark">Transfer Funds</h1>
-          <p className="text-banking-gray mt-2">Send money securely to another account</p>
+          <h1 className="text-3xl font-bold text-brand-800">Transfer Funds</h1>
+          <p className="text-brand-600 mt-2">Send money securely to another account</p>
         </div>
 
-        <Card className="shadow-elegant bg-gradient-card border-banking-gold/20">
+  <Card className="shadow-elegant bg-white/80 backdrop-blur border border-brand-200">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Send className="h-5 w-5 text-banking-gold" />
+              <Send className="h-5 w-5 text-brand-600" />
               <span>New Transfer</span>
             </CardTitle>
             <CardDescription>
@@ -152,14 +152,14 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Source Account */}
               <div className="space-y-2">
-                <Label htmlFor="fromAccount" className="text-banking-dark font-medium">
+                <Label htmlFor="fromAccount" className="text-brand-700 font-medium">
                   From Account
                 </Label>
                 <Select
                   value={formData.fromAccountId}
                   onValueChange={(value) => handleChange('fromAccountId', value)}
                 >
-                  <SelectTrigger className={`border-banking-gold/20 focus:border-banking-gold ${errors.fromAccountId ? 'border-red-500' : ''}`}>
+                  <SelectTrigger className={`border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${errors.fromAccountId ? 'border-red-500' : ''}`}>
                     <SelectValue placeholder="Select source account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -175,7 +175,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
                 </Select>
                 {errors.fromAccountId && <p className="text-red-500 text-sm">{errors.fromAccountId}</p>}
                 {selectedAccount && (
-                  <p className="text-sm text-banking-gray">
+                  <p className="text-sm text-brand-600">
                     Available: {formatCurrency(selectedAccount.balance)}
                   </p>
                 )}
@@ -183,7 +183,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
 
               {/* Recipient Account Number */}
               <div className="space-y-2">
-                <Label htmlFor="toAccountNumber" className="text-banking-dark font-medium">
+                <Label htmlFor="toAccountNumber" className="text-brand-700 font-medium">
                   Recipient Account Number
                 </Label>
                 <Input
@@ -191,7 +191,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
                   placeholder="Enter 10-digit account number"
                   value={formData.toAccountNumber}
                   onChange={(e) => handleChange('toAccountNumber', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                  className={`border-banking-gold/20 focus:border-banking-gold ${errors.toAccountNumber ? 'border-red-500' : ''}`}
+                  className={`border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${errors.toAccountNumber ? 'border-red-500' : ''}`}
                   maxLength={10}
                 />
                 {errors.toAccountNumber && <p className="text-red-500 text-sm">{errors.toAccountNumber}</p>}
@@ -207,7 +207,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
 
               {/* Recipient Name */}
               <div className="space-y-2">
-                <Label htmlFor="recipientName" className="text-banking-dark font-medium">
+                <Label htmlFor="recipientName" className="text-brand-700 font-medium">
                   Recipient Name
                 </Label>
                 <Input
@@ -215,14 +215,14 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
                   placeholder="Enter recipient's full name"
                   value={formData.recipientName}
                   onChange={(e) => handleChange('recipientName', e.target.value)}
-                  className={`border-banking-gold/20 focus:border-banking-gold ${errors.recipientName ? 'border-red-500' : ''}`}
+                  className={`border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${errors.recipientName ? 'border-red-500' : ''}`}
                 />
                 {errors.recipientName && <p className="text-red-500 text-sm">{errors.recipientName}</p>}
               </div>
 
               {/* Amount */}
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-banking-dark font-medium">
+                <Label htmlFor="amount" className="text-brand-700 font-medium">
                   Amount (NGN)
                 </Label>
                 <Input
@@ -231,7 +231,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => handleChange('amount', e.target.value)}
-                  className={`border-banking-gold/20 focus:border-banking-gold ${errors.amount ? 'border-red-500' : ''}`}
+                  className={`border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${errors.amount ? 'border-red-500' : ''}`}
                   min="0"
                   step="0.01"
                 />
@@ -240,7 +240,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-banking-dark font-medium">
+                <Label htmlFor="description" className="text-brand-700 font-medium">
                   Description
                 </Label>
                 <Textarea
@@ -248,7 +248,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
                   placeholder="What is this transfer for?"
                   value={formData.description}
                   onChange={(e) => handleChange('description', e.target.value)}
-                  className={`border-banking-gold/20 focus:border-banking-gold ${errors.description ? 'border-red-500' : ''}`}
+                  className={`border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 ${errors.description ? 'border-red-500' : ''}`}
                   rows={3}
                 />
                 {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}

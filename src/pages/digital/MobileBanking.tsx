@@ -187,7 +187,7 @@ export default function MobileBanking() {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
+              <div className="bg-gradient-to-r from-purple-600 to-red-600 rounded-2xl p-8 text-white">
                 <div className="text-center">
                   <Smartphone className="h-24 w-24 mx-auto mb-6 text-white/80" />
                   <h3 className="text-2xl font-bold mb-4">Download Today</h3>
@@ -231,7 +231,7 @@ export default function MobileBanking() {
               return (
                 <Card key={index} className="text-center shadow-lg hover:shadow-xl transition-shadow">
                   <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Icon className="h-8 w-8 text-white" />
                     </div>
                     <CardTitle className="text-lg text-gray-900">{feature.title}</CardTitle>

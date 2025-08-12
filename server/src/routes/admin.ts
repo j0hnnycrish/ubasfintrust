@@ -1,8 +1,10 @@
-import { Router, Response } from 'express';
+import { Router, Response, Request } from 'express';
+import { body, validationResult } from 'express-validator';
 import { AuthMiddleware } from '../middleware/auth';
 import { ipWhitelist } from '../middleware/security';
 import { db } from '../config/db';
 import { logger, logAudit } from '../utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 import { AuthRequest } from '../types';
 
 const router = Router();
@@ -10,6 +12,304 @@ const router = Router();
 // All admin routes require authentication and admin role
 router.use(AuthMiddleware.verifyToken);
 router.use(AuthMiddleware.requireRole(['corporate'])); // Only corporate users can access admin functions
+
+// Create new user (admin initiated)
+router.post('/users', [
+  body('email').isEmail().withMessage('Valid email required'),
+  body('password').isLength({ min: 8 }).withMessage('Password min length 8'),
+  body('firstName').isLength({ min: 2 }).withMessage('First name required'),
+  body('lastName').isLength({ min: 2 }).withMessage('Last name required'),
+  body('phone').isMobilePhone('any').withMessage('Valid phone required'),
+  body('dateOfBirth').isISO8601().withMessage('Valid date of birth required'),
+  body('accountType').isIn(['personal','business','corporate','private']).withMessage('Invalid account type')
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { email, password, firstName, lastName, phone, dateOfBirth, accountType } = req.body;
+
+    const existing = await db('users').where({ email }).first();
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Email already in use' });
+    }
+
+    const phoneExists = await db('users').where({ phone }).first();
+    if (phoneExists) {
+      return res.status(409).json({ success: false, message: 'Phone already in use' });
+    }
+
+    const userId = uuidv4();
+    const passwordHash = await AuthMiddleware.hashPassword(password);
+
+    const user = {
+      id: userId,
+      email,
+      password_hash: passwordHash,
+      first_name: firstName,
+      last_name: lastName,
+      phone,
+      date_of_birth: dateOfBirth,
+      account_type: accountType,
+      kyc_status: 'pending',
+      is_active: true,
+      is_verified: false,
+      two_factor_enabled: false,
+      failed_login_attempts: 0
+    };
+
+    await db('users').insert(user);
+
+    // Create default account
+    const accountNumber = Math.random().toString().slice(2, 12);
+    const account = {
+      id: uuidv4(),
+      user_id: userId,
+      account_number: accountNumber,
+      account_type: accountType === 'personal' ? 'checking' : 'business',
+      balance: 0,
+      available_balance: 0,
+      currency: 'USD',
+      status: 'active',
+      minimum_balance: accountType === 'personal' ? 0 : 0
+    };
+    await db('accounts').insert(account);
+
+    logAudit('ADMIN_CREATED_USER', (req as any).user?.id, 'user', { userId, email, accountType });
+
+    // Optional welcome notifications
+    const { sendWelcomeEmail, sendWelcomeSms, welcomeEmailTemplateId, welcomeSmsTemplateId } = req.body;
+    try {
+      if (sendWelcomeEmail || sendWelcomeSms) {
+        const { notificationService } = require('../services/notificationService');
+        let title = 'Welcome to UBAS Financial Trust';
+        let message = 'Your account has been created. Login to get started.';
+        if (welcomeEmailTemplateId || welcomeSmsTemplateId) {
+          const tplRows = await db('message_templates')
+            .whereIn('id', [welcomeEmailTemplateId, welcomeSmsTemplateId].filter(Boolean));
+          const emailTpl = tplRows.find((t:any)=>t.id===welcomeEmailTemplateId);
+            const smsTpl = tplRows.find((t:any)=>t.id===welcomeSmsTemplateId);
+          if (emailTpl?.subject) title = emailTpl.subject;
+          if (emailTpl?.body) message = emailTpl.body;
+          if (smsTpl?.body) message = smsTpl.body;
+        }
+        await notificationService.sendNotification({
+          id: require('uuid').v4(),
+          userId,
+          type: 'registration',
+          priority: 'medium',
+          title,
+          message,
+          channels: [
+            ...(sendWelcomeEmail ? ['email'] : []),
+            ...(sendWelcomeSms ? ['sms'] : []),
+            'in_app'
+          ]
+        });
+      }
+    } catch (notifyErr) {
+      logger.warn('Failed to send welcome notifications for admin-created user', notifyErr);
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: {
+        userId,
+        email,
+        accountNumber
+      }
+    });
+  } catch (error) {
+    logger.error('Admin create user error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to create user' });
+  }
+});
+
+// Create an additional account for a user
+router.post('/users/:userId/accounts', [
+  body('accountType').isIn(['checking','savings','business','investment','loan']).withMessage('Invalid account type'),
+  body('currency').optional().isLength({ min: 3, max: 3 }),
+  body('initialBalance').optional().isFloat({ min: 0 })
+], async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
+    }
+    const { userId } = req.params;
+    const { accountType, currency = 'USD', initialBalance = 0 } = req.body;
+    const user = await db('users').where({ id: userId }).first();
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    const accountId = uuidv4();
+    const accountNumber = Math.random().toString().slice(2, 12);
+    await db('accounts').insert({
+      id: accountId,
+      user_id: userId,
+      account_number: accountNumber,
+      account_type: accountType,
+      balance: initialBalance,
+      available_balance: initialBalance,
+      currency,
+      status: 'active',
+      minimum_balance: 0
+    });
+    logAudit('ADMIN_CREATED_ACCOUNT', (req as any).user?.id, 'account', { accountId, userId, accountType });
+    return res.status(201).json({ success: true, message: 'Account created', data: { accountId, accountNumber } });
+  } catch (error) {
+    logger.error('Admin create account error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to create account' });
+  }
+});
+
+// Seed (generate) synthetic transactions for a user's account
+router.post('/accounts/:accountId/transactions/seed', [
+  body('count').optional().isInt({ min: 1, max: 200 }),
+  body('type').optional().isIn(['transfer','deposit','withdrawal','payment','fee','interest']),
+], async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
+    }
+    const { accountId } = req.params;
+    const { count = 10, type } = req.body;
+    const account = await db('accounts').where({ id: accountId }).first();
+    if (!account) return res.status(404).json({ success: false, message: 'Account not found' });
+    const txs: any[] = [];
+    for (let i=0;i<count;i++) {
+      const amt = Number((Math.random()*500 + 5).toFixed(2));
+      const isDebit = Math.random() > 0.5;
+      const tType = type || (isDebit ? 'payment' : 'deposit');
+      txs.push({
+        id: uuidv4(),
+        from_account_id: isDebit ? accountId : null,
+        to_account_id: !isDebit ? accountId : null,
+        amount: amt,
+        currency: account.currency,
+        type: tType,
+        status: 'completed',
+        description: `${tType} seed ${i+1}`,
+        reference: `SEED${Date.now()}${i}${Math.random().toString(36).slice(2,6).toUpperCase()}`,
+        category: 'Seed',
+        processed_at: new Date(),
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+    }
+    await db('transactions').insert(txs);
+    // Update balance roughly
+    const net = txs.reduce((sum, t) => sum + (t.to_account_id ? t.amount : -t.amount), 0);
+    await db('accounts').where({ id: accountId }).update({ balance: account.balance + net, available_balance: account.available_balance + net, updated_at: new Date() });
+    logAudit('ADMIN_SEEDED_TRANSACTIONS', (req as any).user?.id, 'account', { accountId, count });
+    return res.json({ success: true, message: 'Transactions seeded', data: { inserted: txs.length, netChange: net } });
+  } catch (error) {
+    logger.error('Admin seed transactions error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to seed transactions' });
+  }
+});
+
+// List accounts for a specific user (admin)
+router.get('/users/:userId/accounts', async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const user = await db('users').where({ id: userId }).first();
+    if (!user) return res.status(404).json({ success:false, message:'User not found' });
+    const accounts = await db('accounts').where({ user_id: userId }).orderBy('created_at','desc');
+    return res.json({ success:true, data: accounts });
+  } catch (error) {
+    logger.error('Admin list user accounts error:', error);
+    return res.status(500).json({ success:false, message:'Failed to get accounts' });
+  }
+});
+
+// List transactions for an account (admin)
+router.get('/accounts/:accountId/transactions', async (req: AuthRequest, res: Response) => {
+  try {
+    const { accountId } = req.params;
+    const account = await db('accounts').where({ id: accountId }).first();
+    if (!account) return res.status(404).json({ success:false, message:'Account not found' });
+    const { page = 1, limit = 50 } = req.query as any;
+    const offset = (Number(page)-1)*Number(limit);
+    const txs = await db('transactions')
+      .where('from_account_id', accountId)
+      .orWhere('to_account_id', accountId)
+      .orderBy('created_at','desc')
+      .limit(Number(limit))
+      .offset(offset);
+    return res.json({ success:true, data: txs, pagination:{ page:Number(page), limit:Number(limit) }});
+  } catch (error) {
+    logger.error('Admin list account transactions error:', error);
+    return res.status(500).json({ success:false, message:'Failed to get transactions' });
+  }
+});
+
+// Send a direct test email (admin tool) to any target address to verify provider chain
+router.post('/email/test', async (req: AuthRequest, res: Response) => {
+  try {
+    const { to, subject, message } = req.body;
+    if (!to || !subject || !message) {
+      return res.status(400).json({ success: false, message: 'to, subject, message required' });
+    }
+    const emailServiceModule = require('../services/emailService');
+    const emailService = new emailServiceModule.EmailService();
+    const conversationalHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;line-height:1.5;color:#111">
+      <h2 style="margin:0 0 12px;font-size:20px">Hi there 👋</h2>
+      <p style="margin:0 0 12px">${message}</p>
+      <p style="margin:0 0 12px">If you were expecting a super formal template – this is intentionally conversational so you can gauge tone.&nbsp;Feel free to tweak variables and resend.</p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0" />
+      <p style="font-size:12px;color:#555;margin:0">Sent via UBAS multi‑provider relay (Resend → SMTP fallback). Time: ${new Date().toISOString()}</p>
+    </body></html>`;
+    const result = await emailService.sendEmail({ to, subject, text: message, html: conversationalHtml });
+    return res.json({ success: result.success, provider: result.provider, messageId: result.messageId, error: result.error });
+  } catch (err:any) {
+    logger.error('Test email failed', err);
+    return res.status(500).json({ success: false, message: 'Test email failed', error: err.message });
+  }
+});
+
+// Credit a grant (admin) to a user's account
+router.post('/accounts/:accountId/grants', [
+  body('amount').isFloat({ min: 1 }).withMessage('Amount required'),
+  body('purpose').isLength({ min: 3 }).withMessage('Purpose required'),
+  body('currency').optional().isLength({ min:3, max:3 })
+], async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success:false, message:'Validation failed', errors: errors.array() });
+    }
+    const { accountId } = req.params;
+    const { amount, purpose, currency } = req.body;
+    const account = await db('accounts').where({ id: accountId }).first();
+    if (!account) return res.status(404).json({ success:false, message:'Account not found' });
+    const grantId = uuidv4();
+    const now = new Date();
+    await db('grants').insert({
+      id: grantId,
+      user_id: account.user_id,
+      account_id: accountId,
+      amount,
+      currency: currency || account.currency,
+      purpose,
+      status: 'approved',
+      approved_at: now,
+      metadata: { adminCredit: true }
+    });
+    await db('accounts').where({ id: accountId }).update({
+      balance: Number(account.balance) + Number(amount),
+      available_balance: Number(account.available_balance) + Number(amount),
+      updated_at: now
+    });
+    logAudit('ADMIN_GRANTED_FUNDS', (req as any).user?.id, 'grant', { grantId, accountId, amount });
+    return res.status(201).json({ success:true, message:'Grant credited', data:{ grantId } });
+  } catch (error) {
+    logger.error('Admin grant credit error:', error);
+    return res.status(500).json({ success:false, message:'Failed to credit grant' });
+  }
+});
 
 // Optional IP whitelist for admin endpoints (uncomment and configure as needed)
 // router.use(ipWhitelist(['127.0.0.1', '::1']));

@@ -33,8 +33,11 @@ import {
   PiggyBank,
   Building,
   TrendingUp,
-  Briefcase
+  Briefcase,
+  Gift,
+  Sparkles
 } from 'lucide-react';
+import { adminAPI } from '@/lib/api';
 
 export function AccountManagement() {
   const { customers, createAccount, updateAccount, updateAccountBalance } = useAdmin();
@@ -45,6 +48,9 @@ export function AccountManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [grantModal, setGrantModal] = useState(false);
+  const [seedLoadingAccount, setSeedLoadingAccount] = useState<string|null>(null);
+  const [grantData, setGrantData] = useState({ accountId:'', amount:'', purpose:'' });
 
   const [formData, setFormData] = useState({
     customerId: '',
@@ -169,6 +175,37 @@ export function AccountManagement() {
     setShowBalanceModal(true);
   };
 
+  const openGrantModal = (account: any) => {
+    setGrantData({ accountId: account.id, amount:'', purpose:'' });
+    setGrantModal(true);
+  };
+
+  const submitGrant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(''); setSuccess('');
+    if (!grantData.amount || !grantData.purpose) { setError('Amount & purpose required'); return; }
+    const amt = parseFloat(grantData.amount);
+    if (isNaN(amt) || amt <=0) { setError('Invalid amount'); return; }
+    try {
+      const resp = await adminAPI.grantCredit(grantData.accountId, { amount: amt, purpose: grantData.purpose });
+      if (resp.success) { setSuccess('Grant credited'); setGrantModal(false); }
+      else setError(resp.message || 'Grant failed');
+    } catch (err:any) {
+      setError(err.message || 'Grant error');
+    }
+  };
+
+  const seedTransactions = async (account: any) => {
+    setSeedLoadingAccount(account.id);
+    try {
+      const resp = await adminAPI.seedTransactions(account.id, { count: 25 });
+      if (resp.success) {
+        setSuccess(`Seeded ${resp.data?.inserted||25} tx (Δ ${resp.data?.netChange||0})`);
+      } else setError(resp.message||'Seed failed');
+    } catch (e:any) { setError(e.message); }
+    finally { setSeedLoadingAccount(null); }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -189,11 +226,11 @@ export function AccountManagement() {
 
   const getAccountColor = (type: string) => {
     switch (type) {
-      case 'checking': return 'bg-blue-100 text-blue-600';
-      case 'savings': return 'bg-green-100 text-green-600';
-      case 'business': return 'bg-purple-100 text-purple-600';
-      case 'investment': return 'bg-yellow-100 text-yellow-600';
-      case 'credit': return 'bg-red-100 text-red-600';
+      case 'checking': return 'bg-red-100 text-red-700';
+      case 'savings': return 'bg-red-50 text-red-700';
+      case 'business': return 'bg-red-100 text-red-700';
+      case 'investment': return 'bg-red-50 text-red-700';
+      case 'credit': return 'bg-red-100 text-red-700';
       default: return 'bg-gray-100 text-gray-600';
     }
   };
@@ -499,18 +536,63 @@ export function AccountManagement() {
                       </Badge>
                     </div>
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openBalanceModal(account)}
-                    >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Update Balance
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openBalanceModal(account)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Balance
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openGrantModal(account)}
+                      >
+                        <Gift className="h-4 w-4 mr-1" />
+                        Grant
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={seedLoadingAccount===account.id}
+                        onClick={() => seedTransactions(account)}
+                      >
+                        <Sparkles className={`h-4 w-4 mr-1 ${seedLoadingAccount===account.id?'animate-spin':''}`} />
+                        Seed
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
             })}
+
+      {/* Grant Modal */}
+      <Dialog open={grantModal} onOpenChange={setGrantModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Credit Grant</DialogTitle>
+            <DialogDescription>Inject non-repayable funds for demo purposes.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitGrant} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="grantAmount">Amount *</Label>
+              <Input id="grantAmount" type="number" min="1" step="0.01" value={grantData.amount} onChange={e=>setGrantData(prev=>({...prev,amount:e.target.value}))} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="grantPurpose">Purpose *</Label>
+              <Input id="grantPurpose" value={grantData.purpose} onChange={e=>setGrantData(prev=>({...prev,purpose:e.target.value}))} placeholder="Working capital demo" />
+            </div>
+            {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
+            {success && <Alert className="bg-green-50 border-green-200"><CheckCircle className="h-4 w-4 text-green-600" /><AlertDescription className="text-green-800">{success}</AlertDescription></Alert>}
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" className="flex-1" onClick={()=>setGrantModal(false)}>Cancel</Button>
+              <Button type="submit" className="flex-1 bg-red-600 hover:bg-red-700">Credit Grant</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
             
             {filteredAccounts.length === 0 && (
               <div className="text-center py-8">

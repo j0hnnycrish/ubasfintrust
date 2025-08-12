@@ -20,7 +20,7 @@ export function AuthPage() {
               />
               <div>
                 <h1 className="text-4xl font-bold">Providus Bank</h1>
-                <p className="text-xl text-banking-gold">AI Banking Simulation</p>
+                <p className="text-xl text-brand-600">AI Banking Simulation</p>
               </div>
             </div>
             
@@ -36,19 +36,19 @@ export function AuthPage() {
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-banking-gold rounded-full"></div>
+                  <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
                   <span>AI-powered customer service</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-banking-gold rounded-full"></div>
+                  <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
                   <span>Real-time transaction monitoring</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-banking-gold rounded-full"></div>
+                  <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
                   <span>Secure and seamless transfers</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-banking-gold rounded-full"></div>
+                  <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
                   <span>24/7 intelligent banking assistance</span>
                 </div>
               </div>
@@ -75,7 +75,7 @@ export function AuthPage() {
             />
             <div>
               <h1 className="text-2xl font-bold">Providus Bank</h1>
-              <p className="text-banking-gold">AI Banking Simulation</p>
+              <p className="text-brand-600">AI Banking Simulation</p>
             </div>
           </div>
         </div>

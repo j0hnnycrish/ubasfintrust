@@ -1,4 +1,5 @@
-# 🔐 UBAS Financial Trust - Admin Portal Guide
+# 🔐 UBAS Financial Trust - Admin Portal Guide  
+> For full deployment, DNS, notification providers, grants, loans, and scaling procedures see `COMPLETE_OPERATIONS_MANUAL.md`.
 
 ## 🎯 **COMPLETE ADMIN CONTROL SYSTEM**
 
@@ -12,11 +13,12 @@ Your UBAS Financial Trust application now includes a **comprehensive admin porta
 - **Local:** http://localhost:8081/admin
 - **From Homepage:** Click "Admin Portal" link in the footer
 
-### **Admin Login Credentials:**
+### **Admin Login Credentials (Seeded Corporate User):**
 ```
-Username: admin
-Password: admin123
+Email: (value of ADMIN_EMAIL in backend env)  # default admin@ubasfintrust.com
+Password: (value of ADMIN_PASSWORD)          # default ChangeMe#12345
 ```
+Change the password immediately after first login (Profile → Change Password).
 
 ---
 
@@ -132,7 +134,7 @@ Password: admin123
 
 ---
 
-## 🔧 **TECHNICAL FEATURES**
+## 🔧 **TECHNICAL FEATURES (Updated)**
 
 ### **Real-time Updates:**
 - All changes reflect immediately in customer dashboards
@@ -140,9 +142,7 @@ Password: admin123
 - Transaction history appears instantly
 
 ### **Data Persistence:**
-- All data stored in browser localStorage
-- Survives page refreshes and browser restarts
-- Easy to reset for fresh demos
+Primarily persisted in PostgreSQL (customers, accounts, transactions, loans, grants, templates). LocalStorage now used only for session tokens / light UI state.
 
 ### **Security:**
 - Separate admin authentication system
@@ -236,11 +236,11 @@ Your admin portal provides **complete control** over the banking system:
 ✅ **Professional admin interface**  
 
 **🔐 Access Admin Portal:** http://localhost:8081/admin  
-**👤 Admin Login:** admin / admin123
+**👤 Admin Login:** ADMIN_EMAIL / ADMIN_PASSWORD (environment)
 
 **🎯 Perfect for client demonstrations and system management!**
 
 ---
 
 *Admin Portal Version: 1.0.0*  
-*Last Updated: January 2024*
+*Last Updated: August 2025*

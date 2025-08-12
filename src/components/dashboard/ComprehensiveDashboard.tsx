@@ -127,9 +127,9 @@ export function ComprehensiveDashboard({ onLogout }: ComprehensiveDashboardProps
 
   const getAlertColor = (type: string) => {
     switch (type) {
-      case 'warning': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'success': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'warning': return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+      case 'success': return 'text-red-700 bg-red-50 border-red-200';
+      default: return 'text-red-700 bg-red-50 border-red-200';
     }
   };
 

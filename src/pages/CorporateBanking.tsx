@@ -31,7 +31,7 @@ export default function CorporateBanking() {
       features: ['Global Cash Pooling', 'Liquidity Optimization', 'Risk Management', 'Real-time Reporting'],
       minBalance: '$5,000,000',
       icon: BarChart3,
-      color: 'bg-blue-700'
+      color: 'bg-red-700'
     },
     {
       id: 'capital',
@@ -90,7 +90,7 @@ export default function CorporateBanking() {
       <ProfessionalNavigation />
 
       {/* Hero Section with Scrolling Background */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
         <ScrollingBackground
           images={corporateBankingImages}
           speed={45}
@@ -114,7 +114,7 @@ export default function CorporateBanking() {
                 <Building2 className="h-6 w-6 mr-2" />
                 Explore Solutions
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-banking-dark text-lg px-8 py-3">
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 text-lg px-8 py-3" onClick={() => navigate('/leadership')}>
                 <Users className="h-6 w-6 mr-2" />
                 Meet Our Team
               </Button>

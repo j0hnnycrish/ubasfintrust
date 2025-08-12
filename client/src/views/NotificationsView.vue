@@ -595,7 +595,7 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #ef4444; /* red */
 }
 
 .load-more-section {
@@ -623,12 +623,12 @@ export default {
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: #ef4444; /* red */
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+  background: #dc2626; /* darker red */
 }
 
 .btn-secondary {

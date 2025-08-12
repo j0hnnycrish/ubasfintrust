@@ -2,10 +2,13 @@ import { createClient } from 'redis';
 import { logger } from '../utils/logger';
 
 const redisClient = createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD || undefined,
-  database: parseInt(process.env.REDIS_DB || '0'),
+  url: process.env['REDIS_URL'] || undefined,
+  socket: {
+    host: process.env['REDIS_HOST'] || 'localhost',
+    port: parseInt(process.env['REDIS_PORT'] || '6379'),
+  },
+  password: process.env['REDIS_PASSWORD'] || undefined,
+  database: parseInt(process.env['REDIS_DB'] || '0'),
 });
 
 redisClient.on('error', (err) => {
@@ -140,3 +143,56 @@ export class CacheService {
     return this.del(`lock:${key}`);
   }
 }
+
+// Template cache helpers that compose CacheService
+export class TemplateCacheService {
+  static async getTemplateList(locale?: string): Promise<any[] | null> {
+    const key = `templates:list:${locale || 'all'}`;
+    return CacheService.get<any[]>(key);
+  }
+
+  static async setTemplateList(templates: any[], locale?: string, ttl: number = 1800): Promise<boolean> {
+    const key = `templates:list:${locale || 'all'}`;
+    return CacheService.set(key, templates, ttl);
+  }
+
+  static async getRenderResult(templateHash: string, dataHash: string): Promise<any | null> {
+    const key = `templates:render:${templateHash}:${dataHash}`;
+    return CacheService.get<any>(key);
+  }
+
+  static async setRenderResult(templateHash: string, dataHash: string, result: any, ttl: number = 3600): Promise<boolean> {
+    const key = `templates:render:${templateHash}:${dataHash}`;
+    return CacheService.set(key, result, ttl);
+  }
+
+  static async invalidateTemplateCache(templateId?: string): Promise<boolean> {
+    try {
+      // Clear template list cache for all locales
+      const listKeys = await redisClient.keys('templates:list:*');
+      if (listKeys.length > 0) await redisClient.del(listKeys);
+
+      // Clear render cache (all or specific template)
+      const renderKeys = templateId
+        ? await redisClient.keys(`templates:render:*${templateId}*`)
+        : await redisClient.keys('templates:render:*');
+      if (renderKeys.length > 0) await redisClient.del(renderKeys);
+
+      return true;
+    } catch (error) {
+      logger.error('Template cache invalidation error:', error);
+      return false;
+    }
+  }
+}
+
+// NOTE: The methods below were previously inside CacheService by mistake.
+// They remain for backward-compatibility but delegate to TemplateCacheService.
+export class CacheTemplatesCompat {
+  static async getTemplateList(locale?: string) { return TemplateCacheService.getTemplateList(locale); }
+  static async setTemplateList(templates: any[], locale?: string, ttl: number = 1800) { return TemplateCacheService.setTemplateList(templates, locale, ttl); }
+  static async getRenderResult(templateHash: string, dataHash: string) { return TemplateCacheService.getRenderResult(templateHash, dataHash); }
+  static async setRenderResult(templateHash: string, dataHash: string, result: any, ttl: number = 3600) { return TemplateCacheService.setRenderResult(templateHash, dataHash, result, ttl); }
+  static async invalidateTemplateCache(templateId?: string) { return TemplateCacheService.invalidateTemplateCache(templateId); }
+}
+

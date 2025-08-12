@@ -56,11 +56,11 @@ export function ScrollingBackground({
 
       {/* Animated particles for banking theme */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400/30 rounded-full animate-float" />
-        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-blue-400/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-red-400/30 rounded-full animate-float" />
+        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-red-400/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
         <div className="absolute top-1/2 left-3/4 w-1 h-1 bg-white/40 rounded-full animate-float" style={{ animationDelay: '4s' }} />
-        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-yellow-400/20 rounded-full animate-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-1/4 left-1/2 w-1 h-1 bg-blue-400/30 rounded-full animate-float" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-red-400/20 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 left-1/2 w-1 h-1 bg-red-400/30 rounded-full animate-float" style={{ animationDelay: '3s' }} />
       </div>
     </div>
   );

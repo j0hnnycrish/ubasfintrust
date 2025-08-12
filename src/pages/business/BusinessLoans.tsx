@@ -197,7 +197,7 @@ export default function BusinessLoans() {
                 <Card key={index} className="text-center shadow-lg hover:shadow-xl transition-shadow">
                   <CardHeader>
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-green-600" />
+                      <Icon className="h-8 w-8 text-red-600" />
                     </div>
                     <CardTitle className="text-xl text-gray-900">{feature.title}</CardTitle>
                   </CardHeader>
@@ -224,11 +224,11 @@ export default function BusinessLoans() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {loanTypes.map((loan, index) => (
               <Card key={index} className={`relative shadow-lg hover:shadow-xl transition-shadow ${
-                loan.popular ? 'border-2 border-green-500' : ''
+                loan.popular ? 'border-2 border-red-500' : ''
               }`}>
                 {loan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
                       Most Popular
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export default function BusinessLoans() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">APR Range:</span>
-                      <span className="font-semibold text-green-600">{loan.rate}</span>
+                      <span className="font-semibold text-red-600">{loan.rate}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Loan Amount:</span>
@@ -258,7 +258,7 @@ export default function BusinessLoans() {
                     <ul className="space-y-1">
                       {loan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
                           {feature}
                         </li>
                       ))}
@@ -268,7 +268,7 @@ export default function BusinessLoans() {
                   <Button 
                     className={`w-full ${
                       loan.popular 
-                        ? 'bg-green-600 hover:bg-green-700' 
+                        ? 'bg-red-600 hover:bg-red-700' 
                         : 'bg-gray-600 hover:bg-gray-700'
                     }`}
                     onClick={() => window.location.href = '/open-account'}
@@ -295,7 +295,7 @@ export default function BusinessLoans() {
               <div className="space-y-3">
                 {requirements.map((requirement, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                     <span className="text-gray-700">{requirement}</span>
                   </div>
                 ))}

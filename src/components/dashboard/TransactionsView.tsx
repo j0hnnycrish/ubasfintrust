@@ -101,15 +101,15 @@ export function TransactionsView() {
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
-      'Income': 'bg-green-100 text-green-800',
-      'Shopping': 'bg-blue-100 text-blue-800',
-      'Food & Dining': 'bg-orange-100 text-orange-800',
-      'Transportation': 'bg-purple-100 text-purple-800',
-      'Utilities': 'bg-yellow-100 text-yellow-800',
-      'Entertainment': 'bg-pink-100 text-pink-800',
+      'Income': 'bg-red-50 text-red-800',
+      'Shopping': 'bg-red-100 text-red-800',
+      'Food & Dining': 'bg-red-50 text-red-800',
+      'Transportation': 'bg-red-100 text-red-800',
+      'Utilities': 'bg-red-50 text-red-800',
+      'Entertainment': 'bg-red-100 text-red-800',
       'Healthcare': 'bg-red-100 text-red-800',
-      'Transfer': 'bg-indigo-100 text-indigo-800',
-      'Interest': 'bg-green-100 text-green-800',
+      'Transfer': 'bg-red-50 text-red-800',
+      'Interest': 'bg-red-50 text-red-800',
       'Fees': 'bg-red-100 text-red-800'
     };
     return colors[category] || 'bg-gray-100 text-gray-800';

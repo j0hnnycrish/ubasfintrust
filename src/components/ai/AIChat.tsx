@@ -170,7 +170,7 @@ export function AIChat({ onBack }: AIChatProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-banking-bg p-4">
+  <div className="min-h-screen bg-gradient-to-b from-brand-50 via-white to-brand-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Button
@@ -183,12 +183,12 @@ export function AIChat({ onBack }: AIChatProps) {
           </Button>
           
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gradient-banking rounded-xl">
-              <MessageSquare className="h-8 w-8 text-banking-dark" />
+            <div className="p-3 bg-brand-100 rounded-xl">
+              <MessageSquare className="h-8 w-8 text-brand-700" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-banking-dark">AI Banking Assistant</h1>
-              <p className="text-banking-gray mt-1">Get instant help with your banking needs</p>
+              <h1 className="text-3xl font-bold text-brand-800">AI Banking Assistant</h1>
+              <p className="text-brand-600 mt-1">Get instant help with your banking needs</p>
             </div>
           </div>
         </div>
@@ -196,15 +196,15 @@ export function AIChat({ onBack }: AIChatProps) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Quick Questions Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="shadow-card-banking bg-gradient-card border-banking-gold/20">
+            <Card className="shadow-card-banking bg-white/80 backdrop-blur border border-brand-200">
               <CardHeader>
-                <CardTitle className="text-lg font-bold text-banking-dark">Quick Questions</CardTitle>
+                <CardTitle className="text-lg font-bold text-brand-800">Quick Questions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {quickQuestions.map((question, index) => (
                   <Button
                     key={index}
-                    variant="banking-outline"
+                    variant="outline"
                     size="sm"
                     className="w-full text-left justify-start text-xs h-auto p-3"
                     onClick={() => setInputMessage(question)}
@@ -218,15 +218,15 @@ export function AIChat({ onBack }: AIChatProps) {
 
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="shadow-elegant bg-gradient-card border-banking-gold/20 h-[600px] flex flex-col">
-              <CardHeader className="border-b border-banking-gold/20">
+            <Card className="shadow-elegant bg-white/80 backdrop-blur border border-brand-200 h-[600px] flex flex-col">
+              <CardHeader className="border-b border-brand-200/60">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-banking-gold/10 rounded-lg">
-                    <Bot className="h-5 w-5 text-banking-gold" />
+                  <div className="p-2 bg-brand-100 rounded-lg">
+                    <Bot className="h-5 w-5 text-brand-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-bold text-banking-dark">AI Banking Assistant</CardTitle>
-                    <Badge className="bg-green-100 text-green-800 border-green-200">Online</Badge>
+                    <CardTitle className="text-lg font-bold text-brand-800">AI Banking Assistant</CardTitle>
+                    <Badge className="bg-brand-100 text-brand-700 border-brand-200">Online</Badge>
                   </div>
                 </div>
               </CardHeader>
@@ -241,16 +241,16 @@ export function AIChat({ onBack }: AIChatProps) {
                     <div
                       className={`max-w-[80%] p-4 rounded-lg ${
                         message.sender === 'user'
-                          ? 'bg-gradient-banking text-banking-dark'
-                          : 'bg-white border border-banking-gold/20 text-banking-dark'
+                          ? 'bg-brand-100 text-brand-800'
+                          : 'bg-white border border-brand-200 text-brand-800'
                       }`}
                     >
                       <div className="flex items-start space-x-2">
                         {message.sender === 'ai' && (
-                          <Bot className="h-4 w-4 text-banking-gold mt-1 flex-shrink-0" />
+                          <Bot className="h-4 w-4 text-brand-600 mt-1 flex-shrink-0" />
                         )}
                         {message.sender === 'user' && (
-                          <User className="h-4 w-4 text-banking-dark mt-1 flex-shrink-0" />
+                          <User className="h-4 w-4 text-brand-700 mt-1 flex-shrink-0" />
                         )}
                         <div className="space-y-2">
                           <p className="whitespace-pre-line text-sm leading-relaxed">
@@ -267,13 +267,13 @@ export function AIChat({ onBack }: AIChatProps) {
                 
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-banking-gold/20 text-banking-dark p-4 rounded-lg max-w-[80%]">
+                    <div className="bg-white border border-brand-200 text-brand-800 p-4 rounded-lg max-w-[80%]">
                       <div className="flex items-center space-x-2">
-                        <Bot className="h-4 w-4 text-banking-gold" />
+                        <Bot className="h-4 w-4 text-brand-600" />
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-banking-gold rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-banking-gold rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-banking-gold rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-brand-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -283,25 +283,25 @@ export function AIChat({ onBack }: AIChatProps) {
               </CardContent>
 
               {/* Input Area */}
-              <div className="border-t border-banking-gold/20 p-4">
+              <div className="border-t border-brand-200/60 p-4">
                 <div className="flex space-x-2">
                   <Input
                     placeholder="Ask me anything about your banking needs..."
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="flex-1 border-banking-gold/20 focus:border-banking-gold"
+                    className="flex-1 border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                     disabled={isTyping}
                   />
                   <Button
-                    variant="banking"
+                    variant="default"
                     onClick={handleSendMessage}
                     disabled={!inputMessage.trim() || isTyping}
                   >
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-xs text-banking-gray mt-2">
+                <p className="text-xs text-brand-600 mt-2">
                   Press Enter to send • AI-powered banking assistance
                 </p>
               </div>

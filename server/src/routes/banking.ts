@@ -10,7 +10,7 @@ import { externalBankingService } from '../services/externalBankingService';
 const router = Router();
 
 // Apply authentication middleware to all routes
-router.use(AuthMiddleware.authenticate);
+router.use(AuthMiddleware.verifyToken);
 
 // Get credit score
 router.get('/credit-score', async (req: AuthRequest, res: Response) => {

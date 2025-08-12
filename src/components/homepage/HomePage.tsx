@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from './ProfessionalNavigation';
-import { ForexTicker } from './ForexTicker';
 import { HeroSection } from './HeroSection';
 import { ServicesSection } from './ServicesSection';
 import { ProductsSection } from './ProductsSection';
-import { Footer } from './Footer';
+import { Footer as UBAFooter } from './UBAFooter';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -22,11 +21,10 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
-      <ForexTicker />
       <HeroSection onGetStarted={handleGetStarted} />
       <ServicesSection onSelectService={handleSelectService} />
       <ProductsSection />
-      <Footer />
+      <UBAFooter />
     </div>
   );
 }

@@ -3,17 +3,19 @@ import { logger } from '../utils/logger';
 import { db } from '../config/db';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailService } from './emailService';
-import { SMSService } from './smsService';
+import * as smsModule from './smsService';
 import { FraudDetectionService } from './fraudDetectionService';
+import { sendEventEmail } from '../email/resend';
 
 export interface NotificationEvent {
-  id: string;
+  id?: string;
   userId: string;
-  type: 'transaction' | 'security' | 'account' | 'system' | 'marketing';
+  type: 'transaction' | 'security' | 'account' | 'system' | 'marketing' | 'fraud_alert' | 'kyc' | 'registration' | 'password_reset' | 'profile_update' | 'admin_alert' | 'kyc_submitted' | 'admin_kyc_review' | 'kyc_approved' | 'kyc_rejected' | 'investment_created' | 'bill_payment_completed';
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   message: string;
   data?: Record<string, any>;
+  metadata?: Record<string, any>;
   channels: ('email' | 'sms' | 'push' | 'in_app')[];
   scheduledFor?: Date;
 }
@@ -34,6 +36,18 @@ export interface NotificationPreferences {
   systemSms: boolean;
   marketingEmail: boolean;
   marketingSms: boolean;
+  fraudAlertEmail: boolean;
+  fraudAlertSms: boolean;
+  kycEmail: boolean;
+  kycSms: boolean;
+  registrationEmail: boolean;
+  registrationSms: boolean;
+  passwordResetEmail: boolean;
+  passwordResetSms: boolean;
+  profileUpdateEmail: boolean;
+  profileUpdateSms: boolean;
+  adminAlertEmail: boolean;
+  adminAlertSms: boolean;
 }
 
 export interface NotificationLog {
@@ -51,14 +65,14 @@ export interface NotificationLog {
 
 class NotificationService extends EventEmitter {
   private emailService: EmailService;
-  private smsService: SMSService;
+  private smsService: { sendSMS: (args: { to: string; message: string; provider?: string; priority?: string }) => Promise<any> };
   private maxRetries = 3;
   private retryDelays = [1000, 5000, 15000]; // 1s, 5s, 15s
 
   constructor() {
     super();
     this.emailService = new EmailService();
-    this.smsService = new SMSService();
+    this.smsService = smsModule as any;
     this.setupEventListeners();
   }
 
@@ -148,18 +162,16 @@ class NotificationService extends EventEmitter {
     channel: string
   ): Promise<void> {
     const logId = uuidv4();
-    
     try {
       let result;
-      
       switch (channel) {
         case 'email':
-          result = await this.emailService.sendEmail({
+          // Use Resend API for all event-based emails
+          result = await sendEventEmail({
             to: user.email,
             subject: event.title,
-            text: event.message,
             html: this.generateEmailHTML(event, user),
-            priority: event.priority
+            type: event.type === 'fraud_alert' ? 'alert' : 'notification'
           });
           break;
 
@@ -203,6 +215,15 @@ class NotificationService extends EventEmitter {
   }
 
   private generateEmailHTML(event: NotificationEvent, user: any): string {
+    const substitute = (text: string) => {
+      if (!text) return text;
+      const variables: Record<string,string> = {
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        email: user.email || ''
+      };
+      return text.replace(/{{(\w+)}}/g, (_, k) => variables[k] ?? '');
+    };
     return `
       <!DOCTYPE html>
       <html>
@@ -227,7 +248,7 @@ class NotificationService extends EventEmitter {
           <div class="content ${event.priority === 'high' ? 'priority-high' : event.priority === 'critical' ? 'priority-critical' : ''}">
             <h2>Hello ${user.first_name},</h2>
             <h3>${event.title}</h3>
-            <p>${event.message}</p>
+            <p>${substitute(event.message)}</p>
             ${event.data ? `<div><strong>Details:</strong><pre>${JSON.stringify(event.data, null, 2)}</pre></div>` : ''}
             <p>If you have any questions, please contact our support team.</p>
           </div>

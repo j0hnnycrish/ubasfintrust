@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - 'src/**'
+      - 'scripts/deploy-railway-vercel.sh'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      API_VERSION: v1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm install
+
+      - name: Install server deps
+        run: |
+          cd server
+          npm install
+
+      - name: Make deploy script executable
+        run: chmod +x scripts/deploy-railway-vercel.sh
+
+      - name: Install Railway & Vercel CLIs
+        run: |
+          npm install -g @railway/cli vercel
+
+      - name: Deploy Backend & Frontend
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          DIAGNOSTICS_TOKEN: ${{ secrets.DIAGNOSTICS_TOKEN }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+          SOCKET_IO_CORS_ORIGIN: ${{ secrets.SOCKET_IO_CORS_ORIGIN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          railway login --token $RAILWAY_TOKEN
+          ./scripts/deploy-railway-vercel.sh
+
+      - name: Post-Deploy Smoke (system-check already executed)
+        if: success()
+        run: echo "Smoke test executed inside deploy script."

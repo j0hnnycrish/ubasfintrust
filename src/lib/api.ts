@@ -52,7 +52,7 @@ api.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  async (error: AxiosError) => {
+  async (error: AxiosError<any>) => {
     const originalRequest = error.config as any;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -85,8 +85,9 @@ api.interceptors.response.use(
     }
 
     // Handle other errors
-    if (error.response?.data?.message) {
-      toast.error(error.response.data.message);
+    const respData: any = error.response?.data;
+    if (respData?.message) {
+      toast.error(respData.message);
     } else if (error.message) {
       toast.error(error.message);
     }
@@ -246,6 +247,10 @@ export const userAPI = {
 
 // Account API
 export const accountAPI = {
+  create: async (accountData: { accountType: string; currency?: string; initialDeposit?: number }): Promise<ApiResponse<{ accountId: string; accountNumber: string }>> => {
+    const response = await api.post('/accounts', accountData);
+    return response.data;
+  },
   getAccount: async (accountId: string): Promise<ApiResponse<Account>> => {
     const response = await api.get(`/accounts/${accountId}`);
     return response.data;
@@ -292,6 +297,109 @@ export const transactionAPI = {
     const response = await api.get(`/transactions/${transactionId}`);
     return response.data;
   },
+};
+
+// Admin API
+export const adminAPI = {
+  getStats: async (): Promise<ApiResponse<any>> => {
+    const response = await api.get('/admin/stats');
+    return response.data;
+  },
+  listUsers: async (params?: { page?: number; limit?: number; search?: string }): Promise<ApiResponse<any>> => {
+    const response = await api.get('/admin/users', { params });
+    return response.data;
+  },
+  createUser: async (userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    dateOfBirth: string;
+    accountType: string;
+  }): Promise<ApiResponse<any>> => {
+    const response = await api.post('/admin/users', userData);
+    return response.data;
+  },
+  createAccountForUser: async (userId: string, data: { accountType: string; currency?: string; initialBalance?: number }): Promise<ApiResponse<{ accountId: string; accountNumber: string }>> => {
+    const response = await api.post(`/admin/users/${userId}/accounts`, data);
+    return response.data;
+  },
+  seedTransactions: async (accountId: string, data?: { count?: number; type?: string }): Promise<ApiResponse<{ inserted: number; netChange: number }>> => {
+    const response = await api.post(`/admin/accounts/${accountId}/transactions/seed`, data || {});
+    return response.data;
+  },
+  grantCredit: async (accountId: string, data: { amount: number; purpose: string; currency?: string }): Promise<ApiResponse<{ grantId: string }>> => {
+    const response = await api.post(`/admin/accounts/${accountId}/grants`, data);
+    return response.data;
+  },
+  listUserAccounts: async (userId: string): Promise<ApiResponse<any[]>> => {
+    const response = await api.get(`/admin/users/${userId}/accounts`);
+    return response.data;
+  },
+  listAccountTransactions: async (accountId: string, params?: { page?: number; limit?: number }): Promise<ApiResponse<any[]>> => {
+    const response = await api.get(`/admin/accounts/${accountId}/transactions`, { params });
+    return response.data;
+  },
+  testEmail: async (data: { to: string; subject: string; message: string }): Promise<ApiResponse<{ provider: string; messageId?: string }>> => {
+    const response = await api.post('/admin/email/test', data);
+    return response.data;
+  },
+  completeOnboarding: async (): Promise<ApiResponse<any>> => {
+    const response = await api.post('/users/onboarding/complete');
+    return response.data;
+  }
+};
+
+// Diagnostics API (merged provider health)
+export const diagnosticsAPI = {
+  get: async (): Promise<ApiResponse<any>> => {
+    const response = await api.get('/_diagnostics');
+    return response.data;
+  }
+};
+
+// Templates API (admin)
+export const templateAPI = {
+  list: async (locale?: string): Promise<ApiResponse<any>> => {
+    const response = await api.get('/templates', { params: locale ? { locale } : {} });
+    return response.data;
+  },
+  create: async (tpl: { type: string; channel: string; name: string; body: string; subject?: string; locale?: string; stepOrder?: number; icon?: string }): Promise<ApiResponse<any>> => {
+    const response = await api.post('/templates', tpl);
+    return response.data;
+  },
+  update: async (id: string, updates: Partial<{ name: string; body: string; subject: string; locale: string; icon: string; step_order: number }>): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/templates/${id}`, updates);
+    return response.data;
+  },
+  delete: async (id: string): Promise<ApiResponse<any>> => {
+    const response = await api.delete(`/templates/${id}`);
+    return response.data;
+  },
+  render: async (template: string, data?: object, options?: object): Promise<ApiResponse<{ html: string; missing: string[]; cached?: boolean }>> => {
+    const response = await api.post('/templates/render', { template, data, options });
+    return response.data;
+  }
+};
+
+export const providerAPI = {
+  health: async (): Promise<ApiResponse<any>> => {
+    const response = await api.get('/templates/_health/providers');
+    return response.data;
+  }
+};
+
+// Grants API
+export const grantsAPI = {
+  list: async (): Promise<ApiResponse<any[]>> => {
+    const response = await api.get('/grants');
+    return response.data;
+  },
+  apply: async (data: { accountId: string; amount: number; purpose: string }): Promise<ApiResponse<{ grantId: string }>> => {
+    const response = await api.post('/grants/apply', data);
+    return response.data;
+  }
 };
 
 // Payment API

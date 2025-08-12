@@ -1,6 +1,5 @@
-import { db } from '../config/database';
-import { logger } from '../utils/logger';
-import { logAudit } from '../utils/audit';
+import { db } from '../config/db';
+import { logger, logAudit } from '../utils/logger';
 import { notificationService } from './notificationService';
 
 export interface FraudAlert {

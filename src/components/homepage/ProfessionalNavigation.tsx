@@ -146,237 +146,144 @@ export function ProfessionalNavigation() {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-      {/* Main Navigation */}
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-16 w-full">
-
-          {/* Logo and Brand - Extreme Left */}
-          <div className="flex items-center space-x-3 cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
-            <img
-              src={bankingLogo}
-              alt="UBAS Financial Trust"
-              className="w-10 h-10 rounded-full shadow-md"
-            />
-            <div className="hidden sm:block">
-              <h1 className="text-lg font-bold text-gray-900">UBAS FINANCIAL TRUST</h1>
-              <p className="text-xs text-gray-600">Future Forward Banking</p>
+    <nav className="bg-white shadow-lg relative z-50">
+      {/* Top Bar */}
+      <div className="bg-red-600 text-white py-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="h-4 w-4" />
+                <span>UBAS INTERNET BANKING</span>
+              </div>
             </div>
-          </div>
-
-          {/* Desktop Navigation - Center */}
-          <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
-            {navigationItems.map((item) => (
-              <div key={item.label} className="relative group">
-                {item.subItems ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        className="text-gray-700 hover:text-yellow-600 font-medium flex items-center space-x-1"
-                      >
-                        <span>{item.label}</span>
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>{item.description}</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {item.subItems.map((subItem) => (
-                        <DropdownMenuItem 
-                          key={subItem.name}
-                          onClick={() => handleNavigation(subItem.href)}
-                          className="cursor-pointer"
-                        >
-                          {subItem.name}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => handleNavigation(item.href)}
-                    className="text-gray-700 hover:text-yellow-600 font-medium"
-                  >
-                    {item.label}
-                  </Button>
-                )}
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Phone className="h-4 w-4" />
+                <span>24/7 Customer Care</span>
               </div>
-            ))}
-          </div>
-
-          {/* Right Side Actions - Extreme Right */}
-          <div className="flex items-center space-x-4 flex-shrink-0">
-            
-            {/* Search */}
-            <form onSubmit={handleSearch} className="hidden md:flex items-center">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-64 border-gray-300 focus:border-yellow-500 focus:ring-yellow-500"
-                />
-              </div>
-            </form>
-
-            {/* Login/User Menu */}
-            {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 flex items-center space-x-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">{user?.fullName}</span>
-                    <span className="sm:hidden">Account</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>
-                    <div>
-                      <div className="font-medium">{user?.fullName}</div>
-                      <div className="text-xs text-gray-500">{user?.accountNumber}</div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="cursor-pointer">
-                    <User className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Profile Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 flex items-center space-x-2">
-                    <Shield className="h-4 w-4" />
-                    <span>Online Banking</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuLabel>Secure Login</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleLoginClick('personal')} className="cursor-pointer">
-                    <User className="h-4 w-4 mr-2" />
-                    Personal Banking
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleLoginClick('business')} className="cursor-pointer">
-                    <Building className="h-4 w-4 mr-2" />
-                    Business Banking
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleLoginClick('corporate')} className="cursor-pointer">
-                    <Building className="h-4 w-4 mr-2" />
-                    Corporate Banking
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleLoginClick('private')} className="cursor-pointer">
-                    <Crown className="h-4 w-4 mr-2" />
-                    Private Banking
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
-            {/* Open Account Button */}
-            {!isAuthenticated && (
-              <Button
-                onClick={() => navigate('/open-account')}
-                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 flex items-center space-x-2"
-              >
-                <CreditCard className="h-4 w-4" />
-                <span className="hidden sm:inline">Open Account</span>
-              </Button>
-            )}
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+              <button className="flex items-center space-x-2 hover:underline" onClick={() => navigate('/contact')}>
+                <Mail className="h-4 w-4" />
+                <span>Contact Support</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
-          <div className="px-4 py-6 space-y-4">
+      {/* Main Navigation */}
+  <div className="bg-white border-b border-brand-200/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch} className="mb-4">
+            {/* Logo */}
+            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src={bankingLogo}
+                alt="UBAS Financial Trust"
+                className="w-12 h-12 rounded-full"
+              />
+              <div className="ml-3">
+                <h1 className="text-2xl font-bold text-red-600">UBAS</h1>
+                <p className="text-xs text-brand-600 -mt-1">UBAS FINANCIAL TRUST</p>
+              </div>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-8">
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>BANKING</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-64 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/personal" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Personal Banking</a>
+                      <a href="/business" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Business Banking</a>
+                      <a href="/corporate" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Corporate Banking</a>
+                      <a href="/private" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Private Banking</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>ABOUT</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-64 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/about" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">About Us</a>
+                      <a href="/leadership" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Leadership</a>
+                      <a href="/careers" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Careers</a>
+                      <a href="/awards" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Awards</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button className="text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
+              <button className="text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
+              <button className="text-brand-700 hover:text-brand-600 font-medium">CSR</button>
+              <button className="text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+            </div>
+
+            {/* Right Side Actions */}
+            <div className="flex items-center space-x-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500"
+                  className="w-64 pl-10 pr-4 py-2 text-sm border border-brand-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-brand-500" />
               </div>
-            </form>
 
-            {/* Mobile Navigation Items */}
-            {navigationItems.map((item) => (
-              <div key={item.label} className="space-y-2">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleNavigation(item.href)}
-                  className="w-full justify-start text-gray-700 hover:text-yellow-600 font-medium"
-                >
-                  <item.icon className="h-4 w-4 mr-3" />
-                  {item.label}
-                </Button>
-                {item.subItems && (
-                  <div className="ml-6 space-y-1">
-                    {item.subItems.map((subItem) => (
-                      <Button
-                        key={subItem.name}
-                        variant="ghost"
-                        onClick={() => handleNavigation(subItem.href)}
-                        className="w-full justify-start text-sm text-gray-600 hover:text-yellow-600"
-                      >
-                        {subItem.name}
-                      </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              <Button 
+                onClick={() => setShowLoginModal(true)}
+                className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2"
+              >
+                LOGIN
+              </Button>
 
-            {/* Mobile Login Options */}
-            <div className="pt-4 border-t border-gray-200 space-y-2">
-              <h4 className="font-semibold text-gray-900 mb-2">Online Banking</h4>
-              <Button onClick={() => handleLoginClick('personal')} className="w-full justify-start bg-yellow-600 hover:bg-yellow-700 text-white">
-                <User className="h-4 w-4 mr-2" />
-                Personal Banking
-              </Button>
-              <Button onClick={() => handleLoginClick('business')} className="w-full justify-start bg-gray-100 hover:bg-gray-200 text-gray-900">
-                <Building className="h-4 w-4 mr-2" />
-                Business Banking
-              </Button>
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 rounded-md text-brand-700 hover:text-brand-600"
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
           </div>
         </div>
-      )}
 
-
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-brand-200/60">
+            <div className="px-4 py-4 space-y-4">
+              <div className="space-y-2">
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">BANKING</button>
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">ABOUT</button>
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">CSR</button>
+                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+              </div>
+              <Button 
+                onClick={() => setShowLoginModal(true)}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium"
+              >
+                LOGIN
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Authentication Modals */}
       <LoginModal

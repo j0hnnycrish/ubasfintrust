@@ -17,6 +17,9 @@ export interface User {
   locked_until?: Date;
   created_at: Date;
   updated_at: Date;
+  onboarding_completed?: boolean;
+  onboarding_completed_at?: Date;
+  onboarding_version?: number;
 }
 
 export interface Account {
@@ -99,6 +102,7 @@ export type CardStatus = 'active' | 'inactive' | 'blocked' | 'expired';
 export type LoanType = 'personal' | 'mortgage' | 'auto' | 'business' | 'student';
 export type LoanStatus = 'pending' | 'approved' | 'disbursed' | 'active' | 'paid_off' | 'defaulted';
 
+import type { Request } from 'express';
 export interface AuthRequest extends Request {
   user?: User;
   account?: Account;

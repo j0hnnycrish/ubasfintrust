@@ -18,8 +18,8 @@ export default function Privacy() {
             Back
           </Button>
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-green-600" />
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-8 w-8 text-red-600" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
             <p className="text-xl text-gray-600">
@@ -29,13 +29,13 @@ export default function Privacy() {
         </div>
 
         {/* Privacy Commitment */}
-        <Card className="mb-8 border-green-200 bg-green-50">
+        <Card className="mb-8 border-red-200 bg-red-50">
           <CardContent className="p-6">
             <div className="flex items-start space-x-3">
-              <Lock className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
+              <Lock className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-green-800 mb-2">Our Privacy Commitment</h3>
-                <p className="text-green-700 text-sm">
+                <h3 className="font-semibold text-red-800 mb-2">Our Privacy Commitment</h3>
+                <p className="text-red-700 text-sm">
                   At UBAS Financial Trust, protecting your privacy and personal information is fundamental to everything we do. 
                   This policy explains how we collect, use, and safeguard your information.
                 </p>
@@ -49,7 +49,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Eye className="h-6 w-6 text-blue-600 mr-3" />
+                <Eye className="h-6 w-6 text-red-600 mr-3" />
                 Information We Collect
               </CardTitle>
             </CardHeader>
@@ -96,7 +96,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Users className="h-6 w-6 text-blue-600 mr-3" />
+                <Users className="h-6 w-6 text-red-600 mr-3" />
                 How We Use Your Information
               </CardTitle>
             </CardHeader>
@@ -152,7 +152,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Globe className="h-6 w-6 text-blue-600 mr-3" />
+                <Globe className="h-6 w-6 text-red-600 mr-3" />
                 Information Sharing
               </CardTitle>
             </CardHeader>
@@ -201,7 +201,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Lock className="h-6 w-6 text-blue-600 mr-3" />
+                <Lock className="h-6 w-6 text-red-600 mr-3" />
                 Data Security
               </CardTitle>
             </CardHeader>
@@ -234,8 +234,8 @@ export default function Privacy() {
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-                <p className="text-blue-800 text-sm">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <p className="text-red-800 text-sm">
                   <strong>Important:</strong> While we implement robust security measures, no system is 100% secure. 
                   We encourage you to protect your account by using strong passwords, enabling two-factor authentication, 
                   and monitoring your accounts regularly.
@@ -247,7 +247,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Eye className="h-6 w-6 text-blue-600 mr-3" />
+                <Eye className="h-6 w-6 text-red-600 mr-3" />
                 Your Privacy Rights
               </CardTitle>
             </CardHeader>
@@ -258,8 +258,8 @@ export default function Privacy() {
               
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-blue-600 text-xs font-bold">1</span>
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-red-600 text-xs font-bold">1</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Access and Portability</h4>
@@ -268,8 +268,8 @@ export default function Privacy() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-blue-600 text-xs font-bold">2</span>
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-red-600 text-xs font-bold">2</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Correction</h4>
@@ -278,8 +278,8 @@ export default function Privacy() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-blue-600 text-xs font-bold">3</span>
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-red-600 text-xs font-bold">3</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Deletion</h4>
@@ -288,8 +288,8 @@ export default function Privacy() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-blue-600 text-xs font-bold">4</span>
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-red-600 text-xs font-bold">4</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Opt-out</h4>
@@ -310,7 +310,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <AlertTriangle className="h-6 w-6 text-blue-600 mr-3" />
+                <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
                 Cookies and Tracking
               </CardTitle>
             </CardHeader>
@@ -343,7 +343,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Globe className="h-6 w-6 text-blue-600 mr-3" />
+                <Globe className="h-6 w-6 text-red-600 mr-3" />
                 International Transfers
               </CardTitle>
             </CardHeader>
@@ -364,7 +364,7 @@ export default function Privacy() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Users className="h-6 w-6 text-blue-600 mr-3" />
+                <Users className="h-6 w-6 text-red-600 mr-3" />
                 Contact Us
               </CardTitle>
             </CardHeader>
@@ -383,13 +383,13 @@ export default function Privacy() {
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <Card className="bg-green-50 border-green-200">
+          <Card className="bg-red-50 border-red-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-center space-x-2 mb-4">
-                <Shield className="h-6 w-6 text-green-600" />
-                <h3 className="font-semibold text-green-900">Your Privacy Matters</h3>
+                <Shield className="h-6 w-6 text-red-600" />
+                <h3 className="font-semibold text-red-900">Your Privacy Matters</h3>
               </div>
-              <p className="text-green-700 text-sm">
+              <p className="text-red-700 text-sm">
                 We are committed to protecting your privacy and maintaining the confidentiality of your personal information. 
                 This policy may be updated periodically, and we will notify you of any material changes.
               </p>

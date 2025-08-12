@@ -4,72 +4,61 @@ services:
     name: ubas-backend
     env: node
     plan: free
-    buildCommand: cd server && npm install && npm run build
+    buildCommand: cd server && npm install && npm run build && npx knex migrate:latest
     startCommand: cd server && npm start
-    healthCheckPath: /api/v1/health
+    healthCheckPath: /health/readiness
     envVars:
       - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
-      - key: API_VERSION
-        value: v1
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ubas-database
-          property: connectionString
-      - key: JWT_SECRET
-        generateValue: true
-      - key: JWT_REFRESH_SECRET
-        generateValue: true
-      - key: ENCRYPTION_KEY
-        generateValue: true
-      - key: ALLOWED_ORIGINS
-        value: https://ubas-frontend.onrender.com
-      - key: UPLOAD_PATH
-        value: /opt/render/project/src/uploads
-      - key: MAX_FILE_SIZE
-        value: 5242880
-      - key: ALLOWED_FILE_TYPES
-        value: jpg,jpeg,png,pdf
-      - key: MINIMUM_DEPOSIT
-        value: 100
-      - key: MINIMUM_WITHDRAWAL
-        value: 20
-      - key: MAXIMUM_DAILY_TRANSFER
-        value: 50000
-      - key: DEMO_MODE
-        value: false
+        services:
+          # Backend API Service
+          - type: web
+            name: ubas-backend
+            env: node
+            plan: free
+            buildCommand: cd server && npm install && npm run build && npx knex migrate:latest
+            startCommand: cd server && npm start
+            healthCheckPath: /health/readiness
+            envVars:
+              - key: NODE_ENV
+                value: production
+              - key: API_VERSION
+                value: v1
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: ubas-database
+                  property: connectionString
+              - key: JWT_SECRET
+                generateValue: true
+              - key: JWT_REFRESH_SECRET
+                generateValue: true
+              - key: ENCRYPTION_KEY
+                generateValue: true
+              - key: ALLOWED_ORIGINS
+                value: https://ubasfintrust.com,https://www.ubasfintrust.com
+              - key: SOCKET_IO_CORS_ORIGIN
+                value: https://ubasfintrust.com
+              - key: UPLOAD_PATH
+                value: /opt/render/project/src/uploads
+              - key: MAX_FILE_SIZE
+                value: 5242880
+              - key: ALLOWED_FILE_TYPES
+                value: jpg,jpeg,png,pdf
 
-  # Frontend Static Site
-  - type: static
-    name: ubas-frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    pullRequestPreviewsEnabled: false
-    envVars:
-      - key: VITE_API_URL
-        value: https://ubas-backend.onrender.com/api/v1
-      - key: VITE_SOCKET_URL
-        value: https://ubas-backend.onrender.com
-      - key: VITE_APP_NAME
-        value: UBAS Financial Trust
-      - key: VITE_NODE_ENV
-        value: production
-      - key: VITE_DEMO_MODE
-        value: false
-      - key: VITE_ENABLE_2FA
-        value: true
-      - key: VITE_MINIMUM_DEPOSIT
-        value: 100
-      - key: VITE_MINIMUM_WITHDRAWAL
-        value: 20
-      - key: VITE_MAXIMUM_DAILY_TRANSFER
-        value: 50000
+          # Frontend Static Site
+          - type: static
+            name: ubas-frontend
+            buildCommand: npm install && npm run build
+            staticPublishPath: ./dist
+            pullRequestPreviewsEnabled: false
+            envVars:
+              - key: VITE_API_URL
+                value: https://ubas-backend.onrender.com/api/v1
+              - key: VITE_SOCKET_URL
+                value: https://ubas-backend.onrender.com
+              - key: VITE_APP_NAME
+                value: UBAS Financial Trust
+              - key: VITE_NODE_ENV
+                value: production
 
-# Database
-databases:
-  - name: ubas-database
-    databaseName: ubas_financial_trust
-    user: ubas_admin
-    plan: free
+
+

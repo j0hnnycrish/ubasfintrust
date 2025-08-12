@@ -93,9 +93,9 @@ export default function About() {
 
   const stats = [
     { icon: Users, value: '2.5M+', label: 'Global Customers' },
-    { icon: Globe, value: '150+', label: 'Countries Served' },
+    { icon: Globe, value: '30+', label: 'Countries Served' },
     { icon: Building, value: '500+', label: 'Branch Locations' },
-    { icon: Award, value: '50+', label: 'Industry Awards' }
+    { icon: Award, value: '15+', label: 'Industry Awards' }
   ];
 
   return (
@@ -103,7 +103,7 @@ export default function About() {
       <ProfessionalNavigation />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
         <ScrollingBackground 
           images={bankingImages} 
           speed={40} 
@@ -136,7 +136,7 @@ export default function About() {
                 Join Our Family
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3 text-lg">
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 px-8 py-3 text-lg">
                 Our Story
               </Button>
             </div>
@@ -152,8 +152,8 @@ export default function About() {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon className="h-8 w-8 text-blue-600" />
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon className="h-8 w-8 text-red-600" />
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
                   <div className="text-gray-600">{stat.label}</div>
@@ -180,8 +180,8 @@ export default function About() {
               return (
                 <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
                   <CardHeader>
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                      <Icon className="h-6 w-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                      <Icon className="h-6 w-6 text-red-600" />
                     </div>
                     <CardTitle className="text-xl">{value.title}</CardTitle>
                   </CardHeader>
@@ -206,18 +206,18 @@ export default function About() {
           </div>
 
           <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-blue-200"></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-red-200"></div>
             <div className="space-y-12">
               {milestones.map((milestone, index) => (
                 <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                   <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
                     <div className="bg-white p-6 rounded-lg shadow-md">
-                      <div className="text-2xl font-bold text-blue-600 mb-2">{milestone.year}</div>
+                      <div className="text-2xl font-bold text-red-600 mb-2">{milestone.year}</div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-2">{milestone.title}</h3>
                       <p className="text-gray-600">{milestone.description}</p>
                     </div>
                   </div>
-                  <div className="relative z-10 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow-md"></div>
+                  <div className="relative z-10 w-4 h-4 bg-red-600 rounded-full border-4 border-white shadow-md"></div>
                   <div className="w-1/2"></div>
                 </div>
               ))}
@@ -240,11 +240,11 @@ export default function About() {
             {leadership.map((leader, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-red-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                     <User className="h-12 w-12 text-white" />
                   </div>
                   <CardTitle className="text-lg">{leader.name}</CardTitle>
-                  <CardDescription className="text-blue-600 font-medium">{leader.position}</CardDescription>
+                  <CardDescription className="text-red-600 font-medium">{leader.position}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm text-gray-600">
@@ -258,8 +258,8 @@ export default function About() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-blue-900 to-blue-800">
+            {/* CTA Section */}
+      <section className="py-24 bg-gradient-to-r from-red-900 to-red-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
             Ready to Experience Banking Excellence?
@@ -270,15 +270,15 @@ export default function About() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={() => navigate('/open-account')}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 text-lg font-semibold"
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold"
             >
               Open Account Today
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3 text-lg">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 px-8 py-3 text-lg">
               Contact Us
             </Button>
-          </div>
+            </div>
         </div>
       </section>
     </div>

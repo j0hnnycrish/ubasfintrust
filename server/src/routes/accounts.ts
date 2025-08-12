@@ -1,4 +1,5 @@
 import { Router, Response } from 'express';
+import { body, validationResult } from 'express-validator';
 import { AuthMiddleware } from '../middleware/auth';
 import { db } from '../config/db';
 import { logger } from '../utils/logger';
@@ -8,6 +9,39 @@ const router = Router();
 
 // All routes require authentication
 router.use(AuthMiddleware.verifyToken);
+
+// Create additional account for authenticated user
+router.post('/', [
+  body('accountType').isIn(['checking','savings','business','investment','loan']).withMessage('Invalid account type'),
+  body('currency').optional().isLength({ min:3, max:3 }),
+  body('initialDeposit').optional().isFloat({ min:0 })
+], async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
+    }
+    const user = req.user!;
+    const { accountType, currency='USD', initialDeposit=0 } = req.body;
+    const accountId = require('uuid').v4();
+    const accountNumber = Math.random().toString().slice(2,12);
+    await db('accounts').insert({
+      id: accountId,
+      user_id: user.id,
+      account_number: accountNumber,
+      account_type: accountType,
+      balance: initialDeposit,
+      available_balance: initialDeposit,
+      currency,
+      status: 'active',
+      minimum_balance: 0
+    });
+    return res.status(201).json({ success: true, message: 'Account created', data: { accountId, accountNumber } });
+  } catch (error) {
+    logger.error('Create additional account error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to create account' });
+  }
+});
 
 // Get account details
 router.get('/:accountId', async (req: AuthRequest, res: Response) => {

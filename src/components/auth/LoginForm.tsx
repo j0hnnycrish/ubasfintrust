@@ -55,44 +55,44 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto shadow-elegant bg-gradient-card">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold text-banking-dark">Welcome Back</CardTitle>
-        <CardDescription className="text-banking-gray">
+  <CardTitle className="text-2xl font-bold text-brand-800">Welcome Back</CardTitle>
+  <CardDescription className="text-brand-700/70">
           Sign in to your Providus Bank account
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-banking-dark font-medium">
+            <Label htmlFor="email" className="text-brand-800 font-medium">
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-banking-gray" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-brand-700/70" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-9 border-banking-gold/20 focus:border-banking-gold"
+                className="pl-9 border-brand-500/30 focus:border-brand-500"
                 required
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-banking-dark font-medium">
+            <Label htmlFor="password" className="text-brand-800 font-medium">
               Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-banking-gray" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-brand-700/70" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-9 pr-9 border-banking-gold/20 focus:border-banking-gold"
+                className="pl-9 pr-9 border-brand-500/30 focus:border-brand-500"
                 required
               />
               <Button
@@ -103,9 +103,9 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-banking-gray" />
+                  <EyeOff className="h-4 w-4 text-brand-700/70" />
                 ) : (
-                  <Eye className="h-4 w-4 text-banking-gray" />
+                  <Eye className="h-4 w-4 text-brand-700/70" />
                 )}
               </Button>
             </div>
@@ -124,21 +124,20 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <div className="space-y-3">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-banking-gold/20" />
+              <span className="w-full border-t border-brand-500/20" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-banking-gray">Need Help?</span>
+              <span className="bg-card px-2 text-brand-700/70">Need Help?</span>
             </div>
           </div>
 
           <div className="text-center space-y-2">
-            <p className="text-sm text-banking-gray">
+            <p className="text-sm text-brand-700/70">
               Forgot your login credentials?
             </p>
             <Button
-              variant="banking-outline"
+              className="w-full text-xs border border-brand-500/30 text-brand-600 hover:bg-brand-500/10"
               size="sm"
-              className="w-full text-xs"
             >
               Contact Customer Support
             </Button>
@@ -146,11 +145,11 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </div>
 
         <div className="text-center">
-          <p className="text-sm text-banking-gray">
+          <p className="text-sm text-brand-700/70">
             Don't have an account?{' '}
             <Button
               variant="link"
-              className="p-0 h-auto font-medium text-banking-gold hover:text-banking-gold/80"
+              className="p-0 h-auto font-medium text-brand-600 hover:text-brand-500"
               onClick={onSwitchToRegister}
             >
               Sign up here

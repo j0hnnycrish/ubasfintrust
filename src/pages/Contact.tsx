@@ -146,13 +146,13 @@ export default function Contact() {
       <ProfessionalNavigation />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 py-24">
+      <section className="bg-gradient-to-br from-red-700 via-red-800 to-red-900 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6">
             Contact Us
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            We're here to help with all your banking needs. Reach out to our expert team 
+          <p className="text-xl text-red-100 max-w-3xl mx-auto">
+            We're here to help with all your banking needs. Reach out to our expert team
             for personalized assistance and support.
           </p>
         </div>
@@ -172,14 +172,14 @@ export default function Contact() {
               return (
                 <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
                   <CardHeader>
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-6 w-6 text-blue-600" />
-                    </div>
+                                      <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Icon className="h-6 w-6 text-red-600" />
+                  </div>
                     <CardTitle className="text-lg">{method.title}</CardTitle>
                     <CardDescription>{method.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="font-semibold text-blue-600 mb-2">{method.contact}</p>
+                    <p className="font-semibold text-red-600 mb-2">{method.contact}</p>
                     <p className="text-sm text-gray-500">{method.availability}</p>
                   </CardContent>
                 </Card>
@@ -283,7 +283,7 @@ export default function Contact() {
                     <textarea
                       id="message"
                       rows={6}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       placeholder="Please describe your inquiry in detail..."
                       value={formData.message}
                       onChange={(e) => handleInputChange('message', e.target.value)}
@@ -300,7 +300,7 @@ export default function Contact() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -326,7 +326,7 @@ export default function Contact() {
                       <div className="flex items-start justify-between">
                         <div>
                           <CardTitle className="text-xl">{office.city}</CardTitle>
-                          <CardDescription className="text-blue-600 font-medium">{office.type}</CardDescription>
+                          <CardDescription className="text-red-600 font-medium">{office.type}</CardDescription>
                         </div>
                         <MapPin className="h-5 w-5 text-gray-400" />
                       </div>

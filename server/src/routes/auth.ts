@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import { AuthMiddleware } from '../middleware/auth';
-import { authRateLimit } from '../middleware/security';
+// import { authRateLimit } from '../middleware/security';
 import { db } from '../config/db';
 import { CacheService } from '../config/redis';
 import { logger, logSecurity, logAudit } from '../utils/logger';
@@ -107,6 +107,19 @@ router.post('/register', authRateLimit, registerValidation, async (req: Request,
     };
 
     await db('accounts').insert(defaultAccount);
+
+    // Send event-based email notification on registration
+    try {
+      const { sendEventEmail } = require('../email/resend');
+      await sendEventEmail({
+        to: email,
+        subject: 'Welcome to UBAS Financial Trust!',
+        html: `<p>Dear ${firstName},</p><p>Your account has been created successfully. Your account number is <strong>${accountNumber}</strong>.</p>`,
+        type: 'notification'
+      });
+    } catch (err) {
+      logger.warn('Failed to send registration email:', err);
+    }
 
     logAudit('USER_REGISTERED', userId, 'user', { email, accountType });
     logSecurity('USER_REGISTRATION', userId, req.ip, { email });
@@ -224,6 +237,7 @@ router.post('/login',
       }
     }
 
+    const firstLogin = !user.last_login;
     // Reset failed attempts and update last login
     await db('users').where({ id: user.id }).update({
       failed_login_attempts: 0,
@@ -245,6 +259,24 @@ router.post('/login',
       location: req.ip,
       timestamp: new Date()
     });
+
+    // First login: dispatch welcome (registration) multi-channel notification using templates
+    if (firstLogin) {
+      try {
+        const { notificationService } = require('../services/notificationService');
+        await notificationService.sendNotification({
+          id: require('uuid').v4(),
+          userId: user.id,
+            type: 'registration',
+            priority: 'medium',
+            title: 'Welcome to UBAS Financial Trust',
+            message: 'Your account is active. Explore your dashboard and complete onboarding steps.',
+            channels: ['email','sms','in_app']
+        });
+      } catch (welErr) {
+        logger.warn('Failed to send first-login welcome notification', welErr);
+      }
+    }
 
     res.json({
       success: true,

@@ -10,7 +10,7 @@ import { body, validationResult } from 'express-validator';
 interface SecurityRequest extends Request {
   security?: {
     riskLevel: 'low' | 'medium' | 'high' | 'critical';
-    fingerprint: string;
+    fingerprint?: string;
     reasons: string[];
     allowed: boolean;
   };
@@ -326,7 +326,7 @@ export const suspiciousActivityDetection = async (
         });
         
         // Send notification for critical patterns
-        if (pattern.test(/union.*select|<script/i)) {
+        if ((/union.*select|<script/i).test(String(path)) || (/union.*select|<script/i).test(JSON.stringify(req.body))) {
           if (userId) {
             try {
               notificationService.emit('security:suspicious', {

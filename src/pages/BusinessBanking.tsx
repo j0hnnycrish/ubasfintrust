@@ -30,7 +30,7 @@ export default function BusinessBanking() {
       features: ['Multi-Currency Support', 'Real-time Reporting', 'API Integration', 'Bulk Payments'],
       minBalance: '$50,000',
       icon: Building,
-      color: 'bg-blue-600'
+      color: 'bg-red-600'
     },
     {
       id: 'trade',
@@ -39,7 +39,7 @@ export default function BusinessBanking() {
       features: ['Letters of Credit', 'Trade Guarantees', 'Export Financing', 'Supply Chain Finance'],
       minBalance: '$100,000',
       icon: Globe,
-      color: 'bg-green-600'
+      color: 'bg-red-700'
     },
     {
       id: 'cash',
@@ -48,7 +48,7 @@ export default function BusinessBanking() {
       features: ['Liquidity Management', 'Payment Processing', 'Collection Services', 'Treasury Solutions'],
       minBalance: '$250,000',
       icon: BarChart3,
-      color: 'bg-purple-600'
+      color: 'bg-red-800'
     },
     {
       id: 'lending',
@@ -57,7 +57,7 @@ export default function BusinessBanking() {
       features: ['Working Capital', 'Equipment Finance', 'Commercial Real Estate', 'Credit Lines'],
       minBalance: '$75,000',
       icon: TrendingUp,
-      color: 'bg-orange-600'
+      color: 'bg-red-900'
     }
   ];
 
@@ -77,7 +77,7 @@ export default function BusinessBanking() {
       <ProfessionalNavigation />
 
       {/* Hero Section with Scrolling Background */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
         <ScrollingBackground
           images={businessBankingImages}
           speed={40}
@@ -88,14 +88,14 @@ export default function BusinessBanking() {
         <div className="relative py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="inline-flex items-center space-x-2 bg-blue-500/20 backdrop-blur-sm border border-blue-500/30 rounded-full px-6 py-2 text-blue-400 mb-6">
+              <div className="inline-flex items-center space-x-2 bg-red-500/20 backdrop-blur-sm border border-red-500/30 rounded-full px-6 py-2 text-red-300 mb-6">
                 <Award className="h-4 w-4" />
                 <span className="text-sm font-medium">Business Banking Excellence</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6">
                 Business Banking
-                <span className="block text-blue-400">For Growth</span>
+                <span className="block text-red-300">For Growth</span>
               </h1>
 
               <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
@@ -106,12 +106,12 @@ export default function BusinessBanking() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   onClick={() => navigate('/open-account')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold"
                 >
                   Open Business Account
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 text-lg">
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 px-8 py-3 text-lg" onClick={() => navigate('/contact')}>
                   Speak to Advisor
                 </Button>
               </div>

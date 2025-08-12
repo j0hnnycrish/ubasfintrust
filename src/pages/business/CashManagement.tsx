@@ -266,7 +266,7 @@ export default function CashManagement() {
               return (
                 <Card key={index} className="text-center shadow-lg hover:shadow-xl transition-shadow">
                   <CardHeader>
-                    <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-700 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Icon className="h-8 w-8 text-white" />
                     </div>
                     <CardTitle className="text-lg text-gray-900">{tool.title}</CardTitle>
@@ -314,13 +314,13 @@ export default function CashManagement() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-red-50 border-red-200">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-3">
-                    <Users className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <Users className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
                     <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Expert Support</h3>
-                      <p className="text-blue-700 text-sm">
+                      <h3 className="font-semibold text-red-800 mb-2">Expert Support</h3>
+                      <p className="text-red-700 text-sm">
                         Dedicated treasury specialists provide ongoing support and strategic guidance.
                       </p>
                     </div>

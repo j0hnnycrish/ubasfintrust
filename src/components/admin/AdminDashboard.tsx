@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { CustomerManagement } from './CustomerManagement';
 import { AccountManagement } from './AccountManagement';
 import { TransactionManagement } from './TransactionManagement';
 import { SystemSettings } from './SystemSettings';
+import { TemplatesManager } from './TemplatesManager';
 import { BackdatedTransactionGenerator } from './BackdatedTransactionGenerator';
 import { 
   Users, 
@@ -18,14 +19,42 @@ import {
   DollarSign,
   Menu,
   Shield,
-  Activity
+  Activity,
+  Server,
+  Database,
+  HardDrive,
+  RefreshCw
 } from 'lucide-react';
 import bankingLogo from '@/assets/banking-logo.jpg';
 
 export function AdminDashboard() {
   const { adminUser, adminLogout, customers, transactions } = useAdmin();
+  if (!adminUser) return <div className="p-8 text-center text-red-700 font-semibold">Not authenticated.</div>;
+  // Basic role gating: only allow super_admin (corporate account type mapped earlier)
+  if (adminUser.role !== 'super_admin') {
+    return <div className="p-8 text-center text-red-700 font-semibold">Insufficient permissions.</div>;
+  }
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [diag, setDiag] = useState<any>(null);
+  const [diagLoading, setDiagLoading] = useState(false);
+
+  const fetchDiag = async () => {
+    setDiagLoading(true);
+    try {
+      const { diagnosticsAPI } = await import('@/lib/api');
+      const resp = await diagnosticsAPI.get();
+      if (resp.success) setDiag(resp.data);
+    } catch(e) {}
+    finally { setDiagLoading(false); }
+  };
+  useEffect(()=>{ if (activeTab==='overview') fetchDiag(); }, [activeTab]);
+  // Auto refresh diagnostics every 60s while on overview
+  useEffect(()=>{
+    if (activeTab !== 'overview') return; 
+    const id = setInterval(()=>fetchDiag(), 60000);
+    return ()=> clearInterval(id);
+  }, [activeTab]);
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -33,7 +62,8 @@ export function AdminDashboard() {
     { id: 'accounts', label: 'Account Management', icon: CreditCard },
     { id: 'transactions', label: 'Transaction Management', icon: FileText },
     { id: 'generator', label: 'Transaction Generator', icon: Activity },
-    { id: 'settings', label: 'System Settings', icon: Settings }
+  { id: 'templates', label: 'Templates', icon: FileText },
+  { id: 'settings', label: 'System Settings', icon: Settings }
   ];
 
   const handleLogout = () => {
@@ -67,7 +97,7 @@ export function AdminDashboard() {
         </Badge>
       </div>
 
-      {/* Statistics Cards */}
+  {/* Statistics & Diagnostics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -118,6 +148,27 @@ export function AdminDashboard() {
             <p className="text-xs text-muted-foreground">
               {pendingTransactions} pending
             </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-1">System Health {diagLoading && <RefreshCw className="h-3 w-3 animate-spin" />}</CardTitle>
+            <Server className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-semibold">{diag? diag.overall : '...'}</div>
+            <p className="text-xs text-muted-foreground">Uptime {diag?.uptimeSeconds ?? '...'}s</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">DB / Redis</CardTitle>
+            <Database className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm">DB: {diag? (diag.db?.ok ? 'OK':'Down') : '...' } {typeof diag?.db?.latencyMs!=='undefined' && `${diag.db.latencyMs}ms`}</div>
+            <div className="text-sm">Redis: {diag? (diag.redis?.ok ? 'OK':'Down') : '...'} {typeof diag?.redis?.latencyMs!=='undefined' && `${diag.redis.latencyMs}ms`}</div>
+            <Button variant="outline" size="sm" className="mt-2" onClick={fetchDiag} disabled={diagLoading}>{diagLoading? 'Refreshing':'Refresh'}</Button>
           </CardContent>
         </Card>
       </div>
@@ -254,6 +305,7 @@ export function AdminDashboard() {
             {activeTab === 'accounts' && <AccountManagement />}
             {activeTab === 'transactions' && <TransactionManagement />}
             {activeTab === 'generator' && <BackdatedTransactionGenerator />}
+            {activeTab === 'templates' && <TemplatesManager />}
             {activeTab === 'settings' && <SystemSettings />}
           </div>
         </div>

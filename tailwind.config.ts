@@ -19,80 +19,52 @@ export default {
 		},
 		extend: {
 			colors: {
+				// Core semantic tokens
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: 'hsl(var(--brand-red-600))',
+					foreground: 'hsl(var(--brand-red-foreground))'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: 'hsl(var(--brand-red-700))',
+					foreground: 'hsl(var(--brand-red-foreground))'
 				},
 				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
+					DEFAULT: 'hsl(var(--brand-red-700))',
+					foreground: 'hsl(var(--brand-red-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: 'hsl(var(--brand-red-500))',
+					foreground: 'hsl(var(--brand-red-foreground))'
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					DEFAULT: 'hsl(var(--background))',
+					foreground: 'hsl(var(--foreground))'
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
-				},
-				info: {
-					DEFAULT: 'hsl(var(--info))',
-					foreground: 'hsl(var(--info-foreground))'
-				},
-				banking: {
-					gold: 'hsl(var(--banking-gold))',
-					'gold-light': 'hsl(var(--banking-gold-light))',
-					'gold-dark': 'hsl(var(--banking-gold-dark))',
-					'gold-accent': 'hsl(var(--banking-gold-accent))',
-					dark: 'hsl(var(--banking-dark))',
-					'dark-light': 'hsl(var(--banking-dark-light))',
-					gray: 'hsl(var(--banking-gray))',
-					'gray-light': 'hsl(var(--banking-gray-light))',
-					bg: 'hsl(var(--banking-bg))',
-					accent: 'hsl(var(--banking-accent))',
-					'accent-light': 'hsl(var(--banking-accent-light))',
-					success: 'hsl(var(--banking-success))',
-					warning: 'hsl(var(--banking-warning))',
-					error: 'hsl(var(--banking-error))',
-					platinum: 'hsl(var(--banking-platinum))',
-					diamond: 'hsl(var(--banking-diamond))',
-					emerald: 'hsl(var(--banking-emerald))',
-					sapphire: 'hsl(var(--banking-sapphire))'
-				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				// Red scale (monochrome brand system)
+				brand: {
+					50: 'hsl(var(--brand-red-50))',
+					100: 'hsl(var(--brand-red-100))',
+					200: 'hsl(var(--brand-red-200))',
+					300: 'hsl(var(--brand-red-300))',
+					400: 'hsl(var(--brand-red-400))',
+					500: 'hsl(var(--brand-red-500))',
+					600: 'hsl(var(--brand-red-600))',
+					700: 'hsl(var(--brand-red-700))',
+					800: 'hsl(var(--brand-red-800))',
+					900: 'hsl(var(--brand-red-900))'
 				}
 			},
 			borderRadius: {

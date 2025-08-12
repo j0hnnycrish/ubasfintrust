@@ -58,11 +58,11 @@ export function AccountsView() {
 
   const getAccountColor = (type: string) => {
     switch (type) {
-      case 'checking': return 'bg-blue-100 text-blue-600 border-blue-200';
-      case 'savings': return 'bg-green-100 text-green-600 border-green-200';
-      case 'business': return 'bg-purple-100 text-purple-600 border-purple-200';
-      case 'investment': return 'bg-yellow-100 text-yellow-600 border-yellow-200';
-      case 'credit': return 'bg-red-100 text-red-600 border-red-200';
+      case 'checking': return 'bg-red-100 text-red-700 border-red-200';
+      case 'savings': return 'bg-red-50 text-red-700 border-red-200';
+      case 'business': return 'bg-red-100 text-red-700 border-red-200';
+      case 'investment': return 'bg-red-50 text-red-700 border-red-200';
+      case 'credit': return 'bg-red-100 text-red-700 border-red-200';
       default: return 'bg-gray-100 text-gray-600 border-gray-200';
     }
   };

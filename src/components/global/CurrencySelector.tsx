@@ -62,29 +62,29 @@ export function CurrencySelector({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          flex items-center space-x-2 px-3 py-2 rounded-lg border border-banking-gold/20
-          bg-white hover:bg-banking-gold/5 transition-all duration-200
-          hover:border-banking-gold/40 focus:outline-none focus:ring-2
-          focus:ring-banking-gold/20 ${compact ? 'text-sm' : ''} ${className}
+          flex items-center space-x-2 px-3 py-2 rounded-lg border border-brand-200
+          bg-white/90 backdrop-blur hover:bg-brand-50 transition-all duration-200
+          hover:border-brand-400 focus:outline-none focus:ring-2
+          focus:ring-brand-500/40 ${compact ? 'text-sm' : ''} ${className}
         `}
       >
-        <Globe className={`${compact ? 'h-3 w-3' : 'h-4 w-4'} text-banking-gold`} />
-        <span className="font-medium text-banking-dark">
+        <Globe className={`${compact ? 'h-3 w-3' : 'h-4 w-4'} text-brand-600`} />
+        <span className="font-medium text-brand-800">
           {selectedCurrency.flag} {selectedCurrency.code}
         </span>
         {!compact && (
-          <span className="text-banking-gray text-sm">
+          <span className="text-brand-600 text-sm">
             {selectedCurrency.symbol}
           </span>
         )}
-        <ChevronDown className={`${compact ? 'h-3 w-3' : 'h-4 w-4'} text-banking-gray transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`${compact ? 'h-3 w-3' : 'h-4 w-4'} text-brand-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-banking-gold/20 shadow-xl rounded-xl p-2 z-50">
-          <div className="px-3 py-2 border-b border-banking-gold/10 mb-2">
-            <h3 className="font-semibold text-banking-dark text-sm">Select Display Currency</h3>
-            <p className="text-xs text-banking-gray">All amounts will be shown in this currency</p>
+        <div className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur border border-brand-200 shadow-xl rounded-xl p-2 z-50">
+          <div className="px-3 py-2 border-b border-brand-100 mb-2">
+            <h3 className="font-semibold text-brand-800 text-sm">Select Display Currency</h3>
+            <p className="text-xs text-brand-600">All amounts will be shown in this currency</p>
           </div>
 
           {GLOBAL_CURRENCIES.map((currency) => (
@@ -93,17 +93,17 @@ export function CurrencySelector({
               onClick={() => handleCurrencySelect(currency)}
               className={`
                 flex items-center justify-between p-3 rounded-lg cursor-pointer
-                hover:bg-banking-gold/5 transition-colors
-                ${selectedCurrency.code === currency.code ? 'bg-banking-gold/10 border border-banking-gold/20' : ''}
+                hover:bg-brand-50 transition-colors
+                ${selectedCurrency.code === currency.code ? 'bg-brand-100/60 border border-brand-200' : 'border border-transparent'}
               `}
             >
               <div className="flex items-center space-x-3">
                 <span className="text-lg">{currency.flag}</span>
                 <div>
-                  <div className="font-medium text-banking-dark text-sm">
+                  <div className="font-medium text-brand-800 text-sm">
                     {currency.code} - {currency.symbol}
                   </div>
-                  <div className="text-xs text-banking-gray">
+                  <div className="text-xs text-brand-600">
                     {currency.name}
                   </div>
                 </div>
@@ -111,23 +111,21 @@ export function CurrencySelector({
 
               {showRates && currency.rate && (
                 <div className="text-right">
-                  <div className="text-xs text-banking-gray">
+                  <div className="text-xs text-brand-600">
                     1 USD = {currency.rate.toFixed(4)}
                   </div>
-                  <div className="text-xs text-banking-success">
-                    Live Rate
-                  </div>
+                  <div className="text-xs text-brand-600 font-medium">Live Rate</div>
                 </div>
               )}
 
               {selectedCurrency.code === currency.code && (
-                <div className="w-2 h-2 bg-banking-gold rounded-full"></div>
+                <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
               )}
             </div>
           ))}
 
-          <div className="px-3 py-2 border-t border-banking-gold/10 mt-2">
-            <p className="text-xs text-banking-gray text-center">
+          <div className="px-3 py-2 border-t border-brand-100 mt-2">
+            <p className="text-xs text-brand-500 text-center">
               Rates updated every 30 seconds
             </p>
           </div>

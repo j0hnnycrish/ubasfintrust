@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: provi_banking
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: provi_banking
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      JWT_SECRET: test_jwt_secret_123
+      JWT_REFRESH_SECRET: test_jwt_refresh_secret_456
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: AdminPass#123
+      DIAGNOSTICS_TOKEN: ci_diagnostics_token
+      API_VERSION: v1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm install
+
+      - name: Install server deps
+        run: |
+          cd server
+          npm install
+
+      - name: Build server
+        run: |
+          cd server
+          npm run build
+
+      - name: Run migrations
+        run: |
+          cd server
+          npx knex migrate:latest
+
+      - name: Start server
+        run: |
+          cd server
+          node dist/server.js &
+          sleep 8
+
+      - name: Run system integration check
+        env:
+          API_BASE: http://localhost:5000/api/v1
+          ADMIN_EMAIL: admin@example.com
+          ADMIN_PASSWORD: AdminPass#123
+          DIAGNOSTICS_TOKEN: ci_diagnostics_token
+        run: node scripts/system-check.mjs
+
+      - name: Upload system-check summary (always)
+        if: always()
+        run: |
+          echo "Summaries captured in previous step output." 

@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { AuthMiddleware, AuthRequest } from '../middleware/auth';
+import { AuthMiddleware } from '../middleware/auth';
+import { AuthRequest } from '../types';
 import { db } from '../config/db';
 import { logger } from '../utils/logger';
 import { notificationService } from '../services/notificationService';
 import { EmailService } from '../services/emailService';
-import { SMSService } from '../services/smsService';
+// import { SMSService } from '../services/smsService';
 import { body, validationResult } from 'express-validator';
 
 const router = Router();
@@ -365,18 +366,16 @@ router.get('/logs', async (req: AuthRequest, res: Response) => {
 router.get('/providers/health', async (req: AuthRequest, res: Response) => {
   try {
     const emailService = new EmailService();
-    const smsService = new SMSService();
 
-    const [emailProviders, smsProviders] = await Promise.all([
-      emailService.getProviderStatus(),
-      smsService.getProviderStatus()
+    const [emailProviders] = await Promise.all([
+      emailService.getProviderStatus()
     ]);
 
     res.json({
       success: true,
       data: {
         email: emailProviders,
-        sms: smsProviders
+        sms: []
       }
     });
   } catch (error) {

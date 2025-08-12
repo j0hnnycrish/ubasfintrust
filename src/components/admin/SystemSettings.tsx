@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '@/lib/api';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,19 @@ export function SystemSettings() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [diagnostics, setDiagnostics] = useState<any|null>(null);
+  const [diagLoading, setDiagLoading] = useState(false);
+
+  const fetchDiagnostics = async () => {
+    setDiagLoading(true);
+    try {
+      const resp = await api.get('/_diagnostics'); // baseURL already includes /api/v1
+      if (resp.data.success) setDiagnostics(resp.data.data);
+      else setError(resp.data.message || 'Diagnostics failed');
+    } catch (e:any) { setError(e.message); }
+    finally { setDiagLoading(false); }
+  };
+  useEffect(()=>{ if (activeSection==='monitoring') fetchDiagnostics(); }, [activeSection]);
 
   const sections = [
     { id: 'general', label: 'General', icon: Settings },
@@ -330,13 +344,19 @@ export function SystemSettings() {
 
   const renderMonitoringSettings = () => (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Button size="sm" variant="outline" onClick={fetchDiagnostics} disabled={diagLoading}>
+          {diagLoading && <RefreshCw className="h-4 w-4 mr-1 animate-spin" />} Refresh
+        </Button>
+        {diagnostics && <span className="text-xs text-gray-500">Uptime: {diagnostics.uptimeSeconds}s • DB:{diagnostics.db?.ok?'OK':'DOWN'}({diagnostics.db?.latencyMs||'—'}ms) • Redis:{diagnostics.redis?.ok?'OK':'DOWN'}({diagnostics.redis?.latencyMs||'—'}ms)</span>}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">System Status</p>
-                <p className="text-2xl font-bold text-green-600">Online</p>
+                <p className="text-2xl font-bold {diagnostics && diagnostics.db?.ok && diagnostics.redis?.ok ? 'text-green-600':'text-yellow-600'}">{diagnostics? (diagnostics.db?.ok && diagnostics.redis?.ok ? 'Online':'Degraded') : '...'}</p>
               </div>
               <Activity className="h-8 w-8 text-green-600" />
             </div>
@@ -347,8 +367,8 @@ export function SystemSettings() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Uptime</p>
-                <p className="text-2xl font-bold">99.9%</p>
+                <p className="text-sm font-medium text-gray-600">Uptime (s)</p>
+                <p className="text-2xl font-bold">{diagnostics? diagnostics.uptimeSeconds : '...'}</p>
               </div>
               <Server className="h-8 w-8 text-blue-600" />
             </div>
@@ -359,22 +379,21 @@ export function SystemSettings() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold">{customers.filter(c => c.status === 'active').length}</p>
+                <p className="text-sm font-medium text-gray-600">DB Latency</p>
+                <p className="text-2xl font-bold">{diagnostics? (diagnostics.db?.latencyMs??'—') : '...' }<span className="text-base font-normal">ms</span></p>
               </div>
-              <Users className="h-8 w-8 text-purple-600" />
+              <Database className="h-8 w-8 text-indigo-600" />
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Security</p>
-                <p className="text-2xl font-bold text-green-600">Secure</p>
+                <p className="text-sm font-medium text-gray-600">Redis Latency</p>
+                <p className="text-2xl font-bold">{diagnostics? (diagnostics.redis?.latencyMs??'—') : '...' }<span className="text-base font-normal">ms</span></p>
               </div>
-              <Shield className="h-8 w-8 text-green-600" />
+              <HardDrive className="h-8 w-8 text-orange-600" />
             </div>
           </CardContent>
         </Card>

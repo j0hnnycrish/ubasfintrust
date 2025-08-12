@@ -8,166 +8,103 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Neutral base */
     --background: 0 0% 100%;
-    --foreground: 220 20% 14%;
-
+    --foreground: 0 0% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
-
+    --card-foreground: 0 0% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
-
-    --primary: 45 90% 55%;
-    --primary-foreground: 220 20% 14%;
-
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 20% 14%;
-
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-
-    --accent: 45 90% 55%;
-    --accent-foreground: 220 20% 14%;
-
-    --destructive: 0 72% 51%;
+    --popover-foreground: 0 0% 12%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 45 90% 55%;
+    /* Monochrome brand red scale */
+    --brand-red-50: 0 86% 97%;
+    --brand-red-100: 0 93% 94%;
+    --brand-red-200: 0 96% 89%;
+    --brand-red-300: 0 94% 82%;
+    --brand-red-400: 0 91% 71%;
+    --brand-red-500: 0 84% 60%; /* core */
+    --brand-red-600: 0 72% 50%; /* primary */
+    --brand-red-700: 0 74% 42%;
+    --brand-red-800: 0 70% 35%;
+    --brand-red-900: 0 63% 31%;
+    --brand-red-foreground: 0 0% 98%;
 
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
+    /* Semantic tokens mapped to red */
+    --primary: var(--brand-red-600);
+    --primary-foreground: var(--brand-red-foreground);
+    --secondary: var(--brand-red-700);
+    --secondary-foreground: var(--brand-red-foreground);
+    --accent: var(--brand-red-500);
+    --accent-foreground: var(--brand-red-foreground);
+    --ring: var(--brand-red-500);
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
+    /* Gradients (red only) */
+    --gradient-banking: linear-gradient(135deg, hsl(var(--brand-red-700)), hsl(var(--brand-red-600)), hsl(var(--brand-red-500)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red-800)) 0%, hsl(var(--brand-red-700)) 50%, hsl(var(--brand-red-600)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--brand-red-50)) 0%, hsl(var(--brand-red-100)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--brand-red-500)) 0%, hsl(var(--brand-red-600)) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(var(--brand-red-700)) 0%, hsl(var(--brand-red-600)) 50%, hsl(var(--brand-red-500)) 100%);
 
-    --info: 221 83% 53%;
-    --info-foreground: 0 0% 98%;
-
-    /* UBAS Financial Trust - Global Banking Excellence Brand Colors */
-    --banking-gold: 38 92% 50%; /* Premium gold - Global luxury standard */
-    --banking-gold-light: 38 92% 70%;
-    --banking-gold-dark: 38 92% 35%;
-    --banking-gold-accent: 45 100% 60%; /* Bright gold for highlights */
-    --banking-dark: 210 40% 8%; /* Deep navy blue - Trust & stability */
-    --banking-dark-light: 210 35% 15%;
-    --banking-gray: 210 15% 46%;
-    --banking-gray-light: 210 10% 65%;
-    --banking-bg: 210 20% 98%;
-    --banking-accent: 210 100% 50%; /* Global trust blue */
-    --banking-accent-light: 210 100% 60%;
-    --banking-success: 142 71% 45%; /* Global success green */
-    --banking-warning: 25 95% 53%; /* Universal warning amber */
-    --banking-error: 0 84% 60%; /* Critical error red */
-    --banking-platinum: 0 0% 85%; /* Platinum tier - Premium clients */
-    --banking-diamond: 220 25% 25%; /* Diamond tier - Ultra high net worth */
-    --banking-emerald: 160 84% 39%; /* Emerald tier - Private banking */
-    --banking-sapphire: 220 91% 54%; /* Sapphire tier - Corporate banking */
-
-    /* Professional Global Banking Gradients */
-    --gradient-banking: linear-gradient(135deg, hsl(210, 40%, 8%), hsl(210, 35%, 15%), hsl(38, 92%, 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(210, 40%, 8%) 0%, hsl(210, 35%, 12%) 50%, hsl(210, 30%, 18%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(210, 20%, 98%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(210, 100%, 50%) 0%, hsl(210, 100%, 60%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(38, 92%, 35%) 0%, hsl(38, 92%, 50%) 50%, hsl(38, 92%, 70%) 100%);
-    --gradient-platinum: linear-gradient(135deg, hsl(0, 0%, 75%) 0%, hsl(0, 0%, 85%) 50%, hsl(0, 0%, 95%) 100%);
-    --gradient-diamond: linear-gradient(135deg, hsl(220, 25%, 15%) 0%, hsl(220, 25%, 25%) 50%, hsl(220, 25%, 35%) 100%);
-
-    /* Sophisticated Global Banking Shadows */
-    --shadow-banking: 0 25px 50px -12px hsla(210, 40%, 8%, 0.25);
-    --shadow-card: 0 10px 30px -8px hsla(210, 40%, 8%, 0.12);
-    --shadow-elegant: 0 15px 40px -10px hsla(210, 40%, 8%, 0.18);
-    --shadow-gold: 0 8px 25px -5px hsla(38, 92%, 50%, 0.3);
-    --shadow-floating: 0 20px 60px -15px hsla(210, 40%, 8%, 0.3);
-    --shadow-inset: inset 0 2px 4px 0 hsla(210, 40%, 8%, 0.06);
+    /* Shadows tuned for red */
+    --shadow-banking: 0 25px 50px -12px hsla(0, 72%, 50%, 0.25);
+    --shadow-card: 0 10px 30px -8px hsla(0, 72%, 50%, 0.12);
+    --shadow-elegant: 0 15px 40px -10px hsla(0, 72%, 50%, 0.18);
+    --shadow-gold: 0 8px 25px -5px hsla(0, 72%, 50%, 0.3);
+    --shadow-floating: 0 20px 60px -15px hsla(0, 72%, 50%, 0.3);
+    --shadow-inset: inset 0 2px 4px 0 hsla(0, 72%, 50%, 0.06);
 
     --radius: 0.5rem;
-
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: var(--brand-red-700);
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: var(--brand-red-100);
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: var(--brand-red-500);
   }
 
   .dark {
-    --background: 220 20% 14%;
+    --background: 0 0% 8%;
     --foreground: 0 0% 98%;
-
-    --card: 220 20% 16%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 98%;
-
-    --popover: 220 20% 16%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 98%;
-
-    --primary: 45 90% 55%;
-    --primary-foreground: 220 20% 14%;
-
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 220 15% 20%;
-    --muted-foreground: 220 9% 65%;
-
-    --accent: 45 90% 55%;
-    --accent-foreground: 220 20% 14%;
-
-    --destructive: 0 72% 51%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 45 90% 55%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
-
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
-
-    --info: 221 83% 53%;
-    --info-foreground: 0 0% 98%;
-
-    /* UBAS Financial Trust Dark Mode Colors */
-    --banking-gold: 38 92% 60%;
-    --banking-gold-light: 38 92% 75%;
-    --banking-dark: 0 0% 98%;
-    --banking-gray: 210 15% 65%;
-    --banking-bg: 210 40% 8%;
-    --banking-accent: 210 100% 60%;
-    --banking-success: 142 71% 55%;
-    --banking-warning: 25 95% 63%;
-    --banking-error: 0 84% 70%;
-
-    /* Dark mode gradients */
-    --gradient-banking: linear-gradient(135deg, hsl(38, 92%, 50%), hsl(38, 92%, 60%));
-    --gradient-hero: linear-gradient(135deg, hsl(210, 40%, 8%), hsl(210, 35%, 5%));
-    --gradient-card: linear-gradient(145deg, hsl(210, 35%, 12%), hsl(210, 30%, 15%));
-    --gradient-accent: linear-gradient(135deg, hsl(210, 100%, 50%), hsl(210, 100%, 60%));
-
-    /* Dark mode shadows */
-    --shadow-banking: 0 20px 40px -8px hsla(0, 0%, 0%, 0.4);
-    --shadow-card: 0 8px 25px -5px hsla(0, 0%, 0%, 0.3);
-    --shadow-elegant: 0 12px 35px -8px hsla(0, 0%, 0%, 0.5);
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --primary: var(--brand-red-500);
+    --primary-foreground: var(--brand-red-foreground);
+    --secondary: var(--brand-red-700);
+    --secondary-foreground: var(--brand-red-foreground);
+    --accent: var(--brand-red-500);
+    --accent-foreground: var(--brand-red-foreground);
+    --ring: var(--brand-red-500);
+    --gradient-banking: linear-gradient(135deg, hsl(var(--brand-red-800)), hsl(var(--brand-red-700)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red-900)), hsl(var(--brand-red-800)));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 12%), hsl(0 0% 16%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--brand-red-600)), hsl(var(--brand-red-500)));
+    --shadow-banking: 0 20px 40px -8px hsla(0, 72%, 50%, 0.4);
+    --shadow-card: 0 8px 25px -5px hsla(0, 72%, 50%, 0.3);
+    --shadow-elegant: 0 12px 35px -8px hsla(0, 72%, 50%, 0.5);
+    --sidebar-background: 0 0% 12%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: var(--brand-red-600);
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: var(--brand-red-500);
   }
 }
 
@@ -232,23 +169,18 @@ All colors MUST be HSL.
   }
 
   .btn-banking-gold {
-    background: var(--gradient-gold);
+    background: var(--gradient-banking);
     color: white;
     font-weight: 600;
     padding: 0.875rem 2rem;
     border-radius: 0.75rem;
-    box-shadow: var(--shadow-gold);
+    box-shadow: var(--shadow-banking);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  .btn-banking-gold:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: var(--shadow-floating);
-  }
-
+  .btn-banking-gold:hover { transform: translateY(-2px) scale(1.02); box-shadow: var(--shadow-floating); }
   .btn-banking-outline {
-    border: 2px solid hsl(var(--banking-gold));
-    color: hsl(var(--banking-gold));
+    border: 2px solid hsl(var(--brand-red-600));
+    color: hsl(var(--brand-red-600));
     background: transparent;
     font-weight: 600;
     padding: 0.875rem 2rem;
@@ -257,51 +189,14 @@ All colors MUST be HSL.
     position: relative;
     overflow: hidden;
   }
-
-  .btn-banking-outline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: var(--gradient-gold);
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: -1;
-  }
-
-  .btn-banking-outline:hover::before {
-    width: 100%;
-  }
-
-  .btn-banking-outline:hover {
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-gold);
-  }
+  .btn-banking-outline::before { content: ''; position: absolute; top:0; left:0; width:0; height:100%; background: var(--gradient-accent); transition: width 0.4s cubic-bezier(0.4,0,0.2,1); z-index:-1; }
+  .btn-banking-outline:hover::before { width:100%; }
+  .btn-banking-outline:hover { color:white; transform: translateY(-2px); box-shadow: var(--shadow-banking); }
 
   /* Advanced Card Components */
-  .card-banking {
-    background: white;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(var(--banking-bg));
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
+  .card-banking { background:white; border-radius:1rem; box-shadow:var(--shadow-card); border:1px solid hsl(var(--brand-red-100)); transition:all 0.4s cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden; }
 
-  .card-banking::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-gold);
-    transform: scaleX(0);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+  .card-banking::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--gradient-accent); transform:scaleX(0); transition:transform 0.4s cubic-bezier(0.4,0,0.2,1); }
 
   .card-banking:hover::before {
     transform: scaleX(1);
@@ -312,26 +207,9 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-elegant);
   }
 
-  .card-banking-premium {
-    background: var(--gradient-card);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-floating);
-    border: 1px solid hsl(var(--banking-gold) / 0.3);
-    position: relative;
-    overflow: hidden;
-  }
+  .card-banking-premium { background: var(--gradient-card); border-radius:1rem; box-shadow:var(--shadow-floating); border:1px solid hsl(var(--brand-red-500) / 0.3); position:relative; overflow:hidden; }
 
-  .card-banking-premium::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: var(--gradient-gold);
-    opacity: 0.05;
-    z-index: 0;
-  }
+  .card-banking-premium::before { content:''; position:absolute; top:0; left:0; right:0; height:100%; background: var(--gradient-accent); opacity:0.05; z-index:0; }
 
   .card-banking-premium > * {
     position: relative;
@@ -355,9 +233,7 @@ All colors MUST be HSL.
     animation: float 6s ease-in-out infinite;
   }
 
-  .animate-pulse-gold {
-    animation: pulseGold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+  .animate-pulse-gold { animation: pulseGold 2s cubic-bezier(0.4,0,0.6,1) infinite; }
 
   .animate-shimmer {
     animation: shimmer 2.5s linear infinite;
@@ -409,14 +285,7 @@ All colors MUST be HSL.
     }
   }
 
-  @keyframes pulseGold {
-    0%, 100% {
-      box-shadow: 0 0 0 0 hsla(38, 92%, 50%, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 10px hsla(38, 92%, 50%, 0);
-    }
-  }
+  @keyframes pulseGold { 0%,100% { box-shadow:0 0 0 0 hsla(0,72%,50%,0.7);} 70% { box-shadow:0 0 0 10px hsla(0,72%,50%,0);} }
 
   @keyframes shimmer {
     0% {
@@ -441,22 +310,11 @@ All colors MUST be HSL.
     width: 12px;
   }
 
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--banking-bg));
-    border-radius: 6px;
-  }
+  ::-webkit-scrollbar-track { background: hsl(var(--brand-red-50)); border-radius:6px; }
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--gradient-gold);
-    border-radius: 6px;
-    border: 2px solid hsl(var(--banking-bg));
-    transition: all 0.3s ease;
-  }
+  ::-webkit-scrollbar-thumb { background: var(--gradient-accent); border-radius:6px; border:2px solid hsl(var(--brand-red-50)); transition:all 0.3s ease; }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--gradient-banking);
-    transform: scale(1.1);
-  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gradient-banking); transform:scale(1.1); }
 
   /* Advanced Glass Morphism Effects */
   .glass-morphism {
@@ -509,17 +367,10 @@ All colors MUST be HSL.
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .hover-glow:hover {
-    box-shadow: 0 0 30px hsla(38, 92%, 50%, 0.6);
-  }
+  .hover-glow:hover { box-shadow:0 0 30px hsla(0,72%,50%,0.6); }
 
   /* Professional Typography Enhancements */
-  .text-gradient-gold {
-    background: var(--gradient-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  .text-gradient-gold { background: var(--gradient-accent); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 
   .text-gradient-banking {
     background: var(--gradient-banking);
@@ -533,11 +384,7 @@ All colors MUST be HSL.
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .focus-ring:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px hsla(38, 92%, 50%, 0.3);
-    border-color: hsl(var(--banking-gold));
-  }
+  .focus-ring:focus { outline:none; box-shadow:0 0 0 3px hsla(0,72%,50%,0.3); border-color: hsl(var(--brand-red-600)); }
 
   /* Professional Status Indicators */
   .status-indicator {
@@ -555,30 +402,13 @@ All colors MUST be HSL.
     border: 2px solid white;
   }
 
-  .status-indicator.online::before {
-    background: hsl(var(--banking-success));
-    animation: pulseGreen 2s infinite;
-  }
+  .status-indicator.online::before { background: hsl(var(--brand-red-500)); animation:pulseGreen 2s infinite; }
 
-  .status-indicator.busy::before {
-    background: hsl(var(--banking-warning));
-  }
+  .status-indicator.busy::before { background: hsl(var(--brand-red-700)); }
 
-  .status-indicator.offline::before {
-    background: hsl(var(--banking-gray));
-  }
+  .status-indicator.offline::before { background: hsl(var(--brand-red-300)); }
 
-  @keyframes pulseGreen {
-    0% {
-      box-shadow: 0 0 0 0 hsla(142, 71%, 45%, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 10px hsla(142, 71%, 45%, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 hsla(142, 71%, 45%, 0);
-    }
-  }
+  @keyframes pulseGreen { 0% { box-shadow:0 0 0 0 hsla(0,72%,50%,0.7);} 70% { box-shadow:0 0 0 10px hsla(0,72%,50%,0);} 100% { box-shadow:0 0 0 0 hsla(0,72%,50%,0);} }
 
   /* Scrolling Background Animations */
   @keyframes slow-scroll {

@@ -61,6 +61,11 @@ const config: { [key: string]: Knex.Config } = {
     pool: {
       min: 5,
       max: 20,
+      // Advanced pool options
+      createTimeoutMillis: 30000,
+      destroyTimeoutMillis: 5000,
+      idleTimeoutMillis: 30000,
+      reapIntervalMillis: 1000,
     },
     migrations: {
       tableName: 'knex_migrations',
@@ -70,14 +75,6 @@ const config: { [key: string]: Knex.Config } = {
       directory: '../seeds',
     },
     acquireConnectionTimeout: 60000,
-    pool: {
-      min: 2,
-      max: 10,
-      createTimeoutMillis: 30000,
-      destroyTimeoutMillis: 5000,
-      idleTimeoutMillis: 30000,
-      reapIntervalMillis: 1000,
-    },
   },
 };
 

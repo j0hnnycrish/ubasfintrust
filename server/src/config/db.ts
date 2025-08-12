@@ -2,8 +2,8 @@ import knex from 'knex';
 import config from './database';
 import { logger } from '../utils/logger';
 
-const environment = process.env.NODE_ENV || 'development';
-const dbConfig = config[environment];
+const environment = process.env['NODE_ENV'] || 'development';
+const dbConfig = config[environment] || config['development'];
 
 export const db = knex(dbConfig);
 

@@ -669,12 +669,12 @@ export default {
 }
 
 .btn-primary {
-  background-color: #3b82f6;
+  background-color: #ef4444; /* red */
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: #dc2626; /* red-600 */
 }
 
 .btn-secondary {
@@ -688,12 +688,12 @@ export default {
 
 .btn-outline-primary {
   background-color: transparent;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
+  color: #ef4444; /* red */
+  border: 1px solid #ef4444;
 }
 
 .btn-outline-primary:hover:not(:disabled) {
-  background-color: #3b82f6;
+  background-color: #ef4444;
   color: white;
 }
 

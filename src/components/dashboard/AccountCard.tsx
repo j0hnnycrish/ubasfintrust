@@ -34,33 +34,23 @@ export function AccountCard({ account }: AccountCardProps) {
   };
 
   const getAccountTypeColor = () => {
-    switch (account.accountType) {
-      case 'checking':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'savings':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'business':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'investment':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  // Unified brand red styling regardless of account type for consistent theme
+  return 'bg-brand-100 text-brand-700 border-brand-200';
   };
 
   return (
-    <Card className="relative overflow-hidden bg-gradient-card border-banking-gold/20 shadow-card-banking hover:shadow-elegant transition-all duration-300">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-banking-gold/10 rounded-full -translate-y-12 translate-x-12"></div>
+    <Card className="relative overflow-hidden bg-white/80 backdrop-blur border border-brand-200 shadow-card-banking hover:shadow-elegant transition-all duration-300">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-100 rounded-full -translate-y-12 translate-x-12"></div>
       
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-banking-gold/10 rounded-lg text-banking-gold">
+            <div className="p-2 bg-brand-100 rounded-lg text-brand-600">
               {getAccountIcon()}
             </div>
             <div>
-              <h3 className="font-semibold text-banking-dark">{getAccountTypeLabel()} Account</h3>
-              <p className="text-sm text-banking-gray">****{account.accountNumber.slice(-4)}</p>
+              <h3 className="font-semibold text-brand-800">{getAccountTypeLabel()} Account</h3>
+              <p className="text-sm text-brand-600">****{account.accountNumber.slice(-4)}</p>
             </div>
           </div>
           
@@ -73,40 +63,40 @@ export function AccountCard({ account }: AccountCardProps) {
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-sm text-banking-gray">Available Balance</p>
+            <p className="text-sm text-brand-600">Available Balance</p>
             <div className="flex items-center space-x-2">
               {showBalance ? (
-                <span className="text-2xl font-bold text-banking-dark">
+                <span className="text-2xl font-bold text-brand-800">
                   {formatCurrency(account.balance)}
                 </span>
               ) : (
-                <span className="text-2xl font-bold text-banking-dark">••••••</span>
+                <span className="text-2xl font-bold text-brand-800">••••••</span>
               )}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowBalance(!showBalance)}
-                className="p-1 h-auto hover:bg-banking-gold/10"
+                className="p-1 h-auto hover:bg-brand-100"
               >
                 {showBalance ? (
-                  <EyeOff className="h-4 w-4 text-banking-gray" />
+                  <EyeOff className="h-4 w-4 text-brand-500" />
                 ) : (
-                  <Eye className="h-4 w-4 text-banking-gray" />
+                  <Eye className="h-4 w-4 text-brand-500" />
                 )}
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-banking-gold/20">
+        <div className="pt-4 border-t border-brand-200/60">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-banking-gray">Account Number</p>
-              <p className="font-medium text-banking-dark">{account.accountNumber}</p>
+              <p className="text-brand-600">Account Number</p>
+              <p className="font-medium text-brand-800">{account.accountNumber}</p>
             </div>
             <div>
-              <p className="text-banking-gray">Last Activity</p>
-              <p className="font-medium text-banking-dark">
+              <p className="text-brand-600">Last Activity</p>
+              <p className="font-medium text-brand-800">
                 {account.lastActivity.toLocaleDateString()}
               </p>
             </div>

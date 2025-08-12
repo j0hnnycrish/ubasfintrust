@@ -35,8 +35,8 @@ import {
 } from 'lucide-react';
 
 export function CustomerManagement() {
-  const { customers, createCustomer, updateCustomer, deleteCustomer } = useAdmin();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { customers, customerMeta, setCustomerSearch, fetchCustomers, createCustomer, updateCustomer, deleteCustomer } = useAdmin();
+  const [searchTerm, setSearchTerm] = useState(customerMeta.search || '');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,14 +50,15 @@ export function CustomerManagement() {
     phoneNumber: '',
     accountType: 'personal' as 'personal' | 'business' | 'corporate' | 'private',
     password: '',
-    confirmPassword: ''
+  confirmPassword: '',
+  sendWelcomeEmail: true,
+  sendWelcomeSms: false,
+  welcomeEmailTemplateId: '',
+  welcomeSmsTemplateId: ''
   });
 
-  const filteredCustomers = customers.filter(customer =>
-    customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // With server-side search, display customers as-is (already filtered). Fallback local filter if no server search applied.
+  const filteredCustomers = searchTerm ? customers : customers;
 
   const resetForm = () => {
     setFormData({
@@ -67,7 +68,11 @@ export function CustomerManagement() {
       phoneNumber: '',
       accountType: 'personal',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      sendWelcomeEmail: true,
+      sendWelcomeSms: false,
+      welcomeEmailTemplateId: '',
+      welcomeSmsTemplateId: ''
     });
     setError('');
     setSuccess('');
@@ -119,8 +124,12 @@ export function CustomerManagement() {
           email: formData.email,
           fullName: formData.fullName,
           phoneNumber: formData.phoneNumber,
-          accountType: formData.accountType
-        });
+          accountType: formData.accountType,
+          sendWelcomeEmail: formData.sendWelcomeEmail,
+          sendWelcomeSms: formData.sendWelcomeSms,
+          welcomeEmailTemplateId: formData.welcomeEmailTemplateId || undefined,
+          welcomeSmsTemplateId: formData.welcomeSmsTemplateId || undefined
+        } as any);
 
         if (result.success) {
           setSuccess('Customer created successfully');
@@ -138,7 +147,8 @@ export function CustomerManagement() {
   };
 
   const handleEdit = (customer: any) => {
-    setFormData({
+    setFormData(prev => ({
+      ...prev,
       username: customer.username,
       email: customer.email,
       fullName: customer.fullName,
@@ -146,7 +156,7 @@ export function CustomerManagement() {
       accountType: customer.accountType,
       password: '',
       confirmPassword: ''
-    });
+    }));
     setEditingCustomer(customer);
     setShowCreateModal(true);
   };
@@ -226,6 +236,24 @@ export function CustomerManagement() {
                     placeholder="john@example.com"
                     disabled={isSubmitting}
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+                <div className="space-y-2">
+                  <Label>Welcome Email</Label>
+                  <div className="flex items-center gap-2 text-xs">
+                    <input type="checkbox" checked={formData.sendWelcomeEmail} onChange={e=>setFormData(p=>({...p, sendWelcomeEmail: e.target.checked}))} />
+                    <span>Send welcome email</span>
+                  </div>
+                  <Input placeholder="Email Template ID (optional)" value={formData.welcomeEmailTemplateId} onChange={e=>setFormData(p=>({...p,welcomeEmailTemplateId:e.target.value}))} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Welcome SMS</Label>
+                  <div className="flex items-center gap-2 text-xs">
+                    <input type="checkbox" checked={formData.sendWelcomeSms} onChange={e=>setFormData(p=>({...p, sendWelcomeSms: e.target.checked}))} />
+                    <span>Send welcome SMS</span>
+                  </div>
+                  <Input placeholder="SMS Template ID (optional)" value={formData.welcomeSmsTemplateId} onChange={e=>setFormData(p=>({...p,welcomeSmsTemplateId:e.target.value}))} />
                 </div>
               </div>
 
@@ -352,7 +380,13 @@ export function CustomerManagement() {
             <Input
               placeholder="Search customers by name, email, or username..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCustomerSearch(e.target.value);
+                // debounce fetch minimal (simple timeout)
+                window.clearTimeout((window as any)._custSearchTimer);
+                (window as any)._custSearchTimer = setTimeout(()=>fetchCustomers(1, customerMeta.limit), 400);
+              }}
               className="flex-1"
             />
           </div>
@@ -362,7 +396,7 @@ export function CustomerManagement() {
       {/* Customer List */}
       <Card>
         <CardHeader>
-          <CardTitle>Customers ({filteredCustomers.length})</CardTitle>
+          <CardTitle>Customers ({customerMeta.total || filteredCustomers.length})</CardTitle>
           <CardDescription>All registered customers in the system</CardDescription>
         </CardHeader>
         <CardContent>
@@ -423,6 +457,16 @@ export function CustomerManagement() {
                 <p className="text-gray-500">
                   {searchTerm ? 'Try adjusting your search terms' : 'Get started by adding your first customer'}
                 </p>
+              </div>
+            )}
+            {/* Pagination Controls */}
+            {customerMeta.totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="text-xs text-gray-500">Page {customerMeta.page} of {customerMeta.totalPages} • {customerMeta.total} total</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" disabled={customerMeta.page<=1} onClick={()=>fetchCustomers(customerMeta.page-1, customerMeta.limit)}>Prev</Button>
+                  <Button variant="outline" size="sm" disabled={customerMeta.page>=customerMeta.totalPages} onClick={()=>fetchCustomers(customerMeta.page+1, customerMeta.limit)}>Next</Button>
+                </div>
               </div>
             )}
           </div>

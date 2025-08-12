@@ -31,7 +31,7 @@ export default function PersonalBanking() {
       features: ['5.5% Annual Interest', 'Multi-Currency Wallets', 'No Monthly Fees', 'Global ATM Access'],
       minBalance: '$1,000',
       icon: PiggyBank,
-      color: 'bg-blue-500'
+      color: 'bg-red-500'
     },
     {
       id: 'current',
@@ -76,7 +76,7 @@ export default function PersonalBanking() {
       <ProfessionalNavigation />
 
       {/* Hero Section with Scrolling Background */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
         <ScrollingBackground
           images={personalBankingImages}
           speed={35}
@@ -110,7 +110,7 @@ export default function PersonalBanking() {
                   Open Account
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3 text-lg">
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 px-8 py-3 text-lg" onClick={() => navigate('/about')}>
                   Learn More
                 </Button>
               </div>

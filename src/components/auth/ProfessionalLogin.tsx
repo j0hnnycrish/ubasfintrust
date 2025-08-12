@@ -116,8 +116,8 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-2xl border-blue-200 bg-white/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-2xl border-red-200 bg-white/95 backdrop-blur-sm">
         <CardHeader className="space-y-1 text-center">
           <Button variant="ghost" onClick={onBack} className="absolute top-4 left-4 p-2">
             <ArrowLeft className="h-4 w-4" />
@@ -131,10 +131,10 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
             />
           </div>
           
-          <CardTitle className="text-2xl font-bold text-blue-900">
+          <CardTitle className="text-2xl font-bold text-red-900">
             Secure Access
           </CardTitle>
-          <CardDescription className="text-blue-600">
+          <CardDescription className="text-red-600">
             Sign in to your UBAS Financial Trust account
           </CardDescription>
         </CardHeader>
@@ -164,7 +164,7 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
                       placeholder="Enter your username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="pl-9 border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                      className="pl-9 border-red-200 focus:border-red-500 focus:ring-red-500"
                       required
                     />
                   </div>
@@ -185,7 +185,7 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
                       placeholder="UBAS-XXXX-XXXX-XXXX"
                       value={accountNumber}
                       onChange={handleAccountNumberChange}
-                      className="pl-9 border-blue-200 focus:border-blue-500 focus:ring-blue-500 font-mono"
+                      className="pl-9 border-red-200 focus:border-red-500 focus:ring-red-500 font-mono"
                       maxLength={19}
                       required
                     />
@@ -206,7 +206,7 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-9 pr-9 border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-9 pr-9 border-red-200 focus:border-red-500 focus:ring-red-500"
                     required
                   />
                   <Button

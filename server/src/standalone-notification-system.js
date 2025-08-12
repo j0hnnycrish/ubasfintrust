@@ -77,15 +77,15 @@ class EmailService {
       });
     }
 
-    // SendGrid Provider
-    if (env.SENDGRID_API_KEY) {
+    // Resend Provider
+    if (env.RESEND_API_KEY) {
       this.providers.push({
-        name: 'SendGrid',
+        name: 'Resend',
         send: async (options) => {
-          const sgMail = require('@sendgrid/mail');
-          sgMail.setApiKey(env.SENDGRID_API_KEY);
+          const { Resend } = require('resend');
+          const resend = new Resend(env.RESEND_API_KEY);
 
-          const result = await sgMail.send({
+          const result = await resend.emails.send({
             to: options.to,
             from: env.FROM_EMAIL,
             subject: options.subject,
@@ -93,7 +93,7 @@ class EmailService {
             html: options.html,
           });
 
-          return { success: true, messageId: result[0]?.headers?.['x-message-id'] };
+          return { success: true, messageId: result.data?.id };
         },
         isHealthy: async () => true
       });

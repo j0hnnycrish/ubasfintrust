@@ -1,3 +1,78 @@
+import Joi from 'joi';
+
+// Define schema for required / optional environment variables
+const schema = Joi.object({
+  NODE_ENV: Joi.string().valid('development','production','test').default('development'),
+  PORT: Joi.number().integer().min(1).max(65535).default(5000),
+  API_VERSION: Joi.string().default('v1'),
+  // Auth / Security
+  JWT_SECRET: Joi.string().min(16).required(),
+  JWT_REFRESH_SECRET: Joi.string().min(16).required(),
+  SESSION_SECRET: Joi.string().min(16).required(),
+  BCRYPT_ROUNDS: Joi.number().integer().min(4).max(15).default(12),
+  // Admin seed
+  ADMIN_EMAIL: Joi.string().email().optional(),
+  ADMIN_PASSWORD: Joi.string().min(8).optional(),
+  ADMIN_PHONE: Joi.string().optional(),
+  // DB / Redis
+  DATABASE_URL: Joi.string().uri({ scheme: [/postgres/] }).optional(),
+  DB_HOST: Joi.string().optional(),
+  DB_PORT: Joi.number().optional(),
+  DB_NAME: Joi.string().optional(),
+  DB_USER: Joi.string().optional(),
+  DB_PASSWORD: Joi.string().optional(),
+  REDIS_URL: Joi.string().optional(),
+  REDIS_HOST: Joi.string().optional(),
+  REDIS_PORT: Joi.number().optional(),
+  REDIS_PASSWORD: Joi.string().allow('').optional(),
+  // CORS / Socket
+  ALLOWED_ORIGINS: Joi.string().optional(),
+  SOCKET_IO_CORS_ORIGIN: Joi.string().optional(),
+  // Diagnostics
+  DIAGNOSTICS_TOKEN: Joi.string().optional(),
+  // Email providers keys are optional
+  RESEND_API_KEY: Joi.string().optional(),
+  SENDGRID_API_KEY: Joi.string().optional(),
+  MAILGUN_API_KEY: Joi.string().optional(),
+  MAILGUN_DOMAIN: Joi.string().optional(),
+  // Feature flags
+  BANK_SIMULATION_MODE: Joi.boolean().truthy('true').falsy('false').default(false),
+  ENABLE_REALISTIC_DELAYS: Joi.boolean().truthy('true').falsy('false').default(false),
+}).unknown(true); // allow extra vars
+
+export interface AppConfig {
+  NODE_ENV: string;
+  PORT: number;
+  API_VERSION: string;
+  JWT_SECRET: string;
+  JWT_REFRESH_SECRET: string;
+  SESSION_SECRET: string;
+  BCRYPT_ROUNDS: number;
+  ADMIN_EMAIL?: string;
+  ADMIN_PASSWORD?: string;
+  ADMIN_PHONE?: string;
+  ALLOWED_ORIGINS?: string;
+  SOCKET_IO_CORS_ORIGIN?: string;
+  DIAGNOSTICS_TOKEN?: string;
+  [k: string]: any;
+}
+
+const { value, error } = schema.validate(process.env, { abortEarly: false, convert: true });
+if (error) {
+  // Collate validation errors into a readable message
+  const details = error.details.map(d => `${d.path.join('.')}: ${d.message}`).join('\n');
+  // eslint-disable-next-line no-console
+  console.error('\n[env] Configuration validation failed:\n' + details + '\n');
+  throw new Error('Invalid environment configuration');
+}
+
+export const config = value as unknown as AppConfig;
+
+export function requireEnv(key: keyof AppConfig): string {
+  const v = config[key];
+  if (!v) throw new Error(`Missing required environment variable: ${String(key)}`);
+  return v as string;
+}
 // Environment configuration with proper typing
 export const env = {
   // Database

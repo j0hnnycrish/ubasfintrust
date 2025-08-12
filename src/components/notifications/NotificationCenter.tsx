@@ -58,9 +58,9 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
       case 'critical':
         return 'bg-red-100 border-red-200 text-red-800';
       case 'high':
-        return 'bg-orange-100 border-orange-200 text-orange-800';
+        return 'bg-red-50 border-red-200 text-red-700';
       case 'medium':
-        return 'bg-blue-100 border-blue-200 text-blue-800';
+        return 'bg-red-50 border-red-200 text-red-700';
       case 'low':
         return 'bg-gray-100 border-gray-200 text-gray-800';
       default:
@@ -153,9 +153,9 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                       <div
                         key={notification.id}
                         className={`p-4 rounded-lg border transition-all hover:shadow-md ${
-                          notification.read 
-                            ? 'bg-gray-50 border-gray-200' 
-                            : 'bg-white border-blue-200 shadow-sm'
+                          notification.read
+                            ? 'bg-gray-50 border-gray-200'
+                            : 'bg-white border-red-200 shadow-sm'
                         }`}
                       >
                         <div className="flex items-start space-x-3">

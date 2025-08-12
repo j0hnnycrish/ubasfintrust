@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { adminAPI, authAPI } from '@/lib/api';
 
 interface AdminUser {
   id: string;
@@ -56,8 +57,11 @@ interface AdminContextType {
   isAdminAuthenticated: boolean;
   customers: Customer[];
   transactions: Transaction[];
+  customerMeta: { page: number; limit: number; total: number; totalPages: number; search?: string };
+  txMeta: { [accountId: string]: { page: number; limit: number; total?: number; totalPages?: number } };
   adminLogin: (credentials: { username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   adminLogout: () => void;
+  adminChangePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   
   // Customer Management
   createCustomer: (customerData: Partial<Customer>) => Promise<{ success: boolean; error?: string; customer?: Customer }>;
@@ -72,6 +76,9 @@ interface AdminContextType {
   // Transaction Management
   createTransaction: (transactionData: Partial<Transaction>) => Promise<{ success: boolean; error?: string }>;
   updateTransaction: (transactionId: string, updates: Partial<Transaction>) => Promise<{ success: boolean; error?: string }>;
+  fetchAccountTransactions: (accountId: string, page?: number, limit?: number) => Promise<{ success: boolean; error?: string; transactions?: Transaction[] }>;
+  setCustomerSearch: (search: string) => void;
+  fetchCustomers: (page?: number, limit?: number) => Promise<void>;
   
   // Data Management
   refreshData: () => void;
@@ -83,177 +90,101 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [customerMeta, setCustomerMeta] = useState({ page:1, limit:20, total:0, totalPages:0, search:'' });
+  const [txMeta, setTxMeta] = useState<{[accountId:string]: { page:number; limit:number; total?:number; totalPages?:number }}>({});
 
-  // Initialize with sample data
-  useEffect(() => {
-    // Load existing data from localStorage first
-    const storedCustomers = localStorage.getItem('ubas_customers');
-    const storedTransactions = localStorage.getItem('ubas_transactions');
-
-    if (storedCustomers && storedTransactions) {
-      try {
-        setCustomers(JSON.parse(storedCustomers));
-        setTransactions(JSON.parse(storedTransactions));
-      } catch (error) {
-        console.error('Error loading stored data:', error);
-        // Fall back to sample data if stored data is corrupted
-        initializeSampleData();
+  // Load real data from backend
+  const fetchAdminData = async () => {
+    try {
+  const usersResp = await adminAPI.listUsers({ page: customerMeta.page, limit: customerMeta.limit, search: customerMeta.search || undefined });
+      if (!usersResp.success || !usersResp.data) return;
+      const rawUsers = usersResp.data as any[];
+      // For each user fetch accounts
+      const enriched: Customer[] = [];
+      for (const u of rawUsers) {
+        try {
+          const accResp = await adminAPI.listUserAccounts(u.id);
+          const accounts = (accResp.success && accResp.data ? accResp.data : []).map((a:any) => ({
+            id: a.id,
+            customerId: u.id,
+            name: a.account_type?.charAt(0).toUpperCase()+a.account_type?.slice(1)+' Account',
+            type: (a.account_type || 'checking'),
+            balance: a.balance || 0,
+            availableBalance: a.available_balance || a.balance || 0,
+            accountNumber: a.account_number,
+            status: a.status || 'active',
+            createdAt: a.created_at?.split('T')[0] || ''
+          }));
+          enriched.push({
+            id: u.id,
+            username: u.email.split('@')[0],
+            email: u.email,
+            fullName: `${u.first_name} ${u.last_name}`.trim(),
+            phoneNumber: u.phone || '',
+            accountType: u.account_type,
+            accountNumber: accounts[0]?.accountNumber || '',
+            isVerified: !!u.is_verified,
+            kycStatus: u.kyc_status,
+            createdAt: u.created_at?.split('T')[0] || '',
+            status: u.is_active ? 'active' : 'suspended',
+            accounts
+          });
+        } catch {}
       }
-    } else {
-      initializeSampleData();
+      setCustomers(enriched);
+      if (usersResp.pagination) {
+        setCustomerMeta(prev => ({ ...prev, ...usersResp.pagination, search: customerMeta.search }));
+      }
+    } catch (e) {
+      console.warn('Failed to fetch admin data', e);
     }
+  };
 
-    // Check for stored admin session
+  useEffect(() => {
+    // Restore admin session & load data if tokens exist
     const storedAdmin = localStorage.getItem('ubas_admin');
     if (storedAdmin) {
-      try {
-        const adminData = JSON.parse(storedAdmin);
-        setAdminUser(adminData);
-      } catch (error) {
-        localStorage.removeItem('ubas_admin');
-      }
+      try { setAdminUser(JSON.parse(storedAdmin)); fetchAdminData(); } catch { localStorage.removeItem('ubas_admin'); }
     }
   }, []);
 
-  const initializeSampleData = () => {
-    const sampleCustomers: Customer[] = [
-      {
-        id: '1',
-        username: 'john.doe',
-        email: 'john.doe@email.com',
-        fullName: 'John Doe',
-        phoneNumber: '+1-555-0123',
-        accountType: 'personal',
-        accountNumber: 'UBAS001234567',
-        isVerified: true,
-        kycStatus: 'approved',
-        createdAt: '2024-01-15',
-        status: 'active',
-        accounts: [
-          {
-            id: 'acc1',
-            customerId: '1',
-            name: 'Primary Checking',
-            type: 'checking',
-            balance: 12847.32,
-            availableBalance: 12847.32,
-            accountNumber: '****1234',
-            status: 'active',
-            createdAt: '2024-01-15'
-          },
-          {
-            id: 'acc2',
-            customerId: '1',
-            name: 'High Yield Savings',
-            type: 'savings',
-            balance: 45230.18,
-            accountNumber: '****5678',
-            interestRate: 4.25,
-            status: 'active',
-            createdAt: '2024-01-15'
-          }
-        ]
-      },
-      {
-        id: '2',
-        username: 'business.user',
-        email: 'contact@business.com',
-        fullName: 'Business Account',
-        phoneNumber: '+1-555-0124',
-        accountType: 'business',
-        accountNumber: 'UBAS002345678',
-        isVerified: true,
-        kycStatus: 'approved',
-        createdAt: '2024-01-10',
-        status: 'active',
-        accounts: [
-          {
-            id: 'acc3',
-            customerId: '2',
-            name: 'Business Operating',
-            type: 'business',
-            balance: 187450.00,
-            availableBalance: 187450.00,
-            accountNumber: '****9012',
-            status: 'active',
-            createdAt: '2024-01-10'
-          }
-        ]
-      }
-    ];
-
-    const sampleTransactions: Transaction[] = [
-      {
-        id: 'txn1',
-        accountId: 'acc1',
-        customerId: '1',
-        date: '2024-01-15',
-        description: 'Amazon Purchase',
-        amount: -45.67,
-        type: 'debit',
-        category: 'Shopping',
-        status: 'completed',
-        reference: 'TXN001'
-      },
-      {
-        id: 'txn2',
-        accountId: 'acc1',
-        customerId: '1',
-        date: '2024-01-15',
-        description: 'Salary Deposit',
-        amount: 5200.00,
-        type: 'credit',
-        category: 'Income',
-        status: 'completed',
-        reference: 'TXN002'
-      }
-    ];
-
-    setCustomers(sampleCustomers);
-    setTransactions(sampleTransactions);
-
-    // Save sample data to localStorage
-    localStorage.setItem('ubas_customers', JSON.stringify(sampleCustomers));
-    localStorage.setItem('ubas_transactions', JSON.stringify(sampleTransactions));
-  };
-
   // Save data to localStorage whenever it changes
   useEffect(() => {
-    if (customers.length > 0) {
-      localStorage.setItem('ubas_customers', JSON.stringify(customers));
-    }
+  // Persist minimal cache (optional)
+  if (customers.length > 0) localStorage.setItem('ubas_customers', JSON.stringify(customers));
   }, [customers]);
 
   useEffect(() => {
-    if (transactions.length > 0) {
-      localStorage.setItem('ubas_transactions', JSON.stringify(transactions));
-    }
+  if (transactions.length > 0) localStorage.setItem('ubas_transactions', JSON.stringify(transactions));
   }, [transactions]);
 
   const adminLogin = async (credentials: { username: string; password: string }): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check admin credentials
-      if (credentials.username === 'admin' && credentials.password === 'admin123') {
-        const admin: AdminUser = {
-          id: 'admin1',
-          username: 'admin',
-          email: 'admin@ubasfinancial.com',
-          role: 'super_admin',
-          permissions: ['all'],
-          lastLogin: new Date().toISOString()
-        };
-        
-        localStorage.setItem('ubas_admin', JSON.stringify(admin));
-        setAdminUser(admin);
-        return { success: true };
+      // Treat username field as email for backend auth
+      const email = credentials.username;
+      const resp = await authAPI.login({ email, password: credentials.password });
+      if (!resp.success || !resp.data) {
+        return { success: false, error: resp.message || 'Login failed' };
       }
-      
-      return { success: false, error: 'Invalid admin credentials' };
-    } catch (error) {
-      return { success: false, error: 'Login failed' };
+  const { user } = resp.data;
+      if (user.accountType !== 'corporate') {
+        return { success: false, error: 'Insufficient role: corporate required' };
+      }
+      const admin: AdminUser = {
+        id: user.id,
+        username: user.email.split('@')[0],
+        email: user.email,
+        role: 'super_admin',
+        permissions: ['all'],
+        lastLogin: new Date().toISOString()
+      };
+      localStorage.setItem('ubas_admin', JSON.stringify(admin));
+      setAdminUser(admin);
+  // After login load backend data
+  await fetchAdminData();
+  return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error?.response?.data?.message || 'Admin login failed' };
     }
   };
 
@@ -262,27 +193,62 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     setAdminUser(null);
   };
 
+  const adminChangePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      // Reuse user password change endpoint (admin user is just a corporate account type)
+      const resp = await (await import('@/lib/api')).userAPI.changePassword({ currentPassword, newPassword });
+      if (!resp.success) return { success: false, error: resp.message || 'Password change failed' };
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e?.response?.data?.message || e.message || 'Password change error' };
+    }
+  };
+
   const createCustomer = async (customerData: Partial<Customer>): Promise<{ success: boolean; error?: string; customer?: Customer }> => {
     try {
+      if (!customerData.email || !customerData.fullName) {
+        return { success: false, error: 'Email and full name required' };
+      }
+
+      // Simple name split for backend fields
+      const [firstName, ...rest] = customerData.fullName.split(' ');
+      const lastName = rest.join(' ') || 'User';
+
+      const cd: any = customerData; // allow optional extended fields from UI
+      const payload = {
+        email: customerData.email,
+        password: cd.password || 'TempPass#123',
+        firstName,
+        lastName,
+        phone: customerData.phoneNumber || '+10000000000',
+        dateOfBirth: cd.dateOfBirth || '1990-01-01',
+        accountType: customerData.accountType || 'personal'
+      } as const;
+
+      const response = await adminAPI.createUser(payload);
+      if (!response.success || !response.data) {
+        return { success: false, error: response.message || 'Backend creation failed' };
+      }
+
       const newCustomer: Customer = {
-        id: `cust_${Date.now()}`,
-        username: customerData.username || '',
-        email: customerData.email || '',
-        fullName: customerData.fullName || '',
-        phoneNumber: customerData.phoneNumber || '',
-        accountType: customerData.accountType || 'personal',
-        accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
+        id: response.data.userId,
+        username: customerData.username || payload.email.split('@')[0],
+        email: payload.email,
+        fullName: customerData.fullName,
+        phoneNumber: payload.phone,
+        accountType: payload.accountType as any,
+        accountNumber: response.data.accountNumber,
         isVerified: false,
         kycStatus: 'pending',
         createdAt: new Date().toISOString().split('T')[0],
         status: 'active',
         accounts: []
       };
-      
+
       setCustomers(prev => [...prev, newCustomer]);
       return { success: true, customer: newCustomer };
-    } catch (error) {
-      return { success: false, error: 'Failed to create customer' };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Failed to create customer' };
     }
   };
 
@@ -309,25 +275,21 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const createAccount = async (customerId: string, accountData: Partial<CustomerAccount>): Promise<{ success: boolean; error?: string }> => {
     try {
+      const acctType = (accountData.type as any) || 'checking';
+      const resp = await adminAPI.createAccountForUser(customerId, { accountType: acctType, currency: 'USD', initialBalance: accountData.balance || 0 });
+      if (!resp.success || !resp.data) return { success: false, error: resp.message || 'Backend account creation failed' };
       const newAccount: CustomerAccount = {
-        id: `acc_${Date.now()}`,
+        id: resp.data.accountId,
         customerId,
-        name: accountData.name || 'New Account',
-        type: accountData.type || 'checking',
+        name: accountData.name || acctType.charAt(0).toUpperCase()+acctType.slice(1)+' Account',
+        type: acctType,
         balance: accountData.balance || 0,
         availableBalance: accountData.balance || 0,
-        accountNumber: `****${Math.random().toString().substr(2, 4)}`,
+        accountNumber: resp.data.accountNumber,
         status: 'active',
-        createdAt: new Date().toISOString().split('T')[0],
-        ...accountData
+        createdAt: new Date().toISOString().split('T')[0]
       };
-      
-      setCustomers(prev => prev.map(customer => 
-        customer.id === customerId 
-          ? { ...customer, accounts: [...customer.accounts, newAccount] }
-          : customer
-      ));
-      
+      setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, accounts: [...c.accounts, newAccount] } : c));
       return { success: true };
     } catch (error) {
       return { success: false, error: 'Failed to create account' };
@@ -403,19 +365,56 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const refreshData = () => {
-    // Force re-render of data
-    setCustomers(prev => [...prev]);
-    setTransactions(prev => [...prev]);
+  const fetchAccountTransactions = async (accountId: string, page: number = 1, limit: number = 25) => {
+    try {
+      const resp = await adminAPI.listAccountTransactions(accountId, { page, limit });
+      if (!resp.success) return { success:false, error: resp.message || 'Fetch failed' };
+      const txsRaw = (resp.data || []) as any[];
+      const mapped: Transaction[] = txsRaw.map(r => ({
+        id: r.id,
+        accountId: accountId,
+        customerId: r.from_account_id ? (customers.find(c=>c.accounts.some(a=>a.id===r.from_account_id))?.id || '') : (customers.find(c=>c.accounts.some(a=>a.id===r.to_account_id))?.id || ''),
+        date: (r.created_at || '').split('T')[0],
+        description: r.description || r.type,
+        amount: r.to_account_id === accountId ? r.amount : -r.amount,
+        type: r.to_account_id === accountId ? 'credit':'debit',
+        category: r.category || 'General',
+        status: r.status || 'completed',
+        reference: r.reference
+      }));
+      setTransactions(prev => {
+        // Replace existing for this account (simple approach) while keeping others
+        const others = prev.filter(t => t.accountId !== accountId);
+        return [...others, ...mapped];
+      });
+      setTxMeta(prev => ({ ...prev, [accountId]: { page, limit, total: resp.pagination?.total, totalPages: resp.pagination?.totalPages } }));
+      return { success: true, transactions: mapped };
+    } catch (e:any) {
+      return { success:false, error: e.message };
+    }
   };
+
+  const setCustomerSearch = (search: string) => {
+    setCustomerMeta(prev => ({ ...prev, search, page:1 }));
+  };
+
+  const fetchCustomers = async (page?: number, limit?: number) => {
+    if (page || limit) setCustomerMeta(prev => ({ ...prev, page: page||prev.page, limit: limit||prev.limit }));
+    await fetchAdminData();
+  };
+
+  const refreshData = () => { fetchAdminData(); };
 
   const value: AdminContextType = {
     adminUser,
     isAdminAuthenticated: !!adminUser,
     customers,
     transactions,
+  customerMeta,
+  txMeta,
     adminLogin,
     adminLogout,
+  adminChangePassword,
     createCustomer,
     updateCustomer,
     deleteCustomer,
@@ -424,6 +423,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     updateAccountBalance,
     createTransaction,
     updateTransaction,
+  fetchAccountTransactions,
+  setCustomerSearch,
+  fetchCustomers,
     refreshData
   };
 

@@ -40,13 +40,15 @@ router.post('/transfer', transferRateLimit, [
     // Acquire lock for this transfer to prevent double spending
     const lockKey = `transfer_lock:${fromAccountId}`;
     const lockAcquired = await CacheService.acquireLock(lockKey, 30);
-    
+
     if (!lockAcquired) {
       return res.status(409).json({
         success: false,
         message: 'Another transaction is in progress for this account'
       });
     }
+
+    let reference: string = '';
 
     try {
       // Start transaction
@@ -271,7 +273,7 @@ router.post('/transfer', transferRateLimit, [
     }
   } catch (error) {
     logger.error('Transfer error:', error);
-    
+
     let message = 'Transfer failed';
     if (error instanceof Error) {
       message = error.message;
@@ -294,7 +296,7 @@ router.get('/:transactionId', async (req: AuthRequest, res: Response) => {
     const userAccounts = await db('accounts')
       .where({ user_id: user.id })
       .select('id');
-    
+
     const accountIds = userAccounts.map(acc => acc.id);
 
     const transaction = await db('transactions')

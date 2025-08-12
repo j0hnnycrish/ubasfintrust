@@ -35,7 +35,7 @@ export interface BankVerificationResult {
 
 export class ExternalBankingService {
   private static instance: ExternalBankingService;
-  private bankDatabase: Map<string, BankAccount[]>;
+  private bankDatabase: Map<string, BankAccount[]> = new Map();
 
   constructor() {
     this.initializeBankDatabase();

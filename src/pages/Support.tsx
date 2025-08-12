@@ -39,7 +39,7 @@ export default function Support() {
       description: 'Speak with our customer service representatives',
       contact: '+234 1 234 5678',
       availability: 'Available 24/7',
-      color: 'bg-blue-500'
+      color: 'bg-red-500'
     },
     {
       icon: MessageCircle,

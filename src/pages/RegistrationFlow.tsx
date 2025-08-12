@@ -47,9 +47,9 @@ export default function RegistrationFlow() {
       icon: User,
       features: ['Multi-currency accounts', 'Investment options', 'Mobile banking', '24/7 support'],
       minBalance: '$1,000',
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'from-blue-50 to-blue-100',
-      borderColor: 'border-blue-200'
+      color: 'from-red-500 to-red-600',
+      bgColor: 'from-red-50 to-red-100',
+      borderColor: 'border-red-200'
     },
     {
       id: 'business' as AccountType,
@@ -138,7 +138,7 @@ export default function RegistrationFlow() {
   };
 
   const renderAccountTypeSelection = () => (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center p-4">
+          <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Banking Experience</h1>
@@ -268,9 +268,9 @@ export default function RegistrationFlow() {
       
       case 'complete':
         return (
-          <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
+          <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-red-50 flex items-center justify-center p-4">
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
+                              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-red-600 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle className="h-10 w-10 text-white" />
               </div>
               <div>
@@ -284,7 +284,7 @@ export default function RegistrationFlow() {
                   }
                 </p>
               </div>
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
             </div>
           </div>
         );

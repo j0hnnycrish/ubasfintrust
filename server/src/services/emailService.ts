@@ -25,32 +25,16 @@ export class EmailService {
   }
 
   private initializeProviders() {
-    // SMTP Provider (Nodemailer with Gmail/Custom SMTP)
+    // Prefer Resend if configured
+    if (env.RESEND_API_KEY) {
+      this.providers.push(new ResendProvider());
+    }
+    // Add SMTP (Zoho or other) as fallback if configured
     if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) {
       this.providers.push(new SMTPProvider());
     }
 
-    // SendGrid Provider
-    if (env.SENDGRID_API_KEY) {
-      this.providers.push(new SendGridProvider());
-    }
-
-    // Mailgun Provider
-    if (env.MAILGUN_API_KEY && env.MAILGUN_DOMAIN) {
-      this.providers.push(new MailgunProvider());
-    }
-
-    // Resend Provider
-    if (env.RESEND_API_KEY) {
-      this.providers.push(new ResendProvider());
-    }
-
-    // Amazon SES Provider
-    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.AWS_REGION) {
-      this.providers.push(new SESProvider());
-    }
-
-    logger.info(`Initialized ${this.providers.length} email providers`);
+    logger.info(`Initialized ${this.providers.length} email providers (Resend + SMTP if configured)`);
   }
 
   async sendEmail(options: EmailOptions): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
@@ -110,8 +94,8 @@ export class EmailService {
   }
 
   async getProviderStatus(): Promise<{ name: string; healthy: boolean }[]> {
-    const status = [];
-    
+    const status: { name: string; healthy: boolean }[] = [];
+
     for (const provider of this.providers) {
       try {
         const healthy = await provider.isHealthy();

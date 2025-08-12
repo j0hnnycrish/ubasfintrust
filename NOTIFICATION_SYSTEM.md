@@ -121,7 +121,7 @@ AFRICASTALKING_SENDER_ID=your_sender_id
 
 # Termii (Nigerian SMS service with free tier)
 TERMII_API_KEY=your_termii_api_key
-TERMII_SENDER_ID=UBAS Bank
+TERMII_SENDER_ID=UBAS Financial Trust
 ```
 
 ## Usage Examples

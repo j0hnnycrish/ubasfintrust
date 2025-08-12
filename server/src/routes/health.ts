@@ -4,41 +4,43 @@ import { redisClient } from '../config/redis';
 
 const router = Router();
 
-// Basic health check
-router.get('/', async (req: Request, res: Response) => {
+// Liveness probe (fast, no external dependencies)
+router.get('/liveness', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: process.env.npm_package_version || '1.0.0'
+  });
+});
+
+// Readiness probe (checks dependencies: DB + Redis)
+router.get('/readiness', async (req: Request, res: Response) => {
   try {
     const dbHealth = await healthCheck();
-    
     let redisHealth = { status: 'healthy', timestamp: new Date() };
-    try {
-      await redisClient.ping();
-    } catch (error) {
-      redisHealth = { status: 'unhealthy', timestamp: new Date() };
-    }
-
-    const overallStatus = dbHealth.status === 'healthy' && redisHealth.status === 'healthy' 
-      ? 'healthy' : 'unhealthy';
-
-    res.status(overallStatus === 'healthy' ? 200 : 503).json({
+    try { await redisClient.ping(); } catch { redisHealth = { status: 'unhealthy', timestamp: new Date() }; }
+    const overallStatus = dbHealth.status === 'healthy' && redisHealth.status === 'healthy' ? 'ready' : 'degraded';
+    const httpStatus = overallStatus === 'ready' ? 200 : 503;
+    res.status(httpStatus).json({
       success: true,
       status: overallStatus,
       timestamp: new Date().toISOString(),
-      services: {
-        database: dbHealth,
-        redis: redisHealth
-      },
+      services: { database: dbHealth, redis: redisHealth },
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       version: process.env.npm_package_version || '1.0.0'
     });
-  } catch (error) {
-    res.status(503).json({
-      success: false,
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: 'Health check failed'
-    });
+  } catch {
+    res.status(503).json({ success: false, status: 'unready', timestamp: new Date().toISOString(), error: 'Readiness failed' });
   }
+});
+
+// Backwards compatible root health (maps to readiness details, accepts ?type=liveness)
+router.get('/', async (req: Request, res: Response) => {
+  if (req.query.type === 'liveness') return res.redirect(307, '/health/liveness');
+  return res.redirect(307, '/health/readiness');
 });
 
 // Detailed health check

@@ -138,8 +138,8 @@ export function InvestmentModal({ isOpen, onClose, onSuccess }: InvestmentModalP
                 setStep(2);
               }}
               className={`w-full p-4 rounded-lg border-2 transition-all hover:shadow-md text-left ${
-                formData.investmentType === type.id 
-                  ? 'border-blue-500 bg-blue-50' 
+                formData.investmentType === type.id
+                  ? 'border-red-600 bg-red-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >

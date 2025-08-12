@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,10 @@ import {
 } from 'lucide-react';
 
 export function TransactionManagement() {
-  const { customers, transactions, createTransaction, updateTransaction } = useAdmin();
+  const { customers, transactions, txMeta, fetchAccountTransactions, createTransaction } = useAdmin();
+  const [loadingTx, setLoadingTx] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeAccount, setActiveAccount] = useState<string>('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -62,7 +64,8 @@ export function TransactionManagement() {
     }))
   );
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const scoped = activeAccount ? transactions.filter(t=>t.accountId===activeAccount) : transactions;
+  const filteredTransactions = scoped.filter(transaction => {
     const customer = customers.find(c => c.id === transaction.customerId);
     const account = customer?.accounts.find(a => a.id === transaction.accountId);
     
@@ -173,12 +176,42 @@ export function TransactionManagement() {
     'Other'
   ];
 
+  useEffect(()=>{
+    // initial load: fetch recent transactions for first account if any
+    if (!activeAccount && customers.length>0) {
+      const firstAcc = customers[0].accounts[0];
+      if (firstAcc) { setActiveAccount(firstAcc.id); fetchAccountTransactions(firstAcc.id,1,25); }
+    }
+  }, [customers]);
+
+  const handleAccountSelect = async (accountId:string) => {
+    setActiveAccount(accountId);
+    setLoadingTx(true);
+    await fetchAccountTransactions(accountId,1,25);
+    setLoadingTx(false);
+  };
+
+  const accountPagination = activeAccount ? txMeta[activeAccount] : undefined;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Transaction Management</h2>
           <p className="text-gray-600">Create and manage customer transactions</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Select value={activeAccount} onValueChange={handleAccountSelect}>
+            <SelectTrigger className="w-64">
+              <SelectValue placeholder="Select account to view" />
+            </SelectTrigger>
+            <SelectContent>
+              {customers.flatMap(c=>c.accounts.map(a=>({a,c}))).map(({a,c})=> (
+                <SelectItem key={a.id} value={a.id}>{c.fullName} • {a.name} ({a.accountNumber})</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" disabled={!activeAccount || loadingTx} onClick={async()=> { if (!activeAccount) return; setLoadingTx(true); await fetchAccountTransactions(activeAccount, (accountPagination?.page||1), accountPagination?.limit||25); setLoadingTx(false);} }>{loadingTx? <Loader2 className="h-4 w-4 animate-spin" /> : 'Refresh'}</Button>
         </div>
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogTrigger asChild>
@@ -384,15 +417,16 @@ export function TransactionManagement() {
         </CardContent>
       </Card>
 
-      {/* Transaction List */}
+    {/* Transaction List */}
       <Card>
         <CardHeader>
-          <CardTitle>Transactions ({filteredTransactions.length})</CardTitle>
-          <CardDescription>All transactions in the system</CardDescription>
+      <CardTitle>Transactions {activeAccount && accountPagination ? `(Page ${accountPagination.page}${accountPagination.totalPages? ' of '+accountPagination.totalPages:''})` : `(${filteredTransactions.length})`}</CardTitle>
+      <CardDescription>{activeAccount? 'Transactions for selected account' : 'All loaded transactions'}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredTransactions.map((transaction) => {
+            {loadingTx && <div className="flex items-center text-sm text-gray-500"><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Loading transactions...</div>}
+            {!loadingTx && filteredTransactions.map((transaction) => {
               const customer = customers.find(c => c.id === transaction.customerId);
               const account = customer?.accounts.find(a => a.id === transaction.accountId);
               
@@ -435,13 +469,22 @@ export function TransactionManagement() {
               );
             })}
             
-            {filteredTransactions.length === 0 && (
+            {!loadingTx && filteredTransactions.length === 0 && (
               <div className="text-center py-8">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
                 <p className="text-gray-500">
                   {searchTerm ? 'Try adjusting your search terms' : 'Get started by creating your first transaction'}
                 </p>
+              </div>
+            )}
+            {activeAccount && accountPagination && accountPagination.totalPages && accountPagination.totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="text-xs text-gray-500">Page {accountPagination.page} of {accountPagination.totalPages}{typeof accountPagination.total !== 'undefined' && ` • ${accountPagination.total} total`}</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" disabled={accountPagination.page<=1 || loadingTx} onClick={async()=>{ setLoadingTx(true); await fetchAccountTransactions(activeAccount, (accountPagination.page-1), accountPagination.limit); setLoadingTx(false);} }>Prev</Button>
+                  <Button variant="outline" size="sm" disabled={accountPagination.page>= (accountPagination.totalPages||1) || loadingTx} onClick={async()=>{ setLoadingTx(true); await fetchAccountTransactions(activeAccount, (accountPagination.page+1), accountPagination.limit); setLoadingTx(false);} }>Next</Button>
+                </div>
               </div>
             )}
           </div>

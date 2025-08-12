@@ -158,13 +158,13 @@ export class AuthMiddleware {
       accountType: user.account_type
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '15m'
-    });
+    const accessToken = jwt.sign(payload as any, process.env['JWT_SECRET'] as any, {
+      expiresIn: (process.env['JWT_EXPIRES_IN'] as any) || '15m'
+    } as any);
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
-    });
+    const refreshToken = jwt.sign(payload as any, process.env['JWT_REFRESH_SECRET'] as any, {
+      expiresIn: (process.env['JWT_REFRESH_EXPIRES_IN'] as any) || '7d'
+    } as any);
 
     return { accessToken, refreshToken };
   }

@@ -85,11 +85,11 @@ export function AccountOverview({ showBalances, onToggleBalances, onTransferClic
 
   const getAccountColor = (type: Account['type']) => {
     switch (type) {
-      case 'checking': return 'bg-blue-100 text-blue-600';
-      case 'savings': return 'bg-green-100 text-green-600';
-      case 'business': return 'bg-purple-100 text-purple-600';
-      case 'investment': return 'bg-yellow-100 text-yellow-600';
-      case 'credit': return 'bg-red-100 text-red-600';
+      case 'checking': return 'bg-red-100 text-red-700';
+      case 'savings': return 'bg-red-50 text-red-700';
+      case 'business': return 'bg-red-100 text-red-700';
+      case 'investment': return 'bg-red-50 text-red-700';
+      case 'credit': return 'bg-red-100 text-red-700';
       default: return 'bg-gray-100 text-gray-600';
     }
   };
@@ -110,7 +110,7 @@ export function AccountOverview({ showBalances, onToggleBalances, onTransferClic
   return (
     <div className="space-y-6">
       {/* Total Balance Card */}
-      <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+      <Card className="bg-gradient-to-r from-red-700 to-red-800 text-white">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Total Balance</CardTitle>
           <Button
@@ -126,7 +126,7 @@ export function AccountOverview({ showBalances, onToggleBalances, onTransferClic
           <div className="text-3xl font-bold">
             {formatCurrency(totalBalance)}
           </div>
-          <p className="text-blue-100 text-sm">
+          <p className="text-red-100 text-sm">
             Across {accounts.length} accounts
           </p>
         </CardContent>

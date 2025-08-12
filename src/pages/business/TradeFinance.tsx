@@ -100,22 +100,22 @@ export default function TradeFinance() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-20">
+              <div className="bg-gradient-to-r from-red-900 to-red-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center space-x-3 mb-6">
-                <Globe className="h-12 w-12 text-blue-300" />
+                <Globe className="h-12 w-12 text-red-300" />
                 <h1 className="text-4xl md:text-5xl font-bold">Trade Finance</h1>
               </div>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-red-100 mb-8">
                 Expand your business globally with comprehensive trade finance solutions. 
                 From letters of credit to supply chain financing, we support your international growth.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
-                  className="bg-white text-blue-900 hover:bg-gray-100"
+                  className="bg-white text-red-900 hover:bg-gray-100"
                   onClick={() => window.location.href = '/contact'}
                 >
                   Get Started
@@ -124,7 +124,7 @@ export default function TradeFinance() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-blue-900"
+                  className="border-white text-white hover:bg-white hover:text-red-900"
                   onClick={() => window.location.href = '/contact'}
                 >
                   Speak to Specialist
@@ -136,8 +136,8 @@ export default function TradeFinance() {
                 <CardContent className="p-8">
                   <div className="text-center">
                     <div className="text-4xl font-bold text-white mb-2">150+</div>
-                    <div className="text-blue-200 mb-4">Countries Served</div>
-                    <div className="text-sm text-blue-100">
+                    <div className="text-red-200 mb-4">Countries Served</div>
+                    <div className="text-sm text-red-100">
                       Global trade finance network
                     </div>
                   </div>
@@ -164,8 +164,8 @@ export default function TradeFinance() {
               return (
                 <Card key={index} className="text-center shadow-lg hover:shadow-xl transition-shadow">
                   <CardHeader>
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-blue-600" />
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Icon className="h-8 w-8 text-red-600" />
                     </div>
                     <CardTitle className="text-xl text-gray-900">{service.title}</CardTitle>
                   </CardHeader>
@@ -202,20 +202,20 @@ export default function TradeFinance() {
                     <ul className="space-y-1">
                       {solution.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                          <CheckCircle className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-red-500 mr-2 flex-shrink-0" />
                           {feature}
                         </li>
                       ))}
                     </ul>
                   </div>
                   
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-blue-800 text-xs font-medium">Best For:</p>
-                    <p className="text-blue-700 text-xs">{solution.bestFor}</p>
+                  <div className="bg-red-50 rounded-lg p-3">
+                    <p className="text-red-800 text-xs font-medium">Best For:</p>
+                    <p className="text-red-700 text-xs">{solution.bestFor}</p>
                   </div>
                   
                   <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-red-600 hover:bg-red-700"
                     onClick={() => window.location.href = '/contact'}
                   >
                     Learn More
@@ -239,20 +239,20 @@ export default function TradeFinance() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                                            <CheckCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                     <span className="text-gray-700">{benefit}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div className="space-y-6">
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-red-50 border-red-200">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-3">
-                    <Globe className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <Globe className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
                     <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Global Network</h3>
-                      <p className="text-blue-700 text-sm">
+                      <h3 className="font-semibold text-red-800 mb-2">Global Network</h3>
+                      <p className="text-red-700 text-sm">
                         Access to 150+ countries through our extensive correspondent banking network.
                       </p>
                     </div>
@@ -310,7 +310,7 @@ export default function TradeFinance() {
               { step: '4', title: 'Execution', description: 'Your trade finance solution is implemented' }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-white">{item.step}</span>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
@@ -322,17 +322,17 @@ export default function TradeFinance() {
       </div>
 
       {/* CTA Section */}
-      <div className="py-16 bg-blue-900 text-white">
+      <div className="py-16 bg-red-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Expand Globally?</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-red-100 mb-8 max-w-3xl mx-auto">
             Take your business international with our comprehensive trade finance solutions. 
             Contact our specialists today to get started.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              className="bg-white text-blue-900 hover:bg-gray-100"
+              className="bg-white text-red-900 hover:bg-gray-100"
               onClick={() => window.location.href = '/contact'}
             >
               Contact Specialist
@@ -341,7 +341,7 @@ export default function TradeFinance() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-900"
+              className="border-white text-white hover:bg-white hover:text-red-900"
               onClick={() => window.location.href = '/open-account'}
             >
               Open Business Account

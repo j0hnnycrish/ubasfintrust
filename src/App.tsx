@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { OnboardingProvider } from "@/contexts/OnboardingContext";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PersonalBanking from "./pages/PersonalBanking";
@@ -15,9 +17,15 @@ import OpenAccount from "./pages/OpenAccount";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 
+import Leadership from "./pages/Leadership";
+import Careers from "./pages/Careers";
+import Awards from "./pages/Awards";
+import Dashboard from "./pages/Dashboard";
 import { ComprehensiveDashboard } from "./components/dashboard/ComprehensiveDashboard";
 import { PrivateBankingDashboard } from "./components/dashboard/PrivateBankingDashboard";
 import AdminPortal from "./pages/AdminPortal";
+import AdminTemplates from "./pages/AdminTemplates";
+import Security2FA from "./pages/Security2FA";
 import { AIChatbot } from "./components/support/AIChatbot";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -39,12 +47,25 @@ import CashManagement from "./pages/business/CashManagement";
 // Digital Banking Pages
 import MobileBanking from "./pages/digital/MobileBanking";
 
+// Corporate Banking Pages
+import CorporateRisk from "./pages/corporate/Risk";
+import CorporateAccounts from "./pages/corporate/Accounts";
+import CorporateTreasury from "./pages/corporate/Treasury";
+import CorporateInvestment from "./pages/corporate/Investment";
+
+// Private Banking Pages
+import PrivateEstate from "./pages/private/Estate";
+import PrivateWealth from "./pages/private/Wealth";
+import PrivateAdvisory from "./pages/private/Advisory";
+import PrivateBankingPage from "./pages/private/Banking";
+
 const queryClient = new QueryClient();
 
 const App = () => (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AdminProvider>
+          <OnboardingProvider>
           <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -57,12 +78,16 @@ const App = () => (
               <Route path="/private" element={<PrivateBanking />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/leadership" element={<Leadership />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/awards" element={<Awards />} />
 
               <Route path="/open-account" element={<OpenAccount />} />
               <Route path="/register" element={<RegistrationFlow />} />
-              <Route path="/dashboard" element={<ComprehensiveDashboard onLogout={() => window.location.href = "/"} />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/private" element={<PrivateBankingDashboard onLogout={() => window.location.href = "/"} />} />
               <Route path="/admin" element={<AdminPortal />} />
+              <Route path="/admin/templates" element={<AdminTemplates />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
 
@@ -83,11 +108,28 @@ const App = () => (
               <Route path="/digital" element={<MobileBanking />} />
               <Route path="/digital/mobile" element={<MobileBanking />} />
 
+              {/* Corporate Banking Routes */}
+              <Route path="/corporate/risk" element={<CorporateRisk />} />
+              <Route path="/corporate/accounts" element={<CorporateAccounts />} />
+              <Route path="/corporate/treasury" element={<CorporateTreasury />} />
+              <Route path="/corporate/investment" element={<CorporateInvestment />} />
+
+              {/* Private Banking Routes */}
+              <Route path="/private/estate" element={<PrivateEstate />} />
+              <Route path="/private/wealth" element={<PrivateWealth />} />
+              <Route path="/private/advisory" element={<PrivateAdvisory />} />
+              <Route path="/private/banking" element={<PrivateBankingPage />} />
+
+              {/* Security */}
+              <Route path="/security/2fa" element={<Security2FA />} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
             <AIChatbot />
+            <OnboardingModal />
           </BrowserRouter>
           </TooltipProvider>
+          </OnboardingProvider>
         </AdminProvider>
       </AuthProvider>
     </QueryClientProvider>

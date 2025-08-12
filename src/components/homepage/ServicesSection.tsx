@@ -97,25 +97,25 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
     }
   };
   return (
-    <section id="services-section" className="py-24 bg-gradient-to-br from-banking-bg to-white relative overflow-hidden">
+  <section id="services-section" className="py-24 bg-gradient-to-br from-brand-50 to-white relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-banking-gold/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl"></div>
+  <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-700/5 rounded-full blur-3xl"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Section Header */}
         <div className={`text-center mb-20 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
-          <div className="inline-flex items-center space-x-2 bg-banking-gold/10 backdrop-blur-sm border border-banking-gold/20 rounded-full px-6 py-2 text-banking-gold mb-6 animate-scale-in">
+          <div className="inline-flex items-center space-x-2 bg-brand-500/10 backdrop-blur-sm border border-brand-500/20 rounded-full px-6 py-2 text-brand-700 mb-6 animate-scale-in">
             <Star className="h-4 w-4" />
             <span className="text-sm font-medium">Comprehensive Banking Solutions</span>
           </div>
 
-          <h2 className="text-5xl lg:text-6xl font-bold text-banking-dark mb-6 animate-slide-up">
+          <h2 className="text-5xl lg:text-6xl font-bold text-brand-800 mb-6 animate-slide-up">
             Banking Solutions for
-            <span className="block text-gradient-gold">Every Need</span>
+            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-brand-500 to-brand-700">Every Need</span>
           </h2>
 
-          <p className="text-xl text-banking-gray max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <p className="text-xl text-brand-700/70 max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
             From personal savings to corporate treasury management, we provide comprehensive
             financial solutions tailored to your unique requirements. Experience banking excellence
             with our award-winning services and global reach.
@@ -125,18 +125,18 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 animate-fade-in" style={{ animationDelay: '0.5s' }}>
             {[
               { icon: Users, value: '2.5M+', label: 'Happy Customers' },
-              { icon: Globe, value: '150+', label: 'Countries' },
+              { icon: Globe, value: '30+', label: 'Countries' },
               { icon: Shield, value: '99.9%', label: 'Uptime' },
-              { icon: Award, value: '50+', label: 'Awards' }
+              { icon: Award, value: '15+', label: 'Awards' }
             ].map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center group">
-                  <div className="w-12 h-12 bg-banking-gold/10 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-banking-gold/20 transition-colors">
-                    <Icon className="h-6 w-6 text-banking-gold" />
+                  <div className="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-500/20 transition-colors">
+                    <Icon className="h-6 w-6 text-brand-600" />
                   </div>
-                  <div className="text-2xl font-bold text-banking-dark">{stat.value}</div>
-                  <div className="text-sm text-banking-gray">{stat.label}</div>
+                  <div className="text-2xl font-bold text-brand-800">{stat.value}</div>
+                  <div className="text-sm text-brand-700/70">{stat.label}</div>
                 </div>
               );
             })}
@@ -160,7 +160,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 onMouseLeave={() => setHoveredCard(null)}
               >
                 {/* Hover Overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br from-banking-gold/10 to-transparent transition-opacity duration-300 ${
+                <div className={`absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent transition-opacity duration-300 ${
                   isHovered ? 'opacity-100' : 'opacity-0'
                 }`}></div>
 
@@ -179,40 +179,40 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                       />
                     </div>
                     {/* Floating Badge */}
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-banking-gold rounded-full flex items-center justify-center">
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-600 rounded-full flex items-center justify-center">
                       <CheckCircle className="h-3 w-3 text-white" />
                     </div>
                   </div>
 
                   <div>
-                    <CardTitle className="text-xl font-bold text-banking-dark group-hover:text-banking-gold transition-colors">
+                    <CardTitle className="text-xl font-bold text-brand-800 group-hover:text-brand-600 transition-colors">
                       {accountType.name}
                     </CardTitle>
                     <div className="flex items-center justify-center space-x-1 mt-2">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-banking-gold text-banking-gold" />
+                        <Star key={i} className="h-3 w-3 fill-brand-500 text-brand-500" />
                       ))}
-                      <span className="text-xs text-banking-gray ml-2">5.0 Rating</span>
+                      <span className="text-xs text-brand-700/70 ml-2">5.0 Rating</span>
                     </div>
                   </div>
                 </CardHeader>
               
               <CardContent className="space-y-6 relative z-10">
-                <p className="text-banking-gray text-center leading-relaxed">
+                <p className="text-brand-700/70 text-center leading-relaxed">
                   {accountType.description}
                 </p>
 
                 {/* Enhanced Features List */}
                 <div className="space-y-4">
-                  <h4 className="font-semibold text-banking-dark text-sm flex items-center">
-                    <Target className="h-4 w-4 mr-2 text-banking-gold" />
+                  <h4 className="font-semibold text-brand-800 text-sm flex items-center">
+                    <Target className="h-4 w-4 mr-2 text-brand-600" />
                     Key Features:
                   </h4>
                   <ul className="space-y-3">
                     {accountType.features.slice(0, 3).map((feature, featureIndex) => (
                       <li
                         key={featureIndex}
-                        className="flex items-start text-sm text-banking-gray group cursor-pointer hover:text-banking-dark transition-colors"
+                        className="flex items-start text-sm text-brand-700/70 group cursor-pointer hover:text-brand-800 transition-colors"
                         onClick={() => handleLearnMore(accountType.id, feature)}
                       >
                         <div className="flex-shrink-0 w-5 h-5 rounded-full mr-3 mt-0.5 flex items-center justify-center group-hover:scale-110 transition-transform"
@@ -230,7 +230,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                   {/* Show More Features */}
                   {accountType.features.length > 3 && (
                     <button
-                      className="text-xs text-banking-gold hover:text-banking-dark transition-colors flex items-center"
+                      className="text-xs text-brand-600 hover:text-brand-800 transition-colors flex items-center"
                       onClick={() => handleLearnMore(accountType.id, 'all-features')}
                     >
                       <span>+{accountType.features.length - 3} more features</span>
@@ -240,35 +240,35 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 </div>
 
                 {/* Enhanced Pricing Section */}
-                <div className="pt-4 space-y-4 border-t border-gray-100">
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="pt-4 space-y-4 border-t border-brand-500/10">
+                  <div className="bg-brand-500/5 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-banking-gray flex items-center">
+                      <span className="text-brand-700/70 flex items-center">
                         <DollarSign className="h-4 w-4 mr-1" />
                         Minimum Balance:
                       </span>
-                      <span className="font-bold text-banking-dark">
+                      <span className="font-bold text-brand-800">
                         ${accountType.minimumBalance.USD?.toLocaleString() || '1,000'}
                       </span>
                     </div>
                     {accountType.interestRate && (
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-banking-gray flex items-center">
+                        <span className="text-brand-700/70 flex items-center">
                           <TrendingUp className="h-4 w-4 mr-1" />
                           Interest Rate:
                         </span>
-                        <span className="font-bold text-green-600 flex items-center">
+                        <span className="font-bold text-brand-600 flex items-center">
                           {accountType.interestRate}% p.a.
                           <LineChart className="h-3 w-3 ml-1" />
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-banking-gray flex items-center">
+                      <span className="text-brand-700/70 flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         Setup Time:
                       </span>
-                      <span className="font-bold text-blue-600">5 minutes</span>
+                      <span className="font-bold text-brand-500">5 minutes</span>
                     </div>
                   </div>
                 </div>
@@ -276,7 +276,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 {/* Enhanced Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    className="w-full btn-banking-gold hover-glow group"
+                    className="w-full bg-brand-600 text-white hover:bg-brand-700 transition-colors group"
                     onClick={() => onSelectService(accountType.id)}
                   >
                     <CreditCard className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
@@ -288,7 +288,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs hover:bg-banking-gold/10 hover:border-banking-gold/30"
+                      className="text-xs hover:bg-brand-500/10 hover:border-brand-500/30"
                       onClick={() => handleLearnMore(accountType.id, 'details')}
                     >
                       <FileText className="h-3 w-3 mr-1" />
@@ -297,7 +297,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs hover:bg-banking-gold/10 hover:border-banking-gold/30"
+                      className="text-xs hover:bg-brand-500/10 hover:border-brand-500/30"
                       onClick={() => handleLearnMore(accountType.id, 'calculator')}
                     >
                       <Calculator className="h-3 w-3 mr-1" />
@@ -314,10 +314,10 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
         {/* Enhanced Additional Services */}
         <div className="mt-24">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-banking-dark mb-4">
+            <h3 className="text-4xl font-bold text-brand-800 mb-4">
               Specialized Financial Services
             </h3>
-            <p className="text-xl text-banking-gray max-w-3xl mx-auto">
+            <p className="text-xl text-brand-700/70 max-w-3xl mx-auto">
               Comprehensive financial solutions designed for sophisticated banking needs
             </p>
           </div>
@@ -328,7 +328,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 title: 'Fixed Deposits',
                 description: 'Earn up to 16% per annum with our high-yield fixed deposit accounts. Flexible terms from 30 days to 5 years.',
                 rate: 'Up to 16% p.a.',
-                color: '#F59E0B',
+                color: '#be123c',
                 icon: PiggyBank,
                 features: ['Flexible Terms', 'Auto-Renewal', 'Premature Withdrawal'],
                 minAmount: '$100,000'
@@ -337,7 +337,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 title: 'Investment Banking',
                 description: 'Professional investment advisory and portfolio management services with global market access.',
                 rate: 'Tailored Solutions',
-                color: '#8B5CF6',
+                color: '#dc2626',
                 icon: TrendingUp,
                 features: ['Portfolio Management', 'Risk Assessment', 'Global Markets'],
                 minAmount: '$5,000,000'
@@ -346,7 +346,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 title: 'Trade Finance',
                 description: 'Comprehensive trade finance solutions for import and export businesses with competitive rates.',
                 rate: 'Competitive Rates',
-                color: '#10B981',
+                color: '#b91c1c',
                 icon: Globe,
                 features: ['Letters of Credit', 'Trade Guarantees', 'Export Financing'],
                 minAmount: '$1,000,000'
@@ -371,24 +371,24 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                       >
                         <Icon className="h-8 w-8" />
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-banking-gold rounded-full flex items-center justify-center">
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-600 rounded-full flex items-center justify-center">
                         <Star className="h-3 w-3 text-white" />
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-xl font-bold text-banking-dark group-hover:text-banking-gold transition-colors mb-2">
+                      <h4 className="text-xl font-bold text-brand-800 group-hover:text-brand-600 transition-colors mb-2">
                         {service.title}
                       </h4>
-                      <p className="text-banking-gray leading-relaxed">{service.description}</p>
+                      <p className="text-brand-700/70 leading-relaxed">{service.description}</p>
                     </div>
 
                     {/* Features */}
                     <div className="space-y-3">
-                      <h5 className="font-semibold text-banking-dark text-sm">Key Benefits:</h5>
+                      <h5 className="font-semibold text-brand-800 text-sm">Key Benefits:</h5>
                       <ul className="space-y-2">
                         {service.features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className="flex items-center text-sm text-banking-gray">
+                          <li key={featureIndex} className="flex items-center text-sm text-brand-700/70">
                             <CheckCircle className="h-3 w-3 mr-2" style={{ color: service.color }} />
                             {feature}
                           </li>
@@ -397,15 +397,15 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                     </div>
 
                     {/* Pricing Info */}
-                    <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                    <div className="bg-brand-500/5 rounded-lg p-4 space-y-2">
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-banking-gray">Returns:</span>
+                        <span className="text-brand-700/70">Returns:</span>
                         <span className="font-bold" style={{ color: service.color }}>
                           {service.rate}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-banking-gray">Minimum:</span>
+                        <span className="text-brand-700/70">Minimum:</span>
                         <span className="font-bold text-banking-dark">{service.minAmount}</span>
                       </div>
                     </div>
@@ -431,10 +431,10 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
 
         {/* Call to Action Section */}
         <div className="mt-24 text-center">
-          <div className="bg-gradient-to-r from-banking-dark to-banking-dark-light rounded-3xl p-12 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-brand-800 to-brand-700 rounded-3xl p-12 text-white relative overflow-hidden">
             {/* Background Effects */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-banking-gold/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-600/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl"></div>
 
             <div className="relative z-10 max-w-3xl mx-auto">
               <h3 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -447,7 +447,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  className="btn-banking-gold text-lg px-8 py-4 hover-glow"
+                  className="bg-brand-600 text-lg px-8 py-4 hover:bg-brand-700 transition-colors"
                   onClick={() => onSelectService('personal')}
                 >
                   <CreditCard className="mr-2 h-5 w-5" />
@@ -455,7 +455,7 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
                 </Button>
                 <Button
                   variant="outline"
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-banking-dark"
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-brand-800"
                   onClick={() => handleLearnMore('general', 'contact')}
                 >
                   <HeadphonesIcon className="mr-2 h-5 w-5" />

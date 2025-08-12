@@ -11,6 +11,7 @@ dotenv.config();
 
 // Import configurations and middleware
 import { testConnection, closeConnection } from './config/db';
+import { config as appConfig } from './config/env';
 import { connectRedis, disconnectRedis } from './config/redis';
 import { logger, logInfo, logError } from './utils/logger';
 import {
@@ -40,7 +41,13 @@ import paymentRoutes from './routes/payments';
 import notificationRoutes from './routes/notifications';
 import kycRoutes from './routes/kyc';
 import bankingRoutes from './routes/banking';
+import supportRoutes from './routes/support';
+import templateRoutes from './routes/templates';
+import userOnboardingRoutes from './routes/userOnboarding';
+import grantRoutes from './routes/grants';
 import { notificationService } from './services/notificationService';
+import { redisClient } from './config/redis';
+import { db } from './config/db';
 
 const app = express();
 const server = createServer(app);
@@ -51,8 +58,8 @@ const io = new SocketIOServer(server, {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-const API_VERSION = process.env.API_VERSION || 'v1';
+const PORT = appConfig.PORT || 5000;
+const API_VERSION = appConfig.API_VERSION || 'v1';
 
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
@@ -60,12 +67,15 @@ app.set('trust proxy', 1);
 // Security middleware
 app.use(securityHeaders);
 app.use(cors(corsOptions));
+// Basic config sanity header for diagnostics (non-sensitive)
+app.use((req, _res, next) => { (req as any).appVersion = API_VERSION; next(); });
 app.use(compression());
+app.use(`/api/${API_VERSION}/support`, supportRoutes);
 
-// Bot blocking and no-index middleware (DISABLED FOR DEMO)
-// app.use(noIndexMiddleware);
-// app.use(botBlockingMiddleware);
-// app.use(advancedBotDetection);
+// Bot blocking and no-index middleware
+app.use(noIndexMiddleware);
+app.use(botBlockingMiddleware);
+app.use(advancedBotDetection);
 
 // Request parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -105,6 +115,57 @@ app.use(`/api/${API_VERSION}/notifications`, notificationRoutes);
 app.use(`/api/${API_VERSION}/kyc`, kycRoutes);
 app.use(`/api/${API_VERSION}/banking`, bankingRoutes);
 app.use(`/api/${API_VERSION}/admin`, adminRoutes);
+app.use(`/api/${API_VERSION}/templates`, templateRoutes);
+app.use(`/api/${API_VERSION}/users/onboarding`, userOnboardingRoutes);
+app.use(`/api/${API_VERSION}/grants`, grantRoutes);
+
+// Diagnostics (lightweight status) - protected by optional header token if DIAGNOSTICS_TOKEN set
+app.get(`/api/${API_VERSION}/_diagnostics`, async (req, res) => {
+  try {
+    if (process.env.DIAGNOSTICS_TOKEN) {
+      if (req.headers['x-diagnostics-token'] !== process.env.DIAGNOSTICS_TOKEN) {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+      }
+    }
+    const uptimeSeconds = Math.round(process.uptime());
+    const mem = process.memoryUsage();
+    // DB ping
+    let dbOk = false; let dbLatency: number|undefined;
+    try { const t0 = Date.now(); await db.raw('select 1'); dbLatency = Date.now()-t0; dbOk = true; } catch {}
+    // Redis ping
+    let redisOk = false; let redisLatency: number|undefined;
+    try { const t1 = Date.now(); await redisClient.ping(); redisLatency = Date.now()-t1; redisOk = true; } catch {}
+    // Provider health (email + sms capability flags)
+    let providerHealth: any = null;
+    try {
+      const { EmailService } = await import('./services/emailService');
+      const emailService = new EmailService();
+      const email = await emailService.getProviderStatus();
+      const sms = [
+        { name: 'textbelt', healthy: !!process.env.TEXTBELT_API_KEY },
+        { name: 'twilio', healthy: !!process.env.TWILIO_ACCOUNT_SID && !!process.env.TWILIO_AUTH_TOKEN },
+        { name: 'vonage', healthy: !!process.env.VONAGE_API_KEY && !!process.env.VONAGE_API_SECRET },
+        { name: 'messagebird', healthy: !!process.env.MESSAGEBIRD_API_KEY },
+        { name: 'plivo', healthy: !!process.env.PLIVO_AUTH_ID && !!process.env.PLIVO_AUTH_TOKEN }
+      ];
+      providerHealth = { email, sms };
+    } catch (e) {
+      providerHealth = { error: (e as any)?.message };
+    }
+    res.json({ success: true, data: {
+      uptimeSeconds,
+      timestamp: new Date().toISOString(),
+      memory: { rss: mem.rss, heapUsed: mem.heapUsed, heapTotal: mem.heapTotal },
+      db: { ok: dbOk, latencyMs: dbLatency },
+      redis: { ok: redisOk, latencyMs: redisLatency },
+      env: { node: process.version },
+      providerHealth,
+      overall: (dbOk && redisOk) ? 'healthy' : (dbOk || redisOk) ? 'degraded' : 'down'
+    }});
+  } catch (e:any) {
+    res.status(500).json({ success:false, message:'Diagnostics error', error: e.message });
+  }
+});
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -172,8 +233,8 @@ const gracefulShutdown = async (signal: string) => {
       await disconnectRedis();
       logInfo('All connections closed. Exiting process.');
       process.exit(0);
-    } catch (error) {
-      logError('Error during graceful shutdown:', error);
+    } catch (error: any) {
+      logError('Error during graceful shutdown:', error as any);
       process.exit(1);
     }
   });
@@ -190,13 +251,13 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-  logError('Uncaught Exception:', error);
+process.on('uncaughtException', (error: any) => {
+  logError('Uncaught Exception:', error as any);
   gracefulShutdown('uncaughtException');
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logError('Unhandled Rejection at:', reason, { promise });
+process.on('unhandledRejection', (reason: any, promise) => {
+  logError('Unhandled Rejection at:', reason as any, { promise });
   gracefulShutdown('unhandledRejection');
 });
 
@@ -212,6 +273,55 @@ const startServer = async () => {
     // Connect to Redis
     await connectRedis();
 
+    // Seed default corporate admin user if configured and missing
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      if (adminEmail && adminPassword) {
+        const existing = await (await import('./config/db')).db('users').where({ email: adminEmail }).first();
+        if (!existing) {
+          const { v4: uuidv4 } = require('uuid');
+          const { AuthMiddleware } = require('./middleware/auth');
+          const password_hash = await AuthMiddleware.hashPassword(adminPassword);
+          const userId = uuidv4();
+          await (await import('./config/db')).db('users').insert({
+            id: userId,
+            email: adminEmail,
+            password_hash,
+            first_name: process.env.ADMIN_FIRST_NAME || 'Platform',
+            last_name: process.env.ADMIN_LAST_NAME || 'Administrator',
+            phone: process.env.ADMIN_PHONE || '+10000000000',
+            date_of_birth: '1990-01-01',
+            account_type: 'corporate',
+            kyc_status: 'approved',
+            is_active: true,
+            is_verified: true,
+            two_factor_enabled: false,
+            failed_login_attempts: 0
+          });
+          // Create a primary corporate operating account
+          await (await import('./config/db')).db('accounts').insert({
+            id: uuidv4(),
+            user_id: userId,
+            account_number: Math.random().toString().slice(2,12),
+            account_type: 'checking',
+            balance: 0,
+            available_balance: 0,
+            currency: 'USD',
+            status: 'active',
+            minimum_balance: 0
+          });
+          logger.info('Seeded default corporate admin user', { adminEmail });
+        } else {
+          logger.info('Admin user already exists', { adminEmail });
+        }
+      } else {
+        logger.warn('ADMIN_EMAIL / ADMIN_PASSWORD not set – skipping admin seed');
+      }
+    } catch (seedErr) {
+      logger.error('Admin seed error', seedErr as any);
+    }
+
     // Start HTTP server
     server.listen(PORT, () => {
       logInfo(`Server running on port ${PORT}`, {
@@ -220,8 +330,8 @@ const startServer = async () => {
         port: PORT
       });
     });
-  } catch (error) {
-    logError('Failed to start server:', error);
+  } catch (error: any) {
+    logError('Failed to start server:', error as any);
     process.exit(1);
   }
 };

@@ -413,7 +413,7 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #3b82f6;
+  background-color: #ef4444; /* red */
   margin-left: 8px;
   flex-shrink: 0;
   margin-top: 4px;
@@ -427,7 +427,7 @@ export default {
 }
 
 .view-all-link {
-  color: #3b82f6;
+  color: #ef4444; /* red */
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
@@ -438,7 +438,7 @@ export default {
 }
 
 .view-all-link:hover {
-  background-color: #eff6ff;
+  background-color: #fee2e2; /* red-100 */
 }
 
 /* Responsive */

@@ -151,7 +151,7 @@ export default function Careers() {
       <ProfessionalNavigation />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-banking-dark to-banking-gold py-16">
+      <section className="bg-gradient-to-br from-red-700 via-red-800 to-red-900 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

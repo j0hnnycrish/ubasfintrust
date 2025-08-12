@@ -258,6 +258,25 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ## 📊 Monitoring & Logging
 
+### Probes & Health Endpoints
+- Liveness: `GET /health/liveness` (no external deps; always fast)  
+- Readiness: `GET /health/readiness` (checks DB + Redis; 503 if degraded)  
+- Backward compatible: `GET /health` redirects to readiness; `GET /health?type=liveness` -> liveness.
+- Diagnostics: `GET /api/v1/_diagnostics` (set `DIAGNOSTICS_TOKEN` to protect; returns provider health & latency metrics).
+
+### CI Pipeline
+Included GitHub Actions workflow (`.github/workflows/ci.yml`) that:
+1. Spins up Postgres + Redis.
+2. Builds backend.
+3. Applies migrations.
+4. Seeds admin (via env).
+5. Runs full system integration script (`scripts/system-check.mjs`).
+
+Configure repository secrets if you extend providers (e.g., RESEND_API_KEY) and map them in the workflow `env`.
+
+### Render Deployment Notes
+Use Readiness probe for scaling decisions; Liveness for crash detection. Ensure `VITE_API_URL` matches deployed backend, and set `DIAGNOSTICS_TOKEN` to shield diagnostics.
+
 - **Structured Logging**: Winston with multiple log levels
 - **Audit Trails**: Complete audit log for compliance
 - **Health Checks**: Application and database health endpoints

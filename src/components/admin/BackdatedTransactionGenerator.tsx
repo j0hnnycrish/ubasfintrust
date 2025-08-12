@@ -320,10 +320,103 @@ export function BackdatedTransactionGenerator() {
           category: template.category,
           date: transactionDate.toISOString().split('T')[0],
           reference: refNumber,
-          status: Math.random() > 0.05 ? 'completed' : 'pending' // 95% completed, 5% pending
-        };
+          status: Math.random() < 0.03 ? 'failed' : (Math.random() < 0.08 ? 'pending' : 'completed')
+        } as const;
 
         transactions.push(transaction);
+
+        // Inject realistic banking anomalies and fees
+        // 1) ATM fees after withdrawals
+        if (transaction.type === 'debit' && /ATM Withdrawal|Cash Withdrawal/i.test(transaction.description) && Math.random() < 0.4) {
+          const feeAmount = parseFloat((Math.random() * (5 - 2.5) + 2.5).toFixed(2));
+          transactions.push({
+            accountId: transaction.accountId,
+            customerId: transaction.customerId,
+            description: 'ATM Withdrawal Fee',
+            amount: -feeAmount,
+            type: 'debit',
+            category: 'Bank Fees',
+            date: transaction.date,
+            reference: `FEE${refNumber}`,
+            status: 'completed'
+          });
+        }
+
+        // 2) International transaction fee for foreign purchases/travel
+        if (transaction.type === 'debit' && /International|Hotel|Airline|Uber|Taxi|Booking/i.test(transaction.description) && Math.random() < 0.3) {
+          const fxFee = Math.max(Math.abs(transaction.amount) * (Math.random() * 0.02 + 0.01), 0.5);
+          transactions.push({
+            accountId: transaction.accountId,
+            customerId: transaction.customerId,
+            description: 'International Transaction Fee',
+            amount: -parseFloat(fxFee.toFixed(2)),
+            type: 'debit',
+            category: 'FX Fees',
+            date: transaction.date,
+            reference: `FXF${refNumber}`,
+            status: 'completed'
+          });
+        }
+
+        // 3) Occasional refunds/chargebacks for online shopping
+        if (transaction.type === 'debit' && /Amazon|eBay|Online|Purchase|POS|Restaurant|Subscription/i.test(transaction.description)) {
+          // Failed transaction (authorization declined)
+          if (transaction.status === 'failed' && Math.random() < 0.6) {
+            transactions[transactions.length - 1].description = `${transaction.description} (Declined: Insufficient funds)`;
+          }
+
+          // Refund or chargeback
+          const refundChance = Math.random();
+          if (refundChance < 0.06) {
+            // Add refund credit 1-14 days later
+            const daysLater = Math.floor(Math.random() * 14) + 1;
+            const refundDate = new Date(transactionDate.getTime());
+            refundDate.setDate(refundDate.getDate() + daysLater);
+            transactions.push({
+              accountId: transaction.accountId,
+              customerId: transaction.customerId,
+              description: `Refund - ${transaction.description}`,
+              amount: Math.abs(transaction.amount),
+              type: 'credit',
+              category: 'Refund',
+              date: refundDate.toISOString().split('T')[0],
+              reference: `RFD${refNumber}`,
+              status: 'completed'
+            });
+          } else if (refundChance < 0.08) {
+            // Chargeback credit
+            const daysLater = Math.floor(Math.random() * 30) + 3;
+            const cbDate = new Date(transactionDate.getTime());
+            cbDate.setDate(cbDate.getDate() + daysLater);
+            transactions.push({
+              accountId: transaction.accountId,
+              customerId: transaction.customerId,
+              description: `Chargeback - ${transaction.description}`,
+              amount: Math.abs(transaction.amount),
+              type: 'credit',
+              category: 'Chargeback',
+              date: cbDate.toISOString().split('T')[0],
+              reference: `CBK${refNumber}`,
+              status: 'completed'
+            });
+          }
+        }
+
+        // 4) Random overdraft/NSF fee
+        if (Math.random() < 0.02) {
+          const ofee = parseFloat((Math.random() * (45 - 15) + 15).toFixed(2));
+          transactions.push({
+            accountId: transaction.accountId,
+            customerId: transaction.customerId,
+            description: 'Overdraft/NSF Fee',
+            amount: -ofee,
+            type: 'debit',
+            category: 'Bank Fees',
+            date: transaction.date,
+            reference: `NSF${refNumber}`,
+            status: 'completed'
+          });
+        }
       }
 
       // Sort transactions by date

@@ -18,8 +18,8 @@ export default function Terms() {
             Back
           </Button>
           <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-8 w-8 text-blue-600" />
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="h-8 w-8 text-red-600" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
             <p className="text-xl text-gray-600">
@@ -49,7 +49,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">1</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">1</span>
                 Acceptance of Terms
               </CardTitle>
             </CardHeader>
@@ -68,7 +68,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">2</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">2</span>
                 Account Registration and Security
               </CardTitle>
             </CardHeader>
@@ -91,7 +91,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">3</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">3</span>
                 Banking Services and Transactions
               </CardTitle>
             </CardHeader>
@@ -116,7 +116,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">4</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">4</span>
                 Fees and Charges
               </CardTitle>
             </CardHeader>
@@ -141,7 +141,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">5</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">5</span>
                 Privacy and Data Protection
               </CardTitle>
             </CardHeader>
@@ -165,7 +165,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">6</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">6</span>
                 Prohibited Uses
               </CardTitle>
             </CardHeader>
@@ -188,7 +188,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">7</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">7</span>
                 Limitation of Liability
               </CardTitle>
             </CardHeader>
@@ -207,7 +207,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">8</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">8</span>
                 Termination
               </CardTitle>
             </CardHeader>
@@ -226,7 +226,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">9</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">9</span>
                 Changes to Terms
               </CardTitle>
             </CardHeader>
@@ -245,7 +245,7 @@ export default function Terms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">10</span>
+                <span className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">10</span>
                 Contact Information
               </CardTitle>
             </CardHeader>
@@ -264,13 +264,13 @@ export default function Terms() {
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="bg-red-50 border-red-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-center space-x-2 mb-4">
-                <Shield className="h-6 w-6 text-blue-600" />
-                <h3 className="font-semibold text-blue-900">FDIC Insured</h3>
+                <Shield className="h-6 w-6 text-red-600" />
+                <h3 className="font-semibold text-red-900">FDIC Insured</h3>
               </div>
-              <p className="text-blue-700 text-sm">
+              <p className="text-red-700 text-sm">
                 UBAS Financial Trust is a member of the Federal Deposit Insurance Corporation (FDIC). 
                 Your deposits are insured up to $250,000 per depositor, per insured bank, for each account ownership category.
               </p>
