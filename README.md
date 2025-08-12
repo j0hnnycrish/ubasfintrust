@@ -1,5 +1,7 @@
 # UBAS Financial Trust - Enterprise Banking Application
 
+[![CI](https://github.com/mriridescent/ubasfintrust/actions/workflows/ci.yml/badge.svg)](https://github.com/mriridescent/ubasfintrust/actions/workflows/ci.yml) [![Deploy](https://github.com/mriridescent/ubasfintrust/actions/workflows/deploy.yml/badge.svg)](https://github.com/mriridescent/ubasfintrust/actions/workflows/deploy.yml)
+
 A comprehensive, **production-ready** banking application built with modern technologies and enterprise-grade security features.
 
 ## 🎉 **STATUS: 100% COMPLETE & DEPLOYMENT READY**
