@@ -1,15 +1,33 @@
-import { createClient } from 'redis';
+import { createClient, RedisClientType } from 'redis';
 import { logger } from '../utils/logger';
 
-const redisClient = createClient({
-  url: process.env['REDIS_URL'] || undefined,
-  socket: {
-    host: process.env['REDIS_HOST'] || 'localhost',
-    port: parseInt(process.env['REDIS_PORT'] || '6379'),
-  },
-  password: process.env['REDIS_PASSWORD'] || undefined,
-  database: parseInt(process.env['REDIS_DB'] || '0'),
-});
+function sanitizeRedisUrl(raw?: string): { url?: string; tls: boolean } {
+  if (!raw) return { url: undefined, tls: false };
+  // Extract the first redis/rediss URL from the string (handles values like `redis-cli --tls -u rediss://...`)
+  const match = raw.match(/(rediss?:\/\/\S+)/i);
+  const url = match ? match[1] : undefined;
+  const tls = /--tls/i.test(raw) || /^rediss:\/\//i.test(url || '');
+  return { url, tls };
+}
+
+const { url: sanitizedUrl, tls } = sanitizeRedisUrl(process.env['REDIS_URL']);
+
+const clientOptions: Parameters<typeof createClient>[0] = sanitizedUrl
+  ? {
+      url: sanitizedUrl,
+      socket: { tls },
+    }
+  : {
+      socket: {
+        host: process.env['REDIS_HOST'] || 'localhost',
+        port: parseInt(process.env['REDIS_PORT'] || '6379'),
+        tls,
+      },
+      password: process.env['REDIS_PASSWORD'] || undefined,
+      database: parseInt(process.env['REDIS_DB'] || '0'),
+    };
+
+const redisClient: RedisClientType = createClient(clientOptions);
 
 redisClient.on('error', (err) => {
   logger.error('Redis Client Error:', err);
@@ -27,7 +45,15 @@ redisClient.on('end', () => {
   logger.info('Redis connection ended');
 });
 
+export const isRedisConfigured = (): boolean => {
+  return Boolean(sanitizedUrl || process.env['REDIS_HOST'] || process.env['REDIS_PORT']);
+};
+
 export const connectRedis = async (): Promise<void> => {
+  if (!isRedisConfigured()) {
+    logger.info('Redis not configured; skipping Redis connection');
+    return;
+  }
   try {
     await redisClient.connect();
   } catch (error) {

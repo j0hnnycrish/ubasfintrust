@@ -270,8 +270,12 @@ const startServer = async () => {
       throw new Error('Failed to connect to database');
     }
 
-    // Connect to Redis
-    await connectRedis();
+    // Connect to Redis only if configured (optional dependency)
+    try {
+      await connectRedis();
+    } catch (e) {
+      logger.warn('Continuing without Redis due to connection issue');
+    }
 
     // Seed default corporate admin user if configured and missing
     try {
