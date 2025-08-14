@@ -103,16 +103,8 @@ export type LoanType = 'personal' | 'mortgage' | 'auto' | 'business' | 'student'
 export type LoanStatus = 'pending' | 'approved' | 'disbursed' | 'active' | 'paid_off' | 'defaulted';
 
 import type { Request } from 'express';
-export interface AuthRequest extends Request {
-  user?: User;
-  account?: Account;
-  security?: {
-    riskLevel: 'low' | 'medium' | 'high' | 'critical';
-    fingerprint?: string;
-    reasons: string[];
-    allowed: boolean;
-  };
-}
+// AuthRequest is an alias of Express Request; extra fields are added via module augmentation
+export type AuthRequest = Request;
 
 export interface JWTPayload {
   userId: string;
@@ -183,4 +175,18 @@ export interface AuditLog {
   ip_address: string;
   user_agent: string;
   created_at: Date;
+}
+
+// Module augmentation for Express to include our custom properties on Request
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: User;
+    account?: Account;
+    security?: {
+      riskLevel: 'low' | 'medium' | 'high' | 'critical';
+      fingerprint?: string;
+      reasons: string[];
+      allowed: boolean;
+    };
+  }
 }
