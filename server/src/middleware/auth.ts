@@ -9,15 +9,16 @@ import { db } from '../config/db';
 
 export class AuthMiddleware {
   // Verify JWT token
-  static async verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
+  static async verifyToken(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Access token required'
         });
+        return;
       }
 
       const token = authHeader.substring(7);
@@ -25,10 +26,11 @@ export class AuthMiddleware {
       // Check if token is blacklisted
       const isBlacklisted = await CacheService.exists(`blacklist:${token}`);
       if (isBlacklisted) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Token has been revoked'
         });
+        return;
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
@@ -39,40 +41,44 @@ export class AuthMiddleware {
         .first();
 
       if (!user) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'User not found or inactive'
         });
+        return;
       }
 
       // Check if user is locked
       if (user.locked_until && new Date(user.locked_until) > new Date()) {
-        return res.status(423).json({
+        res.status(423).json({
           success: false,
           message: 'Account is temporarily locked'
         });
+        return;
       }
 
       req.user = user;
       next();
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Invalid token'
         });
+        return;
       }
       
       logger.error('Auth middleware error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Authentication error'
       });
+      return;
     }
   }
 
   // Verify 2FA token
-  static async verify2FA(req: AuthRequest, res: Response, next: NextFunction) {
+  static async verify2FA(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { twoFactorToken } = req.body;
       const user = req.user!;
@@ -82,10 +88,11 @@ export class AuthMiddleware {
       }
 
       if (!twoFactorToken) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           message: '2FA token required'
         });
+        return;
       }
 
       const verified = speakeasy.totp.verify({
@@ -97,19 +104,21 @@ export class AuthMiddleware {
 
       if (!verified) {
         logSecurity('2FA_VERIFICATION_FAILED', user.id, req.ip);
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           message: 'Invalid 2FA token'
         });
+        return;
       }
 
       next();
     } catch (error) {
       logger.error('2FA verification error:', error);
-      return res.status(500).json({
+  res.status(500).json({
         success: false,
         message: '2FA verification error'
-      });
+  });
+  return;
     }
   }
 
@@ -170,24 +179,26 @@ export class AuthMiddleware {
   }
 
   // Refresh access token
-  static async refreshToken(req: Request, res: Response) {
+  static async refreshToken(req: Request, res: Response): Promise<void> {
     try {
       const { refreshToken } = req.body;
 
       if (!refreshToken) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           message: 'Refresh token required'
         });
+        return;
       }
 
       // Check if refresh token is blacklisted
       const isBlacklisted = await CacheService.exists(`blacklist:${refreshToken}`);
       if (isBlacklisted) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Refresh token has been revoked'
         });
+        return;
       }
 
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JWTPayload;
@@ -197,10 +208,11 @@ export class AuthMiddleware {
         .first();
 
       if (!user) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'User not found'
         });
+        return;
       }
 
       const tokens = AuthMiddleware.generateTokens(user);
@@ -214,22 +226,24 @@ export class AuthMiddleware {
       });
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Invalid refresh token'
         });
+        return;
       }
       
       logger.error('Token refresh error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Token refresh error'
       });
+      return;
     }
   }
 
   // Logout and blacklist tokens
-  static async logout(req: AuthRequest, res: Response) {
+  static async logout(req: AuthRequest, res: Response): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
       const { refreshToken } = req.body;
@@ -243,16 +257,17 @@ export class AuthMiddleware {
         await CacheService.set(`blacklist:${refreshToken}`, true, 7 * 24 * 60 * 60); // 7 days
       }
 
-      res.json({
+  res.json({
         success: true,
         message: 'Logged out successfully'
       });
     } catch (error) {
       logger.error('Logout error:', error);
-      return res.status(500).json({
+  res.status(500).json({
         success: false,
         message: 'Logout error'
-      });
+  });
+  return;
     }
   }
 

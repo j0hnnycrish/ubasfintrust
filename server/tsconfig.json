@@ -46,6 +46,7 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "src/config/supabase.ts"
+  "src/config/supabase.ts",
+  "src/config/mongo.ts"
   ]
 }

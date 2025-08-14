@@ -1,4 +1,5 @@
-import express, { Response } from 'express';
+import express, { Response, Request, NextFunction } from 'express';
+import type * as ExpressNS from 'express';
 import { body, validationResult } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
@@ -65,7 +66,7 @@ if (s3Enabled) {
 }
 
 // Apply authentication middleware to all routes
-router.use(AuthMiddleware.verifyToken);
+router.use((req: Request, res: Response, next: NextFunction) => AuthMiddleware.verifyToken(req as any, res, next));
 
 // Submit KYC application with documents
 router.post('/submit', upload.fields([
@@ -87,27 +88,30 @@ router.post('/submit', upload.fields([
   body('employment_monthlyIncome').isFloat({ min: 0 }).withMessage('Valid monthly income is required'),
   body('agreement_terms').equals('true').withMessage('Terms and conditions must be accepted'),
   body('agreement_privacy').equals('true').withMessage('Privacy policy must be accepted')
-], async (req: AuthRequest, res: Response) => {
+], async (req: Request, res: Response): Promise<void> => {
   try {
+    const reqA = req as unknown as AuthRequest & { files?: { [fieldname: string]: any[] } };
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Validation failed',
         errors: errors.array()
       });
+      return;
     }
 
-    const user = req.user!;
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const user = reqA.user!;
+    const files = (reqA.files || {}) as { [fieldname: string]: any[] };
 
     // Check if user already has a pending or approved KYC
     const existingKyc = await db('kyc_applications').where({ user_id: user.id }).first();
     if (existingKyc && ['pending', 'approved'].includes(existingKyc.status)) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'KYC application already exists'
       });
+      return;
     }
 
     // Create KYC application record
@@ -154,6 +158,7 @@ router.post('/submit', upload.fields([
         const documentId = uuidv4();
 
         // If S3 is enabled, upload file to bucket and replace file_path with S3 key/url
+        let filePathForStorage: string;
         if (s3Enabled && s3) {
           const fileStream = fs.createReadStream(file.path);
           const key = `kyc/${user.id}/${documentId}_${path.basename(file.path)}`;
@@ -165,15 +170,15 @@ router.post('/submit', upload.fields([
               ContentType: file.mimetype,
             }).promise();
             // We will store the S3 key; actual download can be presigned
-            var filePathForStorage = key;
+            filePathForStorage = key;
           } catch (err) {
             logger.error('S3 upload failed', err);
-            var filePathForStorage = file.path; // fallback to local path
+            filePathForStorage = file.path; // fallback to local path
           } finally {
             try { fs.unlinkSync(file.path); } catch {}
           }
         } else {
-          var filePathForStorage = file.path;
+          filePathForStorage = file.path;
         }
 
         const documentData = {

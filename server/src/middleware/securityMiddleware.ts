@@ -7,19 +7,7 @@ import helmet from 'helmet';
 import { body, validationResult } from 'express-validator';
 
 // Enhanced request interface
-interface SecurityRequest extends Request {
-  security?: {
-    riskLevel: 'low' | 'medium' | 'high' | 'critical';
-    fingerprint?: string;
-    reasons: string[];
-    allowed: boolean;
-  };
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
-}
+export type SecurityRequest = Request;
 
 // Security middleware for bot detection and threat analysis
 export const securityAnalysis = async (
@@ -382,7 +370,4 @@ export const geoBlocking = (blockedCountries: string[] = []) => {
 };
 
 // Export all middleware
-export {
-  SecurityRequest,
-  securityAnalysis as default
-};
+export { securityAnalysis as default };
