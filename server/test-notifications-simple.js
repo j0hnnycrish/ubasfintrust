@@ -91,18 +91,21 @@ async function testSMSService() {
       return true;
     }
 
-    // Test Vonage
-    if (process.env.VONAGE_API_KEY && process.env.VONAGE_API_SECRET) {
-      console.log('Testing Vonage...');
-      const { Vonage } = require('@vonage/server-sdk');
-      
-      const vonage = new Vonage({
-        apiKey: process.env.VONAGE_API_KEY,
-        apiSecret: process.env.VONAGE_API_SECRET,
-      });
-
-      console.log('✅ Vonage configuration is valid');
-      return true;
+    // Test Vonage (optional dependency)
+      if (process.env.VONAGE_API_KEY && process.env.VONAGE_API_SECRET) {
+        console.log('Testing Vonage...');
+        try {
+          const { Vonage } = require('@vonage/server-sdk');
+          // eslint-disable-next-line no-new
+          new Vonage({
+            apiKey: process.env.VONAGE_API_KEY,
+            apiSecret: process.env.VONAGE_API_SECRET,
+          });
+          console.log('✅ Vonage configuration is valid');
+          return true;
+        } catch (e) {
+          console.log('ℹ️  Skipping Vonage test (SDK not installed)');
+        }
     }
 
     // TextBelt is always available
