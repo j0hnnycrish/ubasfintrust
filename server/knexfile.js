@@ -1,4 +1,10 @@
 require('dotenv').config();
+// Enable TypeScript support for migration/seed files when running via CLI
+try {
+  require('ts-node').register({ transpileOnly: true });
+} catch (e) {
+  // ts-node may not be present in some environments; migrations should be compiled or ts-node installed
+}
 
 module.exports = {
   development: {
