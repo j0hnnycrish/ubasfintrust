@@ -1,4 +1,4 @@
-import { createClient, RedisClientType } from 'redis';
+import { createClient } from 'redis';
 import { logger } from '../utils/logger';
 
 function sanitizeRedisUrl(raw?: string): { url?: string; tls: boolean } {
@@ -27,7 +27,8 @@ const clientOptions: Parameters<typeof createClient>[0] = sanitizedUrl
       database: parseInt(process.env['REDIS_DB'] || '0'),
     };
 
-const redisClient: RedisClientType = createClient(clientOptions);
+// Avoid explicit RedisClientType annotation to prevent TS module augmentation mismatches on some builders
+const redisClient = createClient(clientOptions);
 
 redisClient.on('error', (err) => {
   logger.error('Redis Client Error:', err);
