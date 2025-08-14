@@ -154,9 +154,26 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
 export const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     const defaultOrigins = ['http://localhost:5173','http://localhost:3000','http://localhost:8080'];
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').filter(Boolean) || defaultOrigins;
-    
-    if (!origin || allowedOrigins.includes(origin)) {
+    const raw = process.env.ALLOWED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) || defaultOrigins;
+
+    // Support simple wildcard entries like https://*.netlify.app or https://*.example.com
+    const isAllowed = (orig?: string): boolean => {
+      if (!orig) return true; // allow non-browser/SSR
+      for (const entry of raw) {
+        if (entry.includes('*')) {
+          // escape regex special chars except '*', then replace '*' with a safe wildcard for one or more non-slash chars
+          const regex = new RegExp('^' + entry
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/\*/g, '[^.]+') + '$');
+          if (regex.test(orig)) return true;
+        } else if (entry === orig) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    if (isAllowed(origin)) {
       callback(null, true);
     } else {
       logSecurity('CORS_VIOLATION', undefined, undefined, { origin });
