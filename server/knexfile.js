@@ -37,15 +37,13 @@ module.exports = {
 
   production: {
     client: 'postgresql',
-    // Ensure SSL for Supabase (requires sslmode=require)
+    // Ensure SSL in production; Node-postgres ignores sslmode in URL, so set ssl explicitly
     connection: (() => {
       if (process.env.DATABASE_URL) {
-        // Append sslmode=require if not already present
-        if (!/sslmode=/.test(process.env.DATABASE_URL)) {
-          const joinChar = process.env.DATABASE_URL.includes('?') ? '&' : '?';
-          return process.env.DATABASE_URL + joinChar + 'sslmode=require';
-        }
-        return process.env.DATABASE_URL;
+        return {
+          connectionString: process.env.DATABASE_URL,
+          ssl: { rejectUnauthorized: false }
+        };
       }
       return {
         host: process.env.DB_HOST,

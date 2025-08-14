@@ -46,6 +46,8 @@ If you need to add custom environment variables:
 - `TWILIO_ACCOUNT_SID` - For SMS notifications
 - `TWILIO_AUTH_TOKEN` - For SMS notifications
 - `TWILIO_PHONE_NUMBER` - For SMS notifications
+ - `DATABASE_URL` - Postgres connection string (required). SSL is enforced in production; no extra flags needed. If your provider uses a self-signed cert, we've set `ssl: { rejectUnauthorized: false }` at runtime and in knex CLI.
+ - Optional: `PGSSLMODE=require` can be added for clarity (node-postgres reads explicit `ssl` config first).
 
 ### **Frontend Service:**
 - `VITE_GOOGLE_ANALYTICS_ID` - For analytics

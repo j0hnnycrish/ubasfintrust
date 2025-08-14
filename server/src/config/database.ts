@@ -53,11 +53,10 @@ const config: { [key: string]: Knex.Config } = {
     connection: (() => {
       const url = process.env['DATABASE_URL'];
       if (url) {
-        if (!/sslmode=/.test(url)) {
-          const joinChar = url.includes('?') ? '&' : '?';
-          return url + joinChar + 'sslmode=require';
-        }
-        return url;
+        return {
+          connectionString: url,
+          ssl: { rejectUnauthorized: false }
+        };
       }
       return {
         host: process.env['DB_HOST'] || 'localhost',
