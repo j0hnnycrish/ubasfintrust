@@ -15,7 +15,8 @@ const schema = Joi.object({
   ADMIN_PASSWORD: Joi.string().min(8).optional(),
   ADMIN_PHONE: Joi.string().optional(),
   // DB / Redis
-  DATABASE_URL: Joi.string().uri({ scheme: [/postgres/] }).optional(),
+  // Accept both 'postgres' and 'postgresql' schemes returned by providers (e.g., Render)
+  DATABASE_URL: Joi.string().uri({ scheme: ['postgres', 'postgresql'] }).optional(),
   DB_HOST: Joi.string().optional(),
   DB_PORT: Joi.number().optional(),
   DB_NAME: Joi.string().optional(),
