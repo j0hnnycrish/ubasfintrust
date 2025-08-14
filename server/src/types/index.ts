@@ -103,20 +103,15 @@ export type LoanType = 'personal' | 'mortgage' | 'auto' | 'business' | 'student'
 export type LoanStatus = 'pending' | 'approved' | 'disbursed' | 'active' | 'paid_off' | 'defaulted';
 
 import type { Request } from 'express';
-export type AuthRequest = Request;
-
-// Augment Express Request with our custom fields
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: User;
-    account?: Account;
-    security?: {
-      riskLevel: 'low' | 'medium' | 'high' | 'critical';
-      fingerprint?: string;
-      reasons: string[];
-      allowed: boolean;
-    };
-  }
+export interface AuthRequest extends Request {
+  user?: User;
+  account?: Account;
+  security?: {
+    riskLevel: 'low' | 'medium' | 'high' | 'critical';
+    fingerprint?: string;
+    reasons: string[];
+    allowed: boolean;
+  };
 }
 
 export interface JWTPayload {

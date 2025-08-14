@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import type { AuthRequest } from '../types';
 import { securityService } from '../services/securityService';
 import { notificationService } from '../services/notificationService';
 import { logger } from '../utils/logger';
@@ -7,7 +8,7 @@ import helmet from 'helmet';
 import { body, validationResult } from 'express-validator';
 
 // Enhanced request interface
-export type SecurityRequest = Request;
+export type SecurityRequest = AuthRequest;
 
 // Security middleware for bot detection and threat analysis
 export const securityAnalysis = async (
