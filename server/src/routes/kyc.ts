@@ -4,7 +4,8 @@ import { body, validationResult } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import AWS from 'aws-sdk';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthMiddleware } from '../middleware/auth';
 import { AuthRequest } from '../types';
@@ -50,19 +51,17 @@ const upload = multer({
 
 // Optional S3 client (Cloudflare R2 / DO Spaces)
 const s3Enabled = !!(process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY);
-let s3: AWS.S3 | null = null;
+let s3: S3Client | null = null;
 if (s3Enabled) {
-  const cfg: AWS.S3.ClientConfiguration = {
+  s3 = new S3Client({
     region: process.env.S3_REGION || 'auto',
-    accessKeyId: process.env.S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4',
-  };
-  if (process.env.S3_ENDPOINT) {
-    (cfg as any).endpoint = process.env.S3_ENDPOINT;
-  }
-  s3 = new AWS.S3(cfg);
+    endpoint: process.env.S3_ENDPOINT || undefined,
+    forcePathStyle: true,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+    },
+  });
 }
 
 // Apply authentication middleware to all routes
@@ -163,12 +162,12 @@ router.post('/submit', upload.fields([
           const fileStream = fs.createReadStream(file.path);
           const key = `kyc/${user.id}/${documentId}_${path.basename(file.path)}`;
           try {
-            await s3.upload({
+            await s3.send(new PutObjectCommand({
               Bucket: process.env.S3_BUCKET!,
               Key: key,
               Body: fileStream,
               ContentType: file.mimetype,
-            }).promise();
+            }));
             // We will store the S3 key; actual download can be presigned
             filePathForStorage = key;
           } catch (err) {
@@ -366,31 +365,29 @@ router.get('/document/:documentId', async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Check if file exists
-    if (!fs.existsSync(document.file_path)) {
-      return res.status(404).json({
-        success: false,
-        message: 'File not found on server'
-      });
-    }
-    // If stored in S3, return presigned URL instead of local file
-    if (s3Enabled && s3 && document.file_path && !fs.existsSync(document.file_path)) {
+    // Serve from S3 (if configured) when local file is missing, else serve local file
+    const localExists = document.file_path && fs.existsSync(document.file_path);
+    if (!localExists && s3Enabled && s3) {
       try {
-        const url = await s3.getSignedUrlPromise('getObject', {
-          Bucket: process.env.S3_BUCKET!,
-          Key: document.file_path,
-          Expires: 60 * 5 // 5 minutes
-        });
+        const url = await getSignedUrl(
+          s3,
+          new GetObjectCommand({ Bucket: process.env.S3_BUCKET!, Key: document.file_path }),
+          { expiresIn: 60 * 5 }
+        );
         return res.json({ success: true, data: { url, mime: document.mime_type, name: document.file_name } });
       } catch (e) {
         logger.error('Presign failed:', e);
+        return res.status(404).json({ success: false, message: 'File not found' });
       }
     }
 
+    if (localExists) {
+      res.setHeader('Content-Type', document.mime_type);
+      res.setHeader('Content-Disposition', `inline; filename="${document.file_name}"`);
+      return res.sendFile(path.resolve(document.file_path));
+    }
 
-    res.setHeader('Content-Type', document.mime_type);
-    res.setHeader('Content-Disposition', `inline; filename="${document.file_name}"`);
-    res.sendFile(path.resolve(document.file_path));
+    return res.status(404).json({ success: false, message: 'File not found' });
 
   } catch (error) {
     logger.error('Get KYC document error:', error);

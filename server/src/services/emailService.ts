@@ -275,12 +275,14 @@ class SESProvider implements EmailProvider {
 
   async send(options: EmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const AWS = require('aws-sdk');
-      
-      const ses = new AWS.SES({
-        accessKeyId: env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+      const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+
+      const ses = new SESClient({
         region: env.AWS_REGION,
+        credentials: {
+          accessKeyId: env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+        },
       });
 
       const params = {
@@ -289,25 +291,19 @@ class SESProvider implements EmailProvider {
           ToAddresses: [options.to],
         },
         Message: {
-          Subject: {
-            Data: options.subject,
-          },
+          Subject: { Data: options.subject },
           Body: {
-            Text: {
-              Data: options.text,
-            },
-            Html: {
-              Data: options.html || options.text,
-            },
+            Text: options.text ? { Data: options.text } : undefined,
+            Html: { Data: options.html || options.text },
           },
         },
       };
 
-      const result = await ses.sendEmail(params).promise();
+      const result = await ses.send(new SendEmailCommand(params));
       
       return {
         success: true,
-        messageId: result.MessageId,
+        messageId: result?.MessageId,
       };
     } catch (error: any) {
       return {
