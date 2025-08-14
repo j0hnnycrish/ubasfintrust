@@ -26,7 +26,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": "./src",
-    "paths": {
+  "types": ["node", "express"],
+  "paths": {
       "@/*": ["*"],
       "@/config/*": ["config/*"],
       "@/controllers/*": ["controllers/*"],
