@@ -42,6 +42,7 @@ services:
     plan: free
     rootDir: .
     buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://ubasfintrust1.onrender.com/api/v1
