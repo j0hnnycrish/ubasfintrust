@@ -19,10 +19,26 @@ router.get('/liveness', (req: Request, res: Response) => {
 router.get('/readiness', async (req: Request, res: Response) => {
   try {
     const dbHealth = await healthCheck();
-    let redisHealth = { status: 'healthy', timestamp: new Date() };
-    try { await redisClient.ping(); } catch { redisHealth = { status: 'unhealthy', timestamp: new Date() }; }
-    const overallStatus = dbHealth.status === 'healthy' && redisHealth.status === 'healthy' ? 'ready' : 'degraded';
-    const httpStatus = overallStatus === 'ready' ? 200 : 503;
+
+    // Only enforce Redis if configured; otherwise mark as skipped
+    const hasRedisCfg = Boolean(
+      process.env['REDIS_URL'] || process.env['REDIS_HOST'] || process.env['REDIS_PORT']
+    );
+
+    let redisHealth: { status: string; timestamp: Date } = { status: 'skipped', timestamp: new Date() };
+    if (hasRedisCfg) {
+      redisHealth = { status: 'healthy', timestamp: new Date() };
+      try {
+        await redisClient.ping();
+      } catch {
+        redisHealth = { status: 'unhealthy', timestamp: new Date() };
+      }
+    }
+
+    const depsHealthy = dbHealth.status === 'healthy' && (!hasRedisCfg || redisHealth.status === 'healthy');
+    const overallStatus = depsHealthy ? 'ready' : 'degraded';
+    const httpStatus = depsHealthy ? 200 : 503;
+
     res.status(httpStatus).json({
       success: true,
       status: overallStatus,
@@ -32,7 +48,7 @@ router.get('/readiness', async (req: Request, res: Response) => {
       memory: process.memoryUsage(),
       version: process.env.npm_package_version || '1.0.0'
     });
-  } catch {
+  } catch (e) {
     res.status(503).json({ success: false, status: 'unready', timestamp: new Date().toISOString(), error: 'Readiness failed' });
   }
 });
