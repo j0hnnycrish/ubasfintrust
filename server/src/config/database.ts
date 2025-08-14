@@ -50,14 +50,24 @@ const config: { [key: string]: Knex.Config } = {
 
   production: {
     client: 'postgresql',
-    connection: process.env['DATABASE_URL'] || {
-      host: process.env['DB_HOST'] || 'localhost',
-      port: parseInt(process.env['DB_PORT'] || '5432'),
-      database: process.env['DB_NAME'] || 'provi_banking',
-      user: process.env['DB_USER'] || 'postgres',
-      password: process.env['DB_PASSWORD'] || '',
-      ssl: { rejectUnauthorized: false },
-    },
+    connection: (() => {
+      const url = process.env['DATABASE_URL'];
+      if (url) {
+        if (!/sslmode=/.test(url)) {
+          const joinChar = url.includes('?') ? '&' : '?';
+          return url + joinChar + 'sslmode=require';
+        }
+        return url;
+      }
+      return {
+        host: process.env['DB_HOST'] || 'localhost',
+        port: parseInt(process.env['DB_PORT'] || '5432'),
+        database: process.env['DB_NAME'] || 'provi_banking',
+        user: process.env['DB_USER'] || 'postgres',
+        password: process.env['DB_PASSWORD'] || '',
+        ssl: { rejectUnauthorized: false },
+      };
+    })(),
     pool: {
       min: 5,
       max: 20,

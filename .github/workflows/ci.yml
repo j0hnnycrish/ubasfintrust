@@ -6,9 +6,36 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
+  lint-and-typecheck:
+    name: Lint & Type Check
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps (root + server)
+        run: |
+          npm install
+          cd server && npm install
+      - name: Type check frontend
+        run: npx tsc --noEmit
+      - name: Type check backend
+        run: cd server && npx tsc --noEmit
+      - name: Lint
+        run: npm run lint || (echo 'Lint issues found' && exit 1)
+
+  backend-tests:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
     services:
       postgres:
         image: postgres:15
@@ -24,7 +51,6 @@ jobs:
         ports: ['6379:6379']
         options: >-
           --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     env:
       NODE_ENV: test
       DB_HOST: localhost
@@ -40,49 +66,84 @@ jobs:
       ADMIN_PASSWORD: AdminPass#123
       DIAGNOSTICS_TOKEN: ci_diagnostics_token
       API_VERSION: v1
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-
-      - name: Install root deps
-        run: npm install
-
-      - name: Install server deps
+      - name: Install deps
         run: |
-          cd server
           npm install
-
-      - name: Build server
-        run: |
-          cd server
-          npm run build
-
+          cd server && npm install
+      - name: Build backend
+        run: cd server && npm run build
       - name: Run migrations
-        run: |
-          cd server
-          npx knex migrate:latest
-
-      - name: Start server
+        run: cd server && npx knex migrate:latest
+      - name: Start backend
         run: |
           cd server
           node dist/server.js &
           sleep 8
-
-      - name: Run system integration check
+      - name: System integration check
         env:
           API_BASE: http://localhost:5000/api/v1
           ADMIN_EMAIL: admin@example.com
           ADMIN_PASSWORD: AdminPass#123
           DIAGNOSTICS_TOKEN: ci_diagnostics_token
         run: node scripts/system-check.mjs
+      - name: Jest (if tests exist)
+        run: cd server && npm test -- --passWithNoTests
 
-      - name: Upload system-check summary (always)
-        if: always()
+  frontend-build:
+    name: Frontend Build & Smoke
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps
+        run: npm install
+      - name: Build frontend
+        env:
+          VITE_API_URL: http://localhost:5000/api/v1
+          VITE_APP_NAME: UBAS Financial Trust
+        run: npm run build
+      - name: Archive production build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist
+
+  security-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps
+        run: npm install
+      - name: npm audit (non-blocking high+critical)
         run: |
-          echo "Summaries captured in previous step output." 
+          set +e
+          npm audit --audit-level=high || echo 'High severity issues detected (review later).'
+          set -e
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-build, security-audit]
+    steps:
+      - name: Report
+        run: echo "CI pipeline finished successfully." 
+

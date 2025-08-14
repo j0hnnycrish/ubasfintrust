@@ -231,6 +231,10 @@ npm run test:coverage
 
 ## 🚀 Deployment
 
+See also:
+- [Kid-friendly: Host everything in one place (Render/Fly/DO)](./KID_FRIENDLY_DEPLOY_ONE_PROVIDER.md)
+- [Kid-friendly: Self-hosted one box (Coolify/Dokku)](./KID_FRIENDLY_DEPLOY_SELF_HOSTED.md)
+
 ### Production Build
 ```bash
 # Frontend
@@ -313,3 +317,76 @@ For support and questions:
 - [ ] Advanced investment products
 - [ ] International wire transfers
 - [ ] Merchant payment processing
+
+## 🚀 Deploy Automation
+
+This project includes one-command deploy scripts for popular stacks. Use these to provision, deploy, and smoke-test quickly.
+
+### Prerequisites
+
+- Node.js 18+, npm
+- CLIs as needed:
+  - Railway: railway (and login)
+  - Vercel: vercel (and login)
+  - Netlify: netlify-cli (and login)
+  - Fly.io: flyctl (and login)
+  - Helpers: jq, curl
+
+Optional install commands (Linux/zsh):
+
+```zsh
+# Railway
+curl -fsSL https://railway.app/install.sh | sh
+export PATH="$HOME/.railway/bin:$PATH"
+
+# Vercel & Netlify
+npm install -g vercel netlify-cli
+
+# Fly.io
+curl -L https://fly.io/install.sh | sh
+export FLYCTL_INSTALL="$HOME/.fly" && export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+# Helper
+npm install -g jq
+```
+
+### One-command paths
+
+1) Railway (backend) + Vercel (frontend)
+
+- Script: scripts/deploy-all.sh
+- What it does: set env on Railway (JWT/refresh/session/CORS/admin), provision Postgres/Redis plugins, deploy backend, wait for readiness, build & deploy SPA to Vercel (correct VITE_API_URL), run smoke tests.
+- Optional env before running: ADMIN_EMAIL, ADMIN_PASSWORD, JWT_SECRET, JWT_REFRESH_SECRET, SESSION_SECRET, ALLOWED_ORIGINS, SOCKET_IO_CORS_ORIGIN.
+- Helper to generate secrets: scripts/gen-secrets.sh.
+
+2) Render (backend) + Netlify (frontend)
+
+- Backend: scripts/deploy-all-render.sh (requires RENDER_API_KEY).
+- SPA: scripts/deploy-all-render-netlify.sh (sets Netlify env, deploys dist/).
+
+3) Fly.io (backend + frontend)
+
+- Script: scripts/deploy-all-fly.sh (wraps deploy-flyio.sh).
+- Optional env: ADMIN_EMAIL, ADMIN_PASSWORD.
+
+### Domain mapping
+
+- API: add api.ubasfintrust.com to API host; SPA: add ubasfintrust.com and www.ubasfintrust.com to SPA host; complete DNS.
+
+### Critical CORS
+
+- API env: ALLOWED_ORIGINS=https://ubasfintrust.com,https://www.ubasfintrust.com, SOCKET_IO_CORS_ORIGIN=https://ubasfintrust.com.
+- SPA env: VITE_API_URL=https://api.ubasfintrust.com/api/v1, VITE_SOCKET_URL=https://api.ubasfintrust.com.
+
+### Helpers
+
+- scripts/gen-secrets.sh — strong secrets
+- scripts/auto-config.sh [domain] — updates configs and prints env
+- scripts/post-deploy-smoke.sh — health + scenario checks
+
+### Troubleshooting
+
+- CLI not found: ensure PATH is updated
+- CORS errors: exact origins, no trailing slashes
+- 401 loops: verify VITE_API_URL ends with /api/v1
+- Degraded health: check Postgres/Redis & migrations

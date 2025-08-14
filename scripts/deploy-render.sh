@@ -48,7 +48,7 @@ while (( ATTEMPTS < MAX )); do
   ((ATTEMPTS++))
   sleep $SLEEP
   info "Waiting ($ATTEMPTS/$MAX) ..."
-endone
+done
 if (( ATTEMPTS == MAX )); then err "Backend not ready in time"; exit 1; fi
 
 success "Render deploys triggered & backend healthy"

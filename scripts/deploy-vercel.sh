@@ -33,8 +33,8 @@ echo "Setting up environment variables..."
 
 # Create .env.local for Vercel
 cat > .env.local << EOF
-VITE_API_URL=https://ubas-backend-production.up.railway.app/api/v1
-VITE_SOCKET_URL=https://ubas-backend-production.up.railway.app
+VITE_API_URL=https://api.ubasfintrust.com/api/v1
+VITE_SOCKET_URL=https://api.ubasfintrust.com
 VITE_APP_NAME=UBAS Financial Trust
 VITE_APP_VERSION=1.0.0
 VITE_NODE_ENV=production
