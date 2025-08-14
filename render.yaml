@@ -44,16 +44,16 @@ services:
     buildCommand: npm ci && npm run build
     envVars:
       - key: VITE_API_URL
-        value: https://ubas-backend.onrender.com/api/v1
+        value: https://ubasfintrust1.onrender.com/api/v1
       - key: VITE_SOCKET_URL
-        value: https://ubas-backend.onrender.com
+        value: https://ubasfintrust1.onrender.com/
       - key: VITE_APP_NAME
         value: UBAS Financial Trust
       - key: VITE_NODE_ENV
         value: production
 
 databases:
-  - name: ubas-database
+  - name: ubasfintrust-db
     plan: free
 
 

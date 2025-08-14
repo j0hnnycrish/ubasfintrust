@@ -1,6 +1,8 @@
 import type { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
+  const exists = await knex.schema.hasTable('kyc_applications');
+  if (exists) return;
   return knex.schema.createTable('kyc_applications', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('user_id').references('id').inTable('users').onDelete('CASCADE');
@@ -22,6 +24,6 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable('kyc_applications');
+  return knex.schema.dropTableIfExists('kyc_applications');
 }
 
