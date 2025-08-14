@@ -1,0 +1,47 @@
+name: Deploy Frontend to Netlify
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'clean/**'
+      - '!clean/server/**'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clean
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: clean/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build site
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_SOCKET_URL: ${{ secrets.VITE_SOCKET_URL }}
+          VITE_APP_NAME: ${{ secrets.VITE_APP_NAME }}
+          VITE_MINIMUM_DEPOSIT: ${{ secrets.VITE_MINIMUM_DEPOSIT }}
+          VITE_MINIMUM_WITHDRAWAL: ${{ secrets.VITE_MINIMUM_WITHDRAWAL }}
+          VITE_MAXIMUM_DAILY_TRANSFER: ${{ secrets.VITE_MAXIMUM_DAILY_TRANSFER }}
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@v4
+        with:
+          args: deploy --prod --dir=dist
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
