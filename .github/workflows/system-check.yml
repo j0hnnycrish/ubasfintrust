@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       api_url:
-        description: "Base URL to your live API (e.g. https://api.example.com/api/v1)"
+        description: "Base URL to your live API (e.g. https://api.ubasfintrust.com/api/v1)"
         required: true
       admin_email:
         description: "Optional admin email for deeper checks"
