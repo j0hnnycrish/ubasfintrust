@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
-import { ScrollingBackground, bankingImages } from '@/components/ui/ScrollingBackground';
 import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -111,7 +110,7 @@ export default function About() {
         </div>
         
         {/* Foreground content overlay */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh] flex items-center">
           <div className="text-center">
             <div className="inline-flex items-center space-x-2 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full px-6 py-2 text-yellow-400 mb-6">
               <Award className="h-4 w-4" />

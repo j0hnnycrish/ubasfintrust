@@ -10,9 +10,9 @@ export default function Leadership() {
         <div className="absolute inset-0">
           <BackgroundCarousel heightVh={40} />
         </div>
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h1 className="text-4xl font-bold mb-4">Leadership</h1>
-          <p className="text-white/90 text-lg">Meet the team guiding UBAS Financial Trust with vision, integrity, and excellence.</p>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[40vh] flex flex-col justify-center">
+          <h1 className="text-4xl font-bold mb-4 text-white drop-shadow">Leadership</h1>
+          <p className="text-white/90 text-lg max-w-3xl">Meet the team guiding UBAS Financial Trust with vision, integrity, and excellence.</p>
         </div>
       </section>
       <section className="py-12">
