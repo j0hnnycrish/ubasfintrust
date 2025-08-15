@@ -1,14 +1,13 @@
 services:
-  # Backend API Service
   - type: web
     name: ubas-backend
     runtime: node
     plan: free
     rootDir: server
-  buildCommand: "npm ci && npm run build"
-  preDeployCommand: "npm run migrate:prod"
-  startCommand: "npm start"
-  healthCheckPath: "/health"
+    buildCommand: "npm ci && npm run build"
+    preDeployCommand: "npm run migrate:prod"
+    startCommand: "npm start"
+    healthCheckPath: "/health"
     envVars:
       - key: NODE_ENV
         value: production
@@ -27,28 +26,21 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://*.netlify.app
+        value: https://ubasfintrust1.onrender.com,https://ubasfintrust.com,https://www.ubasfintrust.com
       - key: SOCKET_IO_CORS_ORIGIN
-        value: https://*.netlify.app
-      - key: UPLOAD_PATH
-        value: /opt/render/project/src/uploads
-      - key: MAX_FILE_SIZE
-        value: "5242880"
-      - key: ALLOWED_FILE_TYPES
-        value: jpg,jpeg,png,pdf
+        value: https://ubasfintrust1.onrender.com
 
-  # Frontend Static Site
   - type: web
     name: ubas-frontend
     runtime: static
     plan: free
     rootDir: .
-  buildCommand: "npm ci && npm run build"
+    buildCommand: "npm ci && npm run build"
     envVars:
       - key: VITE_API_URL
         value: https://ubasfintrust1.onrender.com/api/v1
       - key: VITE_SOCKET_URL
-        value: https://ubasfintrust1.onrender.com/
+        value: https://ubasfintrust1.onrender.com
       - key: VITE_APP_NAME
         value: UBAS Financial Trust
       - key: VITE_NODE_ENV
