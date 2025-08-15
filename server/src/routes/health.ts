@@ -53,10 +53,36 @@ router.get('/readiness', async (req: Request, res: Response) => {
   }
 });
 
-// Backwards compatible root health (maps to readiness details, accepts ?type=liveness)
+// Root health: return a fast 200 OK for platform health checks (no redirects)
+// Optional query "type" can request liveness or readiness detail
 router.get('/', async (req: Request, res: Response) => {
-  if (req.query.type === 'liveness') return res.redirect(307, '/health/liveness');
-  return res.redirect(307, '/health/readiness');
+  try {
+    const type = String(req.query.type || '').toLowerCase();
+    if (type === 'liveness') {
+      return res.json({ success: true, status: 'alive', timestamp: new Date().toISOString(), uptime: process.uptime() });
+    }
+    if (type === 'readiness') {
+      const dbHealth = await healthCheck();
+      const hasRedisCfg = Boolean(
+        process.env['REDIS_URL'] || process.env['REDIS_HOST'] || process.env['REDIS_PORT']
+      );
+      let redisStatus: 'healthy' | 'unhealthy' | 'skipped' = 'skipped';
+      if (hasRedisCfg) {
+        try { await redisClient.ping(); redisStatus = 'healthy'; } catch { redisStatus = 'unhealthy'; }
+      }
+      const depsHealthy = dbHealth.status === 'healthy' && (!hasRedisCfg || redisStatus === 'healthy');
+      return res.status(depsHealthy ? 200 : 503).json({
+        success: true,
+        status: depsHealthy ? 'ready' : 'degraded',
+        timestamp: new Date().toISOString(),
+        services: { database: dbHealth, redis: { status: redisStatus } }
+      });
+    }
+    // Default minimal OK payload
+    return res.json({ success: true, status: 'ok', timestamp: new Date().toISOString() });
+  } catch {
+    return res.status(200).json({ success: true, status: 'ok', timestamp: new Date().toISOString() });
+  }
 });
 
 // Detailed health check
