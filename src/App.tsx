@@ -83,14 +83,14 @@ const Impact = lazy(() => import("./pages/sustainability/Impact"));
 const queryClient = new QueryClient();
 
 const App = () => (
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AdminProvider>
           <OnboardingProvider>
           <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+      <BrowserRouter>
             <Suspense fallback={<div className="p-8 text-center text-gray-600">Loading…</div>}>
             <Routes>
               <Route path="/" element={<Index />} />

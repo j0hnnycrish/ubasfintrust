@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import { ScrollingBackground, bankingImages } from '@/components/ui/ScrollingBackground';
+import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -102,15 +103,14 @@ export default function About() {
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">
-        <ScrollingBackground 
-          images={bankingImages} 
-          speed={40} 
-          opacity={0.15} 
-          overlay={true}
-        />
+      {/* Hero Section (below navbar) */}
+      <section className="relative overflow-hidden">
+        {/* Background carousel fills the hero section */}
+        <div className="absolute inset-0">
+          <BackgroundCarousel heightVh={50} />
+        </div>
         
+        {/* Foreground content overlay */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <div className="inline-flex items-center space-x-2 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full px-6 py-2 text-yellow-400 mb-6">
@@ -118,12 +118,12 @@ export default function About() {
               <span className="text-sm font-medium">Trusted Since 1995</span>
             </div>
             
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6">
+            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow">
               About UBAS
               <span className="block text-yellow-400">Financial Trust</span>
             </h1>
             
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-100 max-w-3xl mx-auto mb-8">
               For nearly three decades, we've been pioneering the future of banking with innovative solutions, 
               unwavering security, and a commitment to global financial excellence.
             </p>
