@@ -27,9 +27,9 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://ubasfintrust.com,https://www.ubasfintrust.com
+        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://*.netlify.app
       - key: SOCKET_IO_CORS_ORIGIN
-        value: https://ubasfintrust.com
+        value: https://*.netlify.app
       - key: UPLOAD_PATH
         value: /opt/render/project/src/uploads
       - key: MAX_FILE_SIZE
