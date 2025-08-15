@@ -31,6 +31,8 @@ export const generalRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Don't rate limit platform health checks
+  skip: (req) => req.path.startsWith('/health'),
   handler: (req, res) => {
     logSecurity('RATE_LIMIT_EXCEEDED', undefined, req.ip, {
       endpoint: req.path,
