@@ -264,10 +264,10 @@ process.on('unhandledRejection', (reason: any, promise) => {
 // Start server
 const startServer = async () => {
   try {
-    // Test database connection
+    // Test database connection (non-fatal on startup; app can run degraded)
     const dbConnected = await testConnection();
     if (!dbConnected) {
-      throw new Error('Failed to connect to database');
+      logger.warn('Database not reachable at startup; continuing in degraded mode');
     }
 
     // Connect to Redis only if configured (optional dependency)
@@ -277,50 +277,54 @@ const startServer = async () => {
       logger.warn('Continuing without Redis due to connection issue');
     }
 
-    // Seed default corporate admin user if configured and missing
+    // Seed default corporate admin user if configured and missing (only if DB connected)
     try {
-      const adminEmail = process.env.ADMIN_EMAIL;
-      const adminPassword = process.env.ADMIN_PASSWORD;
-      if (adminEmail && adminPassword) {
-        const existing = await (await import('./config/db')).db('users').where({ email: adminEmail }).first();
-        if (!existing) {
-          const { v4: uuidv4 } = require('uuid');
-          const { AuthMiddleware } = require('./middleware/auth');
-          const password_hash = await AuthMiddleware.hashPassword(adminPassword);
-          const userId = uuidv4();
-          await (await import('./config/db')).db('users').insert({
-            id: userId,
-            email: adminEmail,
-            password_hash,
-            first_name: process.env.ADMIN_FIRST_NAME || 'Platform',
-            last_name: process.env.ADMIN_LAST_NAME || 'Administrator',
-            phone: process.env.ADMIN_PHONE || '+10000000000',
-            date_of_birth: '1990-01-01',
-            account_type: 'corporate',
-            kyc_status: 'approved',
-            is_active: true,
-            is_verified: true,
-            two_factor_enabled: false,
-            failed_login_attempts: 0
-          });
-          // Create a primary corporate operating account
-          await (await import('./config/db')).db('accounts').insert({
-            id: uuidv4(),
-            user_id: userId,
-            account_number: Math.random().toString().slice(2,12),
-            account_type: 'checking',
-            balance: 0,
-            available_balance: 0,
-            currency: 'USD',
-            status: 'active',
-            minimum_balance: 0
-          });
-          logger.info('Seeded default corporate admin user', { adminEmail });
+      if (dbConnected) {
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (adminEmail && adminPassword) {
+          const existing = await (await import('./config/db')).db('users').where({ email: adminEmail }).first();
+          if (!existing) {
+            const { v4: uuidv4 } = require('uuid');
+            const { AuthMiddleware } = require('./middleware/auth');
+            const password_hash = await AuthMiddleware.hashPassword(adminPassword);
+            const userId = uuidv4();
+            await (await import('./config/db')).db('users').insert({
+              id: userId,
+              email: adminEmail,
+              password_hash,
+              first_name: process.env.ADMIN_FIRST_NAME || 'Platform',
+              last_name: process.env.ADMIN_LAST_NAME || 'Administrator',
+              phone: process.env.ADMIN_PHONE || '+10000000000',
+              date_of_birth: '1990-01-01',
+              account_type: 'corporate',
+              kyc_status: 'approved',
+              is_active: true,
+              is_verified: true,
+              two_factor_enabled: false,
+              failed_login_attempts: 0
+            });
+            // Create a primary corporate operating account
+            await (await import('./config/db')).db('accounts').insert({
+              id: uuidv4(),
+              user_id: userId,
+              account_number: Math.random().toString().slice(2,12),
+              account_type: 'checking',
+              balance: 0,
+              available_balance: 0,
+              currency: 'USD',
+              status: 'active',
+              minimum_balance: 0
+            });
+            logger.info('Seeded default corporate admin user', { adminEmail });
+          } else {
+            logger.info('Admin user already exists', { adminEmail });
+          }
         } else {
-          logger.info('Admin user already exists', { adminEmail });
+          logger.warn('ADMIN_EMAIL / ADMIN_PASSWORD not set – skipping admin seed');
         }
       } else {
-        logger.warn('ADMIN_EMAIL / ADMIN_PASSWORD not set – skipping admin seed');
+        logger.warn('Skipping admin seed because database is not connected');
       }
     } catch (seedErr) {
       logger.error('Admin seed error', seedErr as any);
