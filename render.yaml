@@ -26,9 +26,9 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://ubasfintrust1.onrender.com,https://ubasfintrust.com,https://www.ubasfintrust.com
+        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com,https://ubasfintrust1.onrender.com
       - key: SOCKET_IO_CORS_ORIGIN
-        value: https://ubasfintrust1.onrender.com
+        value: https://ubasfintrust.com
 
   - type: web
     name: ubas-frontend
