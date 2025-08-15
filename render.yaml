@@ -26,7 +26,7 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com,https://ubasfintrust1.onrender.com
+        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com
       - key: SOCKET_IO_CORS_ORIGIN
         value: https://ubasfintrust.com
 
@@ -38,9 +38,9 @@ services:
     buildCommand: "npm ci && npm run build"
     envVars:
       - key: VITE_API_URL
-        value: https://ubasfintrust1.onrender.com/api/v1
+        value: https://api.ubasfintrust.com/api/v1
       - key: VITE_SOCKET_URL
-        value: https://ubasfintrust1.onrender.com
+        value: https://api.ubasfintrust.com
       - key: VITE_APP_NAME
         value: UBAS Financial Trust
       - key: VITE_NODE_ENV
