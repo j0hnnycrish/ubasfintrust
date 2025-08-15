@@ -58,6 +58,10 @@ import PrivateEstate from "./pages/private/Estate";
 import PrivateWealth from "./pages/private/Wealth";
 import PrivateAdvisory from "./pages/private/Advisory";
 import PrivateBankingPage from "./pages/private/Banking";
+import Investors from "./pages/investors/Index";
+import Media from "./pages/media/Index";
+import CSR from "./pages/csr/Index";
+import Sustainability from "./pages/sustainability/Index";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +82,10 @@ const App = () => (
               <Route path="/private" element={<PrivateBanking />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/investors" element={<Investors />} />
+              <Route path="/media" element={<Media />} />
+              <Route path="/csr" element={<CSR />} />
+              <Route path="/sustainability" element={<Sustainability />} />
               <Route path="/leadership" element={<Leadership />} />
               <Route path="/careers" element={<Careers />} />
               <Route path="/awards" element={<Awards />} />

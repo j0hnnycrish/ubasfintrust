@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '@/lib/api';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,18 +118,20 @@ export default function Contact() {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        category: '',
-        message: ''
-      });
+      const resp = await api.post('/support/contact', formData);
+      if (resp.data?.success) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          category: '',
+          message: ''
+        });
+      } else {
+        setError('Failed to send message. Please try again later.');
+      }
     } catch (error) {
       setError('Failed to send message. Please try again.');
     } finally {

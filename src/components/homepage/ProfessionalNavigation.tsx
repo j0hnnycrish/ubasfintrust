@@ -225,10 +225,10 @@ export function ProfessionalNavigation() {
                 </div>
               </div>
 
-              <button className="text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
-              <button className="text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
-              <button className="text-brand-700 hover:text-brand-600 font-medium">CSR</button>
-              <button className="text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+              <button onClick={() => navigate('/investors')} className="text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
+              <button onClick={() => navigate('/media')} className="text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
+              <button onClick={() => navigate('/csr')} className="text-brand-700 hover:text-brand-600 font-medium">CSR</button>
+              <button onClick={() => navigate('/sustainability')} className="text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
             </div>
 
             {/* Right Side Actions */}
@@ -269,10 +269,10 @@ export function ProfessionalNavigation() {
               <div className="space-y-2">
                 <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">BANKING</button>
                 <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">ABOUT</button>
-                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
-                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
-                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">CSR</button>
-                <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+                <button onClick={() => handleNavigation('/investors')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
+                <button onClick={() => handleNavigation('/media')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
+                <button onClick={() => handleNavigation('/csr')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">CSR</button>
+                <button onClick={() => handleNavigation('/sustainability')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
               </div>
               <Button 
                 onClick={() => setShowLoginModal(true)}
