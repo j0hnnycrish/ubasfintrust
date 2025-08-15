@@ -101,7 +101,7 @@ router.post('/register', authRateLimit, registerValidation, async (req: Request,
       account_type: accountType === 'personal' ? 'checking' : 'business',
       balance: 0,
       available_balance: 0,
-      currency: 'NGN',
+      currency: 'USD',
       status: 'active',
       minimum_balance: accountType === 'personal' ? 1000 : 50000
     };

@@ -46,7 +46,7 @@ import templateRoutes from './routes/templates';
 import userOnboardingRoutes from './routes/userOnboarding';
 import grantRoutes from './routes/grants';
 import { notificationService } from './services/notificationService';
-import { redisClient } from './config/redis';
+import { redisClient, isRedisConfigured, isRedisReady } from './config/redis';
 import { db } from './config/db';
 
 const app = express();
@@ -134,7 +134,9 @@ app.get(`/api/${API_VERSION}/_diagnostics`, async (req, res) => {
     try { const t0 = Date.now(); await db.raw('select 1'); dbLatency = Date.now()-t0; dbOk = true; } catch {}
     // Redis ping
     let redisOk = false; let redisLatency: number|undefined;
-    try { const t1 = Date.now(); await redisClient.ping(); redisLatency = Date.now()-t1; redisOk = true; } catch {}
+    if (isRedisConfigured() && isRedisReady()) {
+      try { const t1 = Date.now(); await redisClient.ping(); redisLatency = Date.now()-t1; redisOk = true; } catch {}
+    }
     // Provider health (email + sms capability flags)
     let providerHealth: any = null;
     try {

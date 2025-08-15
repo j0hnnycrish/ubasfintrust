@@ -166,7 +166,7 @@ export const authAPI = {
     email: string;
     password: string;
     twoFactorToken?: string;
-  }): Promise<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>> => {
+  }): Promise<ApiResponse<{ user: User; accessToken: string; refreshToken: string; requiresTwoFactor?: boolean }>> => {
     const response = await api.post('/auth/login', credentials);
     
     if (response.data.success && response.data.data.accessToken) {
@@ -412,7 +412,7 @@ export const grantsAPI = {
 
 // Payment API
 export const paymentAPI = {
-  createDepositIntent: async (accountId: string, amount: number, currency: string = 'NGN'): Promise<ApiResponse<{
+  createDepositIntent: async (accountId: string, amount: number, currency: string = 'USD'): Promise<ApiResponse<{
     id: string;
     amount: number;
     currency: string;
@@ -423,6 +423,14 @@ export const paymentAPI = {
       accountId,
       amount,
       currency
+    });
+    return response.data;
+  },
+
+  simulateCompletion: async (simulationId: string, success: boolean = true): Promise<ApiResponse<{ message: string }>> => {
+    const response = await api.post('/payments/simulate-completion', {
+      simulationId,
+      success
     });
     return response.data;
   },

@@ -4,6 +4,7 @@ import { AuthMiddleware } from '../middleware/auth';
 import { db } from '../config/db';
 import { logger } from '../utils/logger';
 import { AuthRequest } from '../types';
+import { SUPPORTED_CURRENCIES, isSupportedCurrency } from '../constants/currencies';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.use(AuthMiddleware.verifyToken);
 // Create additional account for authenticated user
 router.post('/', [
   body('accountType').isIn(['checking','savings','business','investment','loan']).withMessage('Invalid account type'),
-  body('currency').optional().isLength({ min:3, max:3 }),
+  body('currency').optional().isIn(SUPPORTED_CURRENCIES).withMessage('Unsupported currency'),
   body('initialDeposit').optional().isFloat({ min:0 })
 ], async (req: AuthRequest, res: Response) => {
   try {
@@ -22,7 +23,8 @@ router.post('/', [
       return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
     }
     const user = req.user!;
-    const { accountType, currency='USD', initialDeposit=0 } = req.body;
+  const { accountType, currency='USD', initialDeposit=0 } = req.body;
+  const ccy = isSupportedCurrency(currency) ? currency.toUpperCase() : 'USD';
     const accountId = require('uuid').v4();
     const accountNumber = Math.random().toString().slice(2,12);
     await db('accounts').insert({
@@ -32,7 +34,7 @@ router.post('/', [
       account_type: accountType,
       balance: initialDeposit,
       available_balance: initialDeposit,
-      currency,
+  currency: ccy,
       status: 'active',
       minimum_balance: 0
     });

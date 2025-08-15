@@ -139,7 +139,7 @@ async function runFullIntegrationTest() {
           channels: ['email', 'sms', 'in_app'],
           data: {
             amount: 50000,
-            currency: 'NGN',
+            currency: 'USD',
             type: 'transfer',
             reference: 'TXN' + Date.now()
           }

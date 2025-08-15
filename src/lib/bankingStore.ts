@@ -11,7 +11,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  accountType: AccountType;
+  // Match API shape: string; we still track userAccountType separately as AccountType
+  accountType: string;
   kycStatus: string;
   twoFactorEnabled: boolean;
 }
@@ -81,6 +82,14 @@ interface BankingStore extends AuthState {
     description: string;
     recipientName?: string;
   }) => Promise<{ success: boolean; error?: string }>;
+  // Legacy names used by components
+  transferFunds: (transferData: {
+    fromAccountId: string;
+    toAccountNumber: string;
+    amount: number;
+    description: string;
+    recipientName?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
   
   // Profile actions
   updateProfile: (userData: { firstName?: string; lastName?: string; phone?: string }) => Promise<{ success: boolean; error?: string }>;
@@ -99,6 +108,7 @@ interface BankingStore extends AuthState {
   // Legacy compatibility methods
   getAccountsByUserId: (userId: string) => Account[];
   getTransactionsByAccountId: (accountId: string) => Transaction[];
+  getAccountByNumber: (accountNumber: string) => Account | undefined;
 }
 
 export const useBankingStore = create<BankingStore>()(
@@ -119,12 +129,12 @@ export const useBankingStore = create<BankingStore>()(
           const response = await authAPI.login({ email, password, twoFactorToken });
           
           if (response.success) {
-            if (response.data?.user) {
+      if (response.data?.user) {
               const user = response.data.user;
               set({
                 user,
                 isAuthenticated: true,
-                userAccountType: user.accountType,
+        userAccountType: (user.accountType as AccountType) || null,
                 isLoading: false
               });
               
@@ -241,6 +251,11 @@ export const useBankingStore = create<BankingStore>()(
         }
       },
 
+      // Legacy wrapper to satisfy components expecting transferFunds
+      transferFunds: async (transferData) => {
+        return await get().transfer(transferData);
+      },
+
       // Profile actions
       updateProfile: async (userData) => {
         try {
@@ -343,9 +358,9 @@ export const useBankingStore = create<BankingStore>()(
 
       // Utility functions
       formatCurrency: (amount: number) => {
-        return new Intl.NumberFormat('en-NG', {
+        return new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'NGN',
+          currency: 'USD',
         }).format(amount);
       },
 
@@ -369,6 +384,10 @@ export const useBankingStore = create<BankingStore>()(
         return get().transactions.filter(
           tx => tx.fromAccountId === accountId || tx.toAccountId === accountId
         );
+      },
+
+      getAccountByNumber: (accountNumber: string) => {
+        return get().accounts.find(a => a.accountNumber === accountNumber);
       },
     }),
     {

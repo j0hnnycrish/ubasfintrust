@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useBankingStore } from '@/lib/bankingStore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -7,22 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  FileText, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Download,
-  Search,
-  Filter,
-  User,
-  MapPin,
-  Briefcase,
-  Upload,
-  AlertTriangle,
-  RefreshCw
-} from 'lucide-react';
+import { FileText, Eye, CheckCircle, XCircle, Clock, Download, Search, User, MapPin, Briefcase, Upload, AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface KYCApplication {
   id: string;
@@ -77,6 +63,7 @@ export function KYCManagement() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [rejectionReason, setRejectionReason] = useState('');
   const { toast } = useToast();
+  const formatCurrency = useBankingStore((s) => s.formatCurrency);
 
   // Mock data for demonstration
   useEffect(() => {
@@ -86,7 +73,7 @@ export function KYCManagement() {
         userId: 'user_001',
         customerName: 'John Doe',
         email: 'john.doe@email.com',
-        phone: '+234-801-234-5678',
+  phone: '+1-202-555-0146',
         accountType: 'personal',
         status: 'pending',
         submittedAt: '2024-01-15T10:30:00Z',
@@ -95,27 +82,27 @@ export function KYCManagement() {
           lastName: 'Doe',
           middleName: 'Michael',
           dateOfBirth: '1990-05-15',
-          nationality: 'Nigerian',
-          idType: 'nin',
-          idNumber: '12345678901'
+          nationality: 'American',
+          idType: 'passport',
+          idNumber: 'X12345678'
         },
         addressInfo: {
-          street: '123 Lagos Street',
-          city: 'Lagos',
-          state: 'Lagos State',
-          zipCode: '100001',
-          country: 'Nigeria',
+          street: '123 Main Street',
+          city: 'New York',
+          state: 'NY',
+          zipCode: '10001',
+          country: 'USA',
           residencyStatus: 'owner'
         },
         employmentInfo: {
           employmentStatus: 'employed',
           employerName: 'Tech Corp Ltd',
           jobTitle: 'Software Engineer',
-          monthlyIncome: '500000',
+          monthlyIncome: '12000',
           sourceOfFunds: 'salary'
         },
         documents: {
-          primaryId: 'nin_document.pdf',
+          primaryId: 'passport.pdf',
           addressProof: 'utility_bill.pdf',
           incomeProof: 'salary_slip.pdf',
           selfie: 'selfie.jpg'
@@ -126,7 +113,7 @@ export function KYCManagement() {
         userId: 'user_002',
         customerName: 'Jane Smith',
         email: 'jane.smith@email.com',
-        phone: '+234-802-345-6789',
+        phone: '+44-20-7946-0958',
         accountType: 'business',
         status: 'in_review',
         submittedAt: '2024-01-14T14:20:00Z',
@@ -134,21 +121,21 @@ export function KYCManagement() {
           firstName: 'Jane',
           lastName: 'Smith',
           dateOfBirth: '1985-08-22',
-          nationality: 'Nigerian',
+          nationality: 'British',
           idType: 'passport',
           idNumber: 'A12345678'
         },
         addressInfo: {
-          street: '456 Abuja Avenue',
-          city: 'Abuja',
-          state: 'FCT',
-          zipCode: '900001',
-          country: 'Nigeria',
+          street: '1 Lombard Street',
+          city: 'London',
+          state: 'London',
+          zipCode: 'EC3V',
+          country: 'UK',
           residencyStatus: 'tenant'
         },
         employmentInfo: {
           employmentStatus: 'self_employed',
-          monthlyIncome: '800000',
+          monthlyIncome: '7000',
           sourceOfFunds: 'business'
         },
         documents: {
@@ -271,7 +258,7 @@ export function KYCManagement() {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div><strong>Employment Status:</strong> {app.employmentInfo.employmentStatus}</div>
-            <div><strong>Monthly Income:</strong> ₦{parseInt(app.employmentInfo.monthlyIncome).toLocaleString()}</div>
+            <div><strong>Monthly Income:</strong> {formatCurrency(parseInt(app.employmentInfo.monthlyIncome))}</div>
             {app.employmentInfo.employerName && (
               <div><strong>Employer:</strong> {app.employmentInfo.employerName}</div>
             )}

@@ -4,6 +4,7 @@ import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNaviga
 import { ScrollingBackground, personalBankingImages } from '@/components/ui/ScrollingBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/navigation/PageHeader';
 import {
   CreditCard,
   PiggyBank,
@@ -74,6 +75,7 @@ export default function PersonalBanking() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
+  <PageHeader title="Personal Banking" subtitle="Back or home in one tap" />
 
       {/* Hero Section with Scrolling Background */}
       <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">

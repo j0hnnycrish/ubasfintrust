@@ -4,6 +4,7 @@ import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNaviga
 import { ScrollingBackground, businessBankingImages } from '@/components/ui/ScrollingBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/navigation/PageHeader';
 import {
   Briefcase,
   TrendingUp,
@@ -75,6 +76,7 @@ export default function BusinessBanking() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
+  <PageHeader title="Business Banking" subtitle="Back or return home quickly" />
 
       {/* Hero Section with Scrolling Background */}
       <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">

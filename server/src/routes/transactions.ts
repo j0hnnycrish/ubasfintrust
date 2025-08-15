@@ -87,7 +87,7 @@ router.post('/transfer', transferRateLimit, [
           throw new Error('Transfer would violate minimum balance requirement');
         }
 
-        // Calculate fee (example: 0.1% with minimum of 10 NGN)
+  // Calculate fee (example: 0.1% with minimum of 10 in account currency units)
         const feeAmount = Math.max(amount * 0.001, 10);
         const totalDeduction = amount + feeAmount;
 
@@ -209,11 +209,11 @@ router.post('/transfer', transferRateLimit, [
 
         // Send notification event for sender
         try {
-          notificationService.emit('transaction:completed', {
+            notificationService.emit('transaction:completed', {
             userId: user.id,
             type: 'transfer',
             amount,
-            currency: 'NGN',
+              currency: fromAccount.currency,
             reference,
             toAccountNumber,
             transactionId
@@ -241,11 +241,11 @@ router.post('/transfer', transferRateLimit, [
 
           // Send notification event for recipient
           try {
-            notificationService.emit('transaction:completed', {
+              notificationService.emit('transaction:completed', {
               userId: recipientUser.id,
               type: 'transfer_received',
               amount,
-              currency: 'NGN',
+                currency: toAccount.currency || fromAccount.currency,
               reference,
               fromUser: `${user.first_name} ${user.last_name}`,
               transactionId

@@ -26,7 +26,7 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com
+        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com,https://ubasfintrust1.onrender.com
       - key: SOCKET_IO_CORS_ORIGIN
         value: https://ubasfintrust.com
       # Email / Notifications
@@ -63,6 +63,18 @@ services:
         value: UBAS Financial Trust
       - key: VITE_NODE_ENV
         value: production
+      - key: VITE_MINIMUM_DEPOSIT
+        value: "1"
+      - key: VITE_MINIMUM_WITHDRAWAL
+        value: "20"
+      - key: VITE_SIMULATE_PAYMENTS
+        value: "true"
+      - key: VITE_HERO_IMAGES
+        value: https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=1926&auto=format,https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1950&auto=format,https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1950&auto=format
+      - key: VITE_HERO_ROTATION_MS
+        value: "7000"
+      - key: VITE_HERO_HEIGHT_VH
+        value: "50"
 
 databases:
   - name: ubasfintrust-db

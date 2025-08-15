@@ -4,6 +4,7 @@ import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNaviga
 import { ScrollingBackground, privateBankingImages } from '@/components/ui/ScrollingBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/navigation/PageHeader';
 import {
   Crown,
   TrendingUp,
@@ -88,6 +89,7 @@ export default function PrivateBanking() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
+  <PageHeader title="Private Banking" subtitle="Elite services with easy navigation" />
 
       {/* Hero Section with Scrolling Background */}
       <section className="relative bg-gradient-to-br from-red-700 via-red-800 to-red-900 overflow-hidden">

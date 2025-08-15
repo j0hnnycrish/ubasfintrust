@@ -291,7 +291,7 @@ async function runTests() {
     userId: 'user-123',
     type: 'transfer',
     amount: 50000,
-    currency: 'NGN',
+  currency: 'USD',
     reference: 'TXN123456',
     toAccountNumber: '1234567890'
   });

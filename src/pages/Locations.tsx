@@ -21,35 +21,35 @@ export default function Locations() {
   const locations = [
     {
       id: '1',
-      name: 'UBAS Financial Trust - Victoria Island',
-      address: '1 Tiamiyu Savage Street, Victoria Island, Lagos',
-      phone: '+234 1 234 5678',
+      name: 'UBAS Financial Trust - Midtown',
+      address: '350 5th Avenue, New York, NY 10118, USA',
+      phone: '+1 (212) 555-0100',
       hours: 'Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM',
       services: ['Full Banking Services', 'Private Banking', 'Business Banking', 'ATM'],
       type: 'branch'
     },
     {
       id: '2',
-      name: 'UBAS Financial Trust - Ikoyi',
-      address: '23 Awolowo Road, Ikoyi, Lagos',
-      phone: '+234 1 234 5679',
+      name: 'UBAS Financial Trust - City of London',
+      address: '1 Lombard Street, London EC3V 9AA, UK',
+      phone: '+44 20 7946 0958',
       hours: 'Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM',
       services: ['Full Banking Services', 'Wealth Management', 'ATM'],
       type: 'branch'
     },
     {
       id: '3',
-      name: 'UBAS Financial Trust - Abuja',
-      address: '45 Ademola Adetokunbo Crescent, Wuse II, Abuja',
-      phone: '+234 9 234 5678',
+      name: 'UBAS Financial Trust - Marina Bay',
+      address: '8 Marina Boulevard, Singapore 018981',
+      phone: '+65 3129 2100',
       hours: 'Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM',
       services: ['Full Banking Services', 'Corporate Banking', 'ATM'],
       type: 'branch'
     },
     {
       id: '4',
-      name: 'ATM - Shoprite Ikeja',
-      address: 'Shoprite Mall, Obafemi Awolowo Way, Ikeja, Lagos',
+      name: 'ATM - Downtown Mall',
+      address: '100 Market Street, San Francisco, CA 94103, USA',
       phone: 'N/A',
       hours: '24/7',
       services: ['ATM', 'Cash Deposit'],
@@ -57,8 +57,8 @@ export default function Locations() {
     },
     {
       id: '5',
-      name: 'ATM - Palms Shopping Mall',
-      address: 'The Palms Shopping Mall, Lekki, Lagos',
+      name: 'ATM - Westfield Centre',
+      address: 'Ariel Way, London W12 7GF, UK',
       phone: 'N/A',
       hours: '24/7',
       services: ['ATM', 'Cash Deposit'],
@@ -83,7 +83,7 @@ export default function Locations() {
               Find UBAS Locations
             </h1>
             <p className="text-xl text-banking-light max-w-3xl mx-auto mb-8">
-              Locate our branches and ATMs across Nigeria. We're here to serve you with convenient banking solutions.
+              Locate our branches and ATMs across the globe. We're here to serve you with convenient banking solutions.
             </p>
           </div>
         </div>

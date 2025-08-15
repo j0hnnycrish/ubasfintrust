@@ -28,20 +28,20 @@ export class PaymentService {
     userId: string,
     accountId: string,
     amount: number,
-    currency: string = 'usd'
+    currency: string = 'USD'
   ): Promise<PaymentIntent> {
     try {
-      // Validate minimum amount ($10)
-      if (amount < 1000) { // $10 in cents
-        throw new Error('Minimum deposit amount is $10');
+      // Validate minimum amount ($1 equivalent in minor units)
+      if (amount < 100) {
+        throw new Error('Minimum deposit amount is 1.00');
       }
 
       // Create simulated payment intent
       const simulationId = `sim_${uuidv4()}`;
       const paymentIntent = {
         id: simulationId,
-        amount: amount,
-        currency: currency.toLowerCase(),
+  amount: amount,
+  currency: currency.toUpperCase(),
         status: 'requires_payment_method',
         clientSecret: `${simulationId}_secret_${Date.now()}`,
         metadata: {
@@ -57,8 +57,8 @@ export class PaymentService {
       await db('transactions').insert({
         id: transactionId,
         to_account_id: accountId,
-        amount: amount / 100, // Convert to dollars
-        currency: currency.toUpperCase(),
+  amount: amount / 100, // Convert back to major units for storage
+  currency: currency.toUpperCase(),
         type: 'deposit',
         status: 'pending',
         description: 'Simulated Deposit',
@@ -82,8 +82,8 @@ export class PaymentService {
 
       return {
         id: paymentIntent.id,
-        amount: amount / 100,
-        currency: currency.toUpperCase(),
+  amount: amount / 100,
+  currency: currency.toUpperCase(),
         status: paymentIntent.status,
         clientSecret: paymentIntent.clientSecret || undefined,
         metadata: paymentIntent.metadata,
@@ -186,8 +186,7 @@ export class PaymentService {
         throw new Error('Insufficient funds');
       }
 
-      // For Nigerian banks, we'll use Paystack or Flutterwave
-      // For now, we'll simulate the withdrawal process
+  // For now, we'll simulate the withdrawal process
       const transferId = uuidv4();
 
       await db.transaction(async (trx) => {
@@ -206,7 +205,7 @@ export class PaymentService {
           id: transactionId,
           from_account_id: accountId,
           amount,
-          currency: 'NGN',
+          currency: (account.currency || 'USD').toUpperCase(),
           type: 'withdrawal',
           status: 'processing',
           description: `Withdrawal to ${bankDetails.accountName}`,
@@ -229,10 +228,7 @@ export class PaymentService {
         );
       });
 
-      // In a real implementation, you would integrate with:
-      // - Paystack Transfer API for Nigerian banks
-      // - Flutterwave Transfer API
-      // - Or other local payment processors
+    // In a real implementation, integrate with regional transfer APIs as appropriate
 
       return {
         transferId,
@@ -294,6 +290,7 @@ export class PaymentService {
     userId: string
   ): Promise<BankTransfer> {
     const transferId = uuidv4();
+    let transferCurrency = 'USD';
 
     await db.transaction(async (trx) => {
       // Get source account
@@ -313,6 +310,13 @@ export class PaymentService {
       if (!toAccount) {
         throw new Error('Destination account not found');
       }
+
+      // Enforce same-currency transfers for internal transfers (no FX implemented yet)
+      if (toAccount.currency && fromAccount.currency && toAccount.currency !== fromAccount.currency) {
+        throw new Error('Currency mismatch: internal transfers must use the same currency');
+      }
+
+      transferCurrency = (fromAccount.currency || 'USD').toUpperCase();
 
       // Update balances
       await trx('accounts')
@@ -337,8 +341,8 @@ export class PaymentService {
         id: transactionId,
         from_account_id: fromAccountId,
         to_account_id: toAccountId,
-        amount,
-        currency: 'NGN',
+  amount,
+  currency: transferCurrency,
         type: 'transfer',
         status: 'completed',
         description,
@@ -353,7 +357,7 @@ export class PaymentService {
       fromAccountId,
       toAccountId,
       amount,
-      currency: 'NGN',
+  currency: transferCurrency,
       status: 'completed',
     };
   }
@@ -367,12 +371,9 @@ export class PaymentService {
     userId: string
   ): Promise<BankTransfer> {
     const transferId = uuidv4();
+    let transferCurrency = 'USD';
 
-    // In a real implementation, integrate with:
-    // 1. Central Bank of Nigeria (CBN) for interbank transfers
-    // 2. Nigeria Inter-Bank Settlement System (NIBSS)
-    // 3. Paystack Transfer API
-    // 4. Flutterwave Transfer API
+  // In a real implementation, integrate with appropriate interbank/clearing APIs for the region
 
     await db.transaction(async (trx) => {
       // Deduct from source account
@@ -383,6 +384,8 @@ export class PaymentService {
       if (!fromAccount || fromAccount.available_balance < amount) {
         throw new Error('Insufficient funds');
       }
+
+      transferCurrency = (fromAccount.currency || 'USD').toUpperCase();
 
       await trx('accounts')
         .where({ id: fromAccountId })
@@ -397,8 +400,8 @@ export class PaymentService {
       await trx('transactions').insert({
         id: transactionId,
         from_account_id: fromAccountId,
-        amount,
-        currency: 'NGN',
+  amount,
+  currency: transferCurrency,
         type: 'transfer',
         status: 'processing',
         description: `Transfer to ${toAccountNumber}`,
@@ -440,7 +443,7 @@ export class PaymentService {
       fromAccountId,
       toAccountId: toAccountNumber,
       amount,
-      currency: 'NGN',
+  currency: transferCurrency,
       status: 'processing',
     };
   }

@@ -43,7 +43,7 @@ export default function Rates() {
     { currency: 'EUR/USD', buy: '1.0845', sell: '1.0865', change: '+0.12%' },
     { currency: 'GBP/USD', buy: '1.2634', sell: '1.2654', change: '-0.08%' },
     { currency: 'USD/JPY', buy: '149.25', sell: '149.45', change: '+0.34%' },
-    { currency: 'USD/NGN', buy: '825.50', sell: '830.00', change: '+0.15%' },
+    { currency: 'USD/CHF', buy: '0.8720', sell: '0.8740', change: '+0.10%' },
     { currency: 'USD/CAD', buy: '1.3456', sell: '1.3476', change: '-0.05%' },
     { currency: 'AUD/USD', buy: '0.6523', sell: '0.6543', change: '+0.22%' }
   ];

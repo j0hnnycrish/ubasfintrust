@@ -92,7 +92,7 @@ export function KYCVerificationFlow({ onComplete, onCancel }: KYCVerificationFlo
     city: '',
     state: '',
     zipCode: '',
-    country: 'Nigeria',
+    country: '',
     residencyStatus: '',
     yearsAtAddress: ''
   });
@@ -294,15 +294,17 @@ export function KYCVerificationFlow({ onComplete, onCancel }: KYCVerificationFlo
               </div>
               <div>
                 <Label htmlFor="nationality">Nationality *</Label>
-                <Select value={personalInfo.nationality} onValueChange={(value) => setPersonalInfo(prev => ({ ...prev, nationality: value }))}>
+        <Select value={personalInfo.nationality} onValueChange={(value) => setPersonalInfo(prev => ({ ...prev, nationality: value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select nationality" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="nigerian">Nigerian</SelectItem>
-                    <SelectItem value="american">American</SelectItem>
-                    <SelectItem value="british">British</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+          <SelectItem value="american">American</SelectItem>
+          <SelectItem value="british">British</SelectItem>
+          <SelectItem value="canadian">Canadian</SelectItem>
+          <SelectItem value="indian">Indian</SelectItem>
+          <SelectItem value="nigerian">Nigerian</SelectItem>
+          <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -313,10 +315,10 @@ export function KYCVerificationFlow({ onComplete, onCancel }: KYCVerificationFlo
                     <SelectValue placeholder="Select ID type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="nin">National ID (NIN)</SelectItem>
-                    <SelectItem value="passport">International Passport</SelectItem>
-                    <SelectItem value="drivers_license">Driver's License</SelectItem>
-                    <SelectItem value="voters_card">Voter's Card</SelectItem>
+          <SelectItem value="passport">Passport</SelectItem>
+          <SelectItem value="drivers_license">Driver's License</SelectItem>
+          <SelectItem value="national_id">National ID</SelectItem>
+          <SelectItem value="residence_permit">Residence Permit</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

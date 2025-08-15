@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/api/*", "destination": "https://api.ubasfintrust.com/api/v1/:splat", "status": 200 },
+    { "source": "/(.*)", "destination": "/index.html", "status": 200 }
+  ]
+}

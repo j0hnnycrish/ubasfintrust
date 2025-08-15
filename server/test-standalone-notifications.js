@@ -26,7 +26,7 @@ async function testNotificationSystem() {
       userId: 'user-123',
       type: 'transfer',
       amount: 50000,
-      currency: 'NGN',
+  currency: 'USD',
       reference: 'TXN123456'
     });
     console.log('✅ Transaction completed notification sent');

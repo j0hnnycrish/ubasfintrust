@@ -1,10 +1,12 @@
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
+import PageHeader from '@/components/navigation/PageHeader';
 
 export default function Leadership() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
+  <PageHeader title="Leadership" subtitle="Meet our executive team" />
       {/* Hero below navbar with carousel background */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">

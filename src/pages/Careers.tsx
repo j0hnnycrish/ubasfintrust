@@ -31,10 +31,10 @@ export default function Careers() {
       id: '1',
       title: 'Senior Software Engineer',
       department: 'Technology',
-      location: 'Lagos, Nigeria',
+      location: 'New York, USA',
       type: 'Full-time',
       experience: '5+ years',
-      salary: '₦8,000,000 - ₦12,000,000',
+      salary: '$120,000 - $170,000',
       description: 'Join our fintech team to build next-generation banking solutions.',
       requirements: ['React/Node.js', 'Cloud platforms', 'Banking domain knowledge'],
       posted: '2 days ago'
@@ -43,10 +43,10 @@ export default function Careers() {
       id: '2',
       title: 'Investment Banking Analyst',
       department: 'Investment Banking',
-      location: 'Abuja, Nigeria',
+      location: 'London, UK',
       type: 'Full-time',
       experience: '2-4 years',
-      salary: '₦6,000,000 - ₦9,000,000',
+      salary: '£55,000 - £75,000',
       description: 'Analyze investment opportunities and support client transactions.',
       requirements: ['Finance degree', 'Financial modeling', 'CFA preferred'],
       posted: '1 week ago'
@@ -55,10 +55,10 @@ export default function Careers() {
       id: '3',
       title: 'Customer Experience Manager',
       department: 'Customer Service',
-      location: 'Lagos, Nigeria',
+      location: 'Toronto, Canada',
       type: 'Full-time',
       experience: '3-5 years',
-      salary: '₦4,500,000 - ₦6,500,000',
+      salary: 'CA$80,000 - CA$110,000',
       description: 'Lead customer experience initiatives and service improvements.',
       requirements: ['Customer service experience', 'Team leadership', 'Process improvement'],
       posted: '3 days ago'
@@ -67,10 +67,10 @@ export default function Careers() {
       id: '4',
       title: 'Risk Management Specialist',
       department: 'Risk Management',
-      location: 'Lagos, Nigeria',
+      location: 'Singapore',
       type: 'Full-time',
       experience: '4-6 years',
-      salary: '₦7,000,000 - ₦10,000,000',
+      salary: 'S$95,000 - S$130,000',
       description: 'Assess and mitigate financial risks across banking operations.',
       requirements: ['Risk management certification', 'Banking experience', 'Analytical skills'],
       posted: '5 days ago'
@@ -82,7 +82,7 @@ export default function Careers() {
       location: 'Remote',
       type: 'Full-time',
       experience: '2-4 years',
-      salary: '₦3,500,000 - ₦5,500,000',
+      salary: '$60,000 - $85,000',
       description: 'Drive digital marketing campaigns and brand awareness.',
       requirements: ['Digital marketing experience', 'Social media expertise', 'Analytics tools'],
       posted: '1 week ago'
@@ -91,10 +91,10 @@ export default function Careers() {
       id: '6',
       title: 'Compliance Officer',
       department: 'Compliance',
-      location: 'Abuja, Nigeria',
+      location: 'Dubai, UAE',
       type: 'Full-time',
       experience: '3-5 years',
-      salary: '₦5,000,000 - ₦7,500,000',
+      salary: 'AED 240,000 - AED 360,000',
       description: 'Ensure regulatory compliance across all banking operations.',
       requirements: ['Law/Finance degree', 'Regulatory knowledge', 'Attention to detail'],
       posted: '4 days ago'
@@ -102,7 +102,7 @@ export default function Careers() {
   ];
 
   const departments = ['all', 'Technology', 'Investment Banking', 'Customer Service', 'Risk Management', 'Marketing', 'Compliance'];
-  const locations = ['all', 'Lagos, Nigeria', 'Abuja, Nigeria', 'Remote'];
+  const locations = ['all', 'New York, USA', 'London, UK', 'Toronto, Canada', 'Singapore', 'Dubai, UAE', 'Remote'];
 
   const benefits = [
     {
@@ -321,7 +321,7 @@ export default function Careers() {
             Ready to Start Your Journey?
           </h2>
           <p className="text-xl text-banking-light mb-8">
-            Join a team that's shaping the future of banking in Nigeria and beyond.
+            Join a team that's shaping the future of banking globally.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-banking-gold hover:bg-banking-gold/90 text-banking-dark">

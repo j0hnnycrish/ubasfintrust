@@ -1,11 +1,15 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+// Make supabase dependency optional to avoid build issues when not installed
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const safeRequire = (name: string): any => { try { return require(name); } catch { return null; } };
+const supabaseModule = safeRequire('@supabase/supabase-js');
+const createClient: any = supabaseModule ? supabaseModule.createClient : (() => { throw new Error('Supabase module not installed'); });
+type SupabaseClient = any;
 import { logger } from '../utils/logger';
-import { env } from './env';
 
 // Supabase configuration
-const supabaseUrl = env.SUPABASE_URL || process.env['SUPABASE_URL'] || '';
-const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY || process.env['SUPABASE_SERVICE_ROLE_KEY'] || '';
-const supabaseAnonKey = env.SUPABASE_ANON_KEY || process.env['SUPABASE_ANON_KEY'] || '';
+const supabaseUrl = process.env['SUPABASE_URL'] || '';
+const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY'] || '';
+const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || '';
 
 // Create Supabase client for server-side operations (with service role key)
 export const supabaseAdmin: SupabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -59,11 +63,11 @@ export class SupabaseDatabase {
         timestamp: new Date(),
         details: { connected: true }
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'unhealthy',
         timestamp: new Date(),
-        details: { error: error.message }
+        details: { error: (error && error.message) || 'unknown' }
       };
     }
   }
@@ -152,8 +156,8 @@ export class SupabaseDatabase {
       .from('accounts')
       .insert([{
         ...accountData,
-        balance: accountData.balance || 0,
-        currency: accountData.currency || 'NGN',
+  balance: accountData.balance || 0,
+  currency: accountData.currency || 'USD',
         is_active: accountData.is_active !== false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

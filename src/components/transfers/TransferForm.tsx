@@ -223,7 +223,7 @@ export function TransferForm({ onBack, onSuccess }: TransferFormProps) {
               {/* Amount */}
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-brand-700 font-medium">
-                  Amount (NGN)
+                  Amount
                 </Label>
                 <Input
                   id="amount"

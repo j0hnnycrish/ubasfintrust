@@ -34,13 +34,13 @@ class SocketService {
     // Listen for transaction events
     this.socket.on('transaction_completed', (data) => {
       toast.success(`Transaction completed: ${data.reference}`, {
-        description: `Amount: ${data.amount} ${data.currency || 'NGN'}`,
+  description: `Amount: ${data.amount} ${data.currency || 'USD'}`,
       });
     });
 
     this.socket.on('transaction_received', (data) => {
       toast.success(`Money received from ${data.from}`, {
-        description: `Amount: ${data.amount} ${data.currency || 'NGN'}`,
+  description: `Amount: ${data.amount} ${data.currency || 'USD'}`,
       });
     });
 

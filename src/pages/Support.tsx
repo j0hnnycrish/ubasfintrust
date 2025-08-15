@@ -37,7 +37,7 @@ export default function Support() {
       icon: Phone,
       title: '24/7 Phone Support',
       description: 'Speak with our customer service representatives',
-      contact: '+234 1 234 5678',
+  contact: '+1 (800) 555-0199',
       availability: 'Available 24/7',
       color: 'bg-red-500'
     },
@@ -72,7 +72,7 @@ export default function Support() {
         {
           id: '2',
           question: 'How can I check my account balance?',
-          answer: 'You can check your balance through our mobile app, online banking, ATMs, or by calling our automated phone system at +234 1 234 5678.'
+          answer: 'You can check your balance through our mobile app, online banking, ATMs, or by calling our automated phone system at +1 (800) 555-0199.'
         },
         {
           id: '3',
@@ -88,7 +88,7 @@ export default function Support() {
         {
           id: '4',
           question: 'My card is lost or stolen. What should I do?',
-          answer: 'Immediately call our 24/7 hotline at +234 1 234 5678 to block your card. You can also block it through our mobile app or online banking.'
+          answer: 'Immediately call our 24/7 hotline at +1 (800) 555-0199 to block your card. You can also block it through our mobile app or online banking.'
         },
         {
           id: '5',
@@ -98,7 +98,7 @@ export default function Support() {
         {
           id: '6',
           question: 'What are the daily transaction limits?',
-          answer: 'Daily limits vary by account type and card type. Standard debit cards have a ₦200,000 daily withdrawal limit and ₦1,000,000 POS limit. Contact us to increase your limits.'
+          answer: 'Daily limits vary by account type and card type. Contact us to learn more or request an increase to your limits.'
         }
       ]
     },
@@ -109,7 +109,7 @@ export default function Support() {
         {
           id: '7',
           question: 'How do I download and set up the mobile app?',
-          answer: 'Download the UBAS Mobile app from Google Play Store or Apple App Store. Use your account number and phone number to register, then create a secure PIN.'
+          answer: 'Download the UBAS Mobile app from the Apple App Store or Google Play. Use your account number and phone number to register, then create a secure PIN.'
         },
         {
           id: '8',
@@ -119,7 +119,7 @@ export default function Support() {
         {
           id: '9',
           question: 'Can I transfer money to other banks?',
-          answer: 'Yes, you can transfer to other Nigerian banks instantly using our online banking or mobile app. International transfers are also available.'
+          answer: 'Yes, you can transfer to other banks instantly in supported regions using our online banking or mobile app. International transfers are also available.'
         }
       ]
     }

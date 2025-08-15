@@ -6,6 +6,7 @@ import { PaymentService } from '../services/paymentService';
 import { logger, logAudit } from '../utils/logger';
 import { AuthRequest } from '../types';
 import { externalBankingService } from '../services/externalBankingService';
+import { SUPPORTED_CURRENCIES, isSupportedCurrency } from '../constants/currencies';
 
 const router = Router();
 
@@ -15,8 +16,8 @@ router.use(AuthMiddleware.verifyToken);
 // Create deposit payment intent
 router.post('/deposit/create-intent', [
   body('accountId').isUUID(),
-  body('amount').isFloat({ min: 100 }), // Minimum ₦100
-  body('currency').optional().isIn(['NGN', 'USD', 'EUR', 'GBP'])
+  body('amount').isFloat({ min: 1 }),
+  body('currency').optional().isIn(SUPPORTED_CURRENCIES)
 ], async (req: AuthRequest, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -29,22 +30,22 @@ router.post('/deposit/create-intent', [
     }
 
     const user = req.user!;
-    const { accountId, amount, currency = 'NGN' } = req.body;
-
-    // Convert amount to kobo for Stripe (NGN)
-    const amountInKobo = Math.round(amount * 100);
+  const { accountId, amount, currency = 'USD' } = req.body;
+  const ccy = isSupportedCurrency(currency) ? currency.toUpperCase() : 'USD';
+  // Store monetary values in minor units when creating intents
+  const amountMinor = Math.round(amount * 100);
 
     const paymentIntent = await PaymentService.createDepositIntent(
       user.id,
       accountId,
-      amountInKobo,
-      currency
+  amountMinor,
+  ccy
     );
 
     logAudit('DEPOSIT_INTENT_CREATED', user.id, 'payment', {
       accountId,
-      amount,
-      currency,
+  amount,
+  ccy,
       paymentIntentId: paymentIntent.id
     });
 
@@ -242,26 +243,13 @@ router.get('/methods', async (req: AuthRequest, res: Response) => {
 // Get supported banks for withdrawals
 router.get('/banks', async (req: AuthRequest, res: Response) => {
   try {
-    // Nigerian banks list (in a real app, this would come from an API)
+    // Example banks placeholder. In production, fetch from a region-specific provider.
     const banks = [
-      { code: '044', name: 'Access Bank' },
-      { code: '014', name: 'Afribank Nigeria Plc' },
-      { code: '023', name: 'Citibank Nigeria Limited' },
-      { code: '050', name: 'Ecobank Nigeria Plc' },
-      { code: '011', name: 'First Bank of Nigeria Limited' },
-      { code: '214', name: 'First City Monument Bank Limited' },
-      { code: '070', name: 'Fidelity Bank Plc' },
-      { code: '058', name: 'Guaranty Trust Bank Plc' },
-      { code: '030', name: 'Heritage Banking Company Limited' },
-      { code: '082', name: 'Keystone Bank Limited' },
-      { code: '076', name: 'Polaris Bank Limited' },
-      { code: '221', name: 'Stanbic IBTC Bank Limited' },
-      { code: '068', name: 'Standard Chartered Bank Nigeria Limited' },
-      { code: '232', name: 'Sterling Bank Plc' },
-      { code: '033', name: 'United Bank for Africa Plc' },
-      { code: '032', name: 'Union Bank of Nigeria Plc' },
-      { code: '035', name: 'Wema Bank Plc' },
-      { code: '057', name: 'Zenith Bank Plc' }
+      { code: 'CITI', name: 'Citibank' },
+      { code: 'HSBC', name: 'HSBC' },
+      { code: 'DB', name: 'Deutsche Bank' },
+      { code: 'BARC', name: 'Barclays' },
+      { code: 'JPMC', name: 'JPMorgan Chase' }
     ];
 
     res.json({

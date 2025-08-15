@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.enum('account_type', ['checking', 'savings', 'business', 'investment', 'loan']).notNullable();
     table.decimal('balance', 15, 2).defaultTo(0);
     table.decimal('available_balance', 15, 2).defaultTo(0);
-    table.string('currency', 3).defaultTo('NGN');
+  table.string('currency', 3).defaultTo('USD');
     table.enum('status', ['active', 'inactive', 'suspended', 'closed']).defaultTo('active');
     table.decimal('interest_rate', 5, 2);
     table.decimal('overdraft_limit', 15, 2).defaultTo(0);

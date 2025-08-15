@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
 import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/navigation/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Award,
@@ -101,6 +102,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
+  <PageHeader title="About UBAS" subtitle="Back or return home anytime" />
       
       {/* Hero Section (below navbar) */}
       <section className="relative overflow-hidden">

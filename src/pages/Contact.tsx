@@ -53,7 +53,7 @@ export default function Contact() {
       icon: Mail,
       title: 'Email Support',
       description: 'Get detailed assistance via email',
-      contact: 'support@ubasfinancial.com',
+      contact: 'support@ubasfi.com',
       availability: 'Response within 2 hours'
     },
     {

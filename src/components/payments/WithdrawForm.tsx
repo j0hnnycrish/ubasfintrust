@@ -31,6 +31,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
   const [accountName, setAccountName] = useState('');
   const [banks, setBanks] = useState<Bank[]>([]);
   const [verifiedAccount, setVerifiedAccount] = useState<any>(null);
+  const MIN_WITHDRAW = Number(import.meta.env.VITE_MINIMUM_WITHDRAWAL || 20);
 
   // Fetch banks on component mount
   useEffect(() => {
@@ -83,8 +84,8 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
       return;
     }
 
-    if (!amount || parseFloat(amount) < 100) {
-      toast.error('Minimum withdrawal amount is ₦100');
+    if (!amount || parseFloat(amount) < MIN_WITHDRAW) {
+      toast.error(`Minimum withdrawal amount is $${MIN_WITHDRAW}`);
       return;
     }
 
@@ -158,7 +159,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
                   <SelectItem key={account.id} value={account.id}>
                     {account.accountType} - {account.accountNumber}
                     <span className="ml-2 text-sm text-muted-foreground">
-                      ₦{account.availableBalance.toLocaleString()}
+                      ${account.availableBalance.toLocaleString()}
                     </span>
                   </SelectItem>
                 ))}
@@ -166,7 +167,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
             </Select>
             {selectedAccountData && (
               <p className="text-xs text-muted-foreground">
-                Available: ₦{selectedAccountData.availableBalance.toLocaleString()}
+                Available: ${selectedAccountData.availableBalance.toLocaleString()}
               </p>
             )}
           </div>
@@ -175,8 +176,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
           <div className="space-y-2">
             <Label htmlFor="amount">Amount</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
-                ₦
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">$
               </span>
               <Input
                 id="amount"
@@ -185,14 +185,14 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="pl-8"
-                min="100"
+                min={MIN_WITHDRAW}
                 step="0.01"
                 max={selectedAccountData?.availableBalance || undefined}
                 required
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Minimum withdrawal: ₦100
+              Minimum withdrawal: ${MIN_WITHDRAW}
             </p>
           </div>
 
@@ -267,7 +267,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess, onCancel }) => {
               ) : (
                 <>
                   <Building2 className="mr-2 h-4 w-4" />
-                  Withdraw ₦{amount || '0'}
+                  Withdraw ${amount || '0'}
                 </>
               )}
             </Button>

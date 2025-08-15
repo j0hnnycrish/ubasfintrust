@@ -30,8 +30,10 @@ const clientOptions: Parameters<typeof createClient>[0] = sanitizedUrl
 // Avoid explicit RedisClientType annotation to prevent TS module augmentation mismatches on some builders
 const redisClient = createClient(clientOptions);
 
+// Keep error noise low; Redis is optional. Warn instead of error.
 redisClient.on('error', (err) => {
-  logger.error('Redis Client Error:', err);
+  const msg = (err && (err as any).message) ? (err as any).message : String(err);
+  logger.warn(`Redis client error: ${msg}`);
 });
 
 redisClient.on('connect', () => {
@@ -50,6 +52,16 @@ export const isRedisConfigured = (): boolean => {
   return Boolean(sanitizedUrl || process.env['REDIS_HOST'] || process.env['REDIS_PORT']);
 };
 
+export const isRedisReady = (): boolean => {
+  try {
+    // isOpen is true when the client is connected and ready to send commands
+    // @ts-ignore - property exists at runtime on redis v4 client
+    return !!(redisClient as any).isOpen;
+  } catch {
+    return false;
+  }
+};
+
 export const connectRedis = async (): Promise<void> => {
   if (!isRedisConfigured()) {
     logger.info('Redis not configured; skipping Redis connection');
@@ -58,8 +70,8 @@ export const connectRedis = async (): Promise<void> => {
   try {
     await redisClient.connect();
   } catch (error) {
-    logger.error('Failed to connect to Redis:', error);
-    throw error;
+  logger.warn('Failed to connect to Redis (continuing without it)');
+  // Do not throw; allow app to run degraded without Redis
   }
 };
 
@@ -76,51 +88,67 @@ export { redisClient };
 // Cache utility functions
 export class CacheService {
   static async get<T>(key: string): Promise<T | null> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return null;
+    }
     try {
       const value = await redisClient.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      logger.error(`Cache get error for key ${key}:`, error);
+      // Keep quiet when Redis is unavailable
+      logger.warn(`Cache get error for key ${key}`);
       return null;
     }
   }
 
   static async set(key: string, value: any, ttl: number = 3600): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return false;
+    }
     try {
       await redisClient.setEx(key, ttl, JSON.stringify(value));
       return true;
     } catch (error) {
-      logger.error(`Cache set error for key ${key}:`, error);
+      logger.warn(`Cache set error for key ${key}`);
       return false;
     }
   }
 
   static async del(key: string): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return false;
+    }
     try {
       await redisClient.del(key);
       return true;
     } catch (error) {
-      logger.error(`Cache delete error for key ${key}:`, error);
+      logger.warn(`Cache delete error for key ${key}`);
       return false;
     }
   }
 
   static async exists(key: string): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return false;
+    }
     try {
       const result = await redisClient.exists(key);
       return result === 1;
     } catch (error) {
-      logger.error(`Cache exists error for key ${key}:`, error);
+      logger.warn(`Cache exists error for key ${key}`);
       return false;
     }
   }
 
   static async flushAll(): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return false;
+    }
     try {
       await redisClient.flushAll();
       return true;
     } catch (error) {
-      logger.error('Cache flush all error:', error);
+      logger.warn('Cache flush all error');
       return false;
     }
   }
@@ -140,6 +168,10 @@ export class CacheService {
 
   // Rate limiting
   static async incrementRateLimit(key: string, window: number): Promise<number> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      // Fallback: allow the request (return 1)
+      return 1;
+    }
     try {
       const current = await redisClient.incr(`rate_limit:${key}`);
       if (current === 1) {
@@ -147,13 +179,17 @@ export class CacheService {
       }
       return current;
     } catch (error) {
-      logger.error(`Rate limit increment error for key ${key}:`, error);
+      logger.warn(`Rate limit increment error for key ${key}`);
       return 0;
     }
   }
 
   // Lock mechanism for critical operations
   static async acquireLock(key: string, ttl: number = 30): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      // Without Redis, do not block operations
+      return true;
+    }
     try {
       const result = await redisClient.set(`lock:${key}`, '1', {
         NX: true,
@@ -161,7 +197,7 @@ export class CacheService {
       });
       return result === 'OK';
     } catch (error) {
-      logger.error(`Lock acquire error for key ${key}:`, error);
+      logger.warn(`Lock acquire error for key ${key}`);
       return false;
     }
   }
@@ -194,6 +230,9 @@ export class TemplateCacheService {
   }
 
   static async invalidateTemplateCache(templateId?: string): Promise<boolean> {
+    if (!isRedisConfigured() || !isRedisReady()) {
+      return false;
+    }
     try {
       // Clear template list cache for all locales
       const listKeys = await redisClient.keys('templates:list:*');
@@ -207,7 +246,7 @@ export class TemplateCacheService {
 
       return true;
     } catch (error) {
-      logger.error('Template cache invalidation error:', error);
+      logger.warn('Template cache invalidation error');
       return false;
     }
   }

@@ -16,7 +16,7 @@ const testScenarios = [
       userId: TEST_USER_ID,
       type: 'transfer',
       amount: 50000,
-      currency: 'NGN',
+  currency: 'USD',
       reference: 'TXN' + Date.now(),
       toAccountNumber: '1234567890'
     }
@@ -68,7 +68,7 @@ const testScenarios = [
       channels: ['email', 'sms', 'in_app'],
       data: {
         amount: 500000,
-        currency: 'NGN',
+  currency: 'USD',
         type: 'transfer',
         timestamp: new Date().toISOString()
       }
