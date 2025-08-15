@@ -1,0 +1,36 @@
+name: System Check (Live API)
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "Base URL to your live API (e.g. https://api.example.com/api/v1)"
+        required: true
+      admin_email:
+        description: "Optional admin email for deeper checks"
+        required: false
+      admin_password:
+        description: "Optional admin password for deeper checks"
+        required: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Run system-check
+        env:
+          api_url: ${{ inputs.api_url }}
+          ADMIN_EMAIL: ${{ inputs.admin_email }}
+          ADMIN_PASSWORD: ${{ inputs.admin_password }}
+        run: node scripts/system-check.mjs
