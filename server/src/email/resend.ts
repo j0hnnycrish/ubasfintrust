@@ -10,8 +10,8 @@ export async function sendEventEmail({
 }) {
   // Choose sender based on type
   const from = type === 'alert'
-    ? 'alerts@ubasfintrust.com'
-    : 'noreply@ubasfintrust.com';
+    ? 'no-reply@alerts.ubasfintrust.com'
+    : 'no-reply@alerts.ubasfintrust.com';
 
   return await resend.emails.send({
     from,

@@ -23,7 +23,8 @@ import {
   Server,
   Database,
   HardDrive,
-  RefreshCw
+  RefreshCw,
+  Mail
 } from 'lucide-react';
 import bankingLogo from '@/assets/banking-logo.jpg';
 
@@ -38,6 +39,9 @@ export function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [diag, setDiag] = useState<any>(null);
   const [diagLoading, setDiagLoading] = useState(false);
+  const [emailHealth, setEmailHealth] = useState<any[]>([]);
+  const [emailHealthLoading, setEmailHealthLoading] = useState(false);
+  const [testEmailStatus, setTestEmailStatus] = useState<string>('');
 
   const fetchDiag = async () => {
     setDiagLoading(true);
@@ -55,6 +59,25 @@ export function AdminDashboard() {
     const id = setInterval(()=>fetchDiag(), 60000);
     return ()=> clearInterval(id);
   }, [activeTab]);
+
+  const fetchEmailHealth = async () => {
+    setEmailHealthLoading(true);
+    try {
+      const { adminAPI } = await import('@/lib/api');
+      const resp = await adminAPI.getEmailHealth();
+      if ((resp as any).success) setEmailHealth((resp as any).providers || (resp as any).data?.providers || []);
+    } catch(e) {}
+    finally { setEmailHealthLoading(false); }
+  };
+
+  const sendTestEmail = async () => {
+    setTestEmailStatus('');
+    try {
+      const { adminAPI } = await import('@/lib/api');
+      const resp = await adminAPI.sendTestNotification({ userId: adminUser.id, channel: 'email' });
+      if (resp.success) setTestEmailStatus('Sent'); else setTestEmailStatus('Failed');
+    } catch (e) { setTestEmailStatus('Failed'); }
+  };
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -169,6 +192,42 @@ export function AdminDashboard() {
             <div className="text-sm">DB: {diag? (diag.db?.ok ? 'OK':'Down') : '...' } {typeof diag?.db?.latencyMs!=='undefined' && `${diag.db.latencyMs}ms`}</div>
             <div className="text-sm">Redis: {diag? (diag.redis?.ok ? 'OK':'Down') : '...'} {typeof diag?.redis?.latencyMs!=='undefined' && `${diag.redis.latencyMs}ms`}</div>
             <Button variant="outline" size="sm" className="mt-2" onClick={fetchDiag} disabled={diagLoading}>{diagLoading? 'Refreshing':'Refresh'}</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Provider Health & Email Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Server className="h-4 w-4" /> Provider Health</CardTitle>
+            <Button variant="outline" size="sm" onClick={fetchEmailHealth} disabled={emailHealthLoading}>{emailHealthLoading ? 'Loading...' : 'Refresh'}</Button>
+          </CardHeader>
+          <CardContent>
+            {emailHealth.length === 0 ? (
+              <p className="text-sm text-gray-500">No providers configured or unable to fetch status.</p>
+            ) : (
+              <ul className="space-y-2">
+                {emailHealth.map((p:any, idx:number) => (
+                  <li key={idx} className="flex items-center justify-between text-sm">
+                    <span>{p.name}</span>
+                    <span className={p.healthy ? 'text-green-600' : 'text-red-600'}>{p.healthy ? 'Healthy' : 'Down'}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Mail className="h-4 w-4" /> Send Test Email</CardTitle>
+            <CardDescription>Send a test notification email to the current admin user</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3">
+              <Button onClick={sendTestEmail}>Send Test</Button>
+              {testEmailStatus && <span className={`text-sm ${testEmailStatus==='Sent' ? 'text-green-600':'text-red-600'}`}>{testEmailStatus}</span>}
+            </div>
           </CardContent>
         </Card>
       </div>

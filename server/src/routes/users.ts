@@ -78,6 +78,22 @@ router.put('/profile', [
 
     logAudit('USER_PROFILE_UPDATED', user.id, 'user', updateData);
 
+    // Notify user about profile update (email + in-app)
+    try {
+      const { notificationService } = require('../services/notificationService');
+      await notificationService.sendNotification({
+        id: require('uuid').v4(),
+        userId: user.id,
+        type: 'profile_update',
+        priority: 'medium',
+        title: 'Your profile was updated',
+        message: 'Your account profile details were updated successfully.',
+        channels: ['email','in_app']
+      });
+    } catch (notifErr) {
+      logger.warn('Failed to send profile update notification', notifErr);
+    }
+
     res.json({
       success: true,
       message: 'Profile updated successfully'

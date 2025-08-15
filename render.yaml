@@ -29,6 +29,24 @@ services:
         value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com
       - key: SOCKET_IO_CORS_ORIGIN
         value: https://ubasfintrust.com
+      # Email / Notifications
+      - key: FROM_EMAIL
+        value: no-reply@alerts.ubasfintrust.com
+      - key: FROM_NAME
+        value: UBAS Alerts
+      - key: RESEND_API_KEY
+        sync: false
+      # Optional SMTP (Zoho) for contact fallback
+      - key: SMTP_HOST
+        value: smtp.zohopro.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
 
   - type: web
     name: ubas-frontend

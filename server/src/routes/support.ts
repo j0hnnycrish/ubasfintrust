@@ -71,11 +71,11 @@ router.post('/contact', async (req: any, res: any) => {
 
     // Try to send an email notification if a provider is configured
     let emailResult: any = { success: false, provider: 'none' };
-    try {
+  try {
       const { EmailService } = await import('../services/emailService');
       const emailService = new EmailService();
       emailResult = await emailService.sendEmail({
-        to: process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || 'noreply@ubasfintrust.com',
+    to: process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || 'no-reply@alerts.ubasfintrust.com',
         subject: `[UBAS Website Contact] ${payload.subject} (${payload.category})`,
         text: `New contact form submission\n\nName: ${payload.name}\nEmail: ${payload.email}\nPhone: ${payload.phone || '-'}\nCategory: ${payload.category}\n\nMessage:\n${payload.message}`,
         html: `<p><strong>New contact form submission</strong></p>

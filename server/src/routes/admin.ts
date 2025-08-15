@@ -697,3 +697,36 @@ router.patch('/kyc/:kycId/review', [
 });
 
 export default router;
+// --- Appended admin utilities ---
+// Email provider health check
+router.get('/email/health', async (_req: Request, res: Response) => {
+  try {
+    const { EmailService } = require('../services/emailService');
+    const svc = new EmailService();
+    const status = await svc.getProviderStatus();
+    res.json({ success: true, providers: status });
+  } catch (e:any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// Admin: send a test notification to a user (requires auth + admin role)
+router.post('/notifications/test', async (req: any, res: Response) => {
+  try {
+    const { userId, channel = 'email' } = req.body || {};
+    if (!userId) return res.status(400).json({ success: false, message: 'userId required' });
+    const { notificationService } = require('../services/notificationService');
+    await notificationService.sendNotification({
+      id: require('uuid').v4(),
+      userId,
+      type: 'system',
+      priority: 'low',
+      title: 'Test notification',
+      message: 'This is a test notification from the admin panel.',
+      channels: [channel]
+    });
+    res.json({ success: true });
+  } catch (e:any) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});

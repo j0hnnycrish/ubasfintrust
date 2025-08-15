@@ -225,10 +225,77 @@ export function ProfessionalNavigation() {
                 </div>
               </div>
 
-              <button onClick={() => navigate('/investors')} className="text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
-              <button onClick={() => navigate('/media')} className="text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
-              <button onClick={() => navigate('/csr')} className="text-brand-700 hover:text-brand-600 font-medium">CSR</button>
-              <button onClick={() => navigate('/sustainability')} className="text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>INVESTORS</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-72 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/investors" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Overview</a>
+                      <a href="/investors/reports" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Financial Reports</a>
+                      <a href="/investors/governance" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Corporate Governance</a>
+                      <a href="/investors/announcements" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Announcements</a>
+                      <a href="/investors/shareholder" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Shareholder Services</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>MEDIA</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-72 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/media" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Overview</a>
+                      <a href="/media/press" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Press Releases</a>
+                      <a href="/media/news" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">News</a>
+                      <a href="/media/brand" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Brand Assets</a>
+                      <a href="/media/contacts" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Media Contacts</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>CSR</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-72 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/csr" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Overview</a>
+                      <a href="/csr/initiatives" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Initiatives</a>
+                      <a href="/csr/reports" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Reports</a>
+                      <a href="/csr/partnerships" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Partnerships</a>
+                      <a href="/csr/volunteering" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Volunteering</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-brand-700 hover:text-brand-600 font-medium">
+                  <span>SUSTAINABILITY</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute top-full left-0 w-80 bg-white shadow-lg border rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <a href="/sustainability" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Overview</a>
+                      <a href="/sustainability/strategy" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">ESG Strategy</a>
+                      <a href="/sustainability/policies" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Policies & Standards</a>
+                      <a href="/sustainability/reports" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Reports & Disclosures</a>
+                      <a href="/sustainability/impact" className="block px-3 py-2 text-sm text-brand-700 hover:bg-brand-50 hover:text-brand-600 rounded">Impact</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Side Actions */}
@@ -269,10 +336,42 @@ export function ProfessionalNavigation() {
               <div className="space-y-2">
                 <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">BANKING</button>
                 <button className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">ABOUT</button>
-                <button onClick={() => handleNavigation('/investors')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
-                <button onClick={() => handleNavigation('/media')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
-                <button onClick={() => handleNavigation('/csr')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">CSR</button>
-                <button onClick={() => handleNavigation('/sustainability')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+                <div>
+                  <button onClick={() => handleNavigation('/investors')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">INVESTORS</button>
+                  <div className="pl-4 mt-1 space-y-1 text-sm">
+                    <button onClick={() => handleNavigation('/investors/reports')} className="block w-full text-left text-brand-600 hover:text-brand-700">Financial Reports</button>
+                    <button onClick={() => handleNavigation('/investors/governance')} className="block w-full text-left text-brand-600 hover:text-brand-700">Corporate Governance</button>
+                    <button onClick={() => handleNavigation('/investors/announcements')} className="block w-full text-left text-brand-600 hover:text-brand-700">Announcements</button>
+                    <button onClick={() => handleNavigation('/investors/shareholder')} className="block w-full text-left text-brand-600 hover:text-brand-700">Shareholder Services</button>
+                  </div>
+                </div>
+                <div>
+                  <button onClick={() => handleNavigation('/media')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">MEDIA</button>
+                  <div className="pl-4 mt-1 space-y-1 text-sm">
+                    <button onClick={() => handleNavigation('/media/press')} className="block w-full text-left text-brand-600 hover:text-brand-700">Press Releases</button>
+                    <button onClick={() => handleNavigation('/media/news')} className="block w-full text-left text-brand-600 hover:text-brand-700">News</button>
+                    <button onClick={() => handleNavigation('/media/brand')} className="block w-full text-left text-brand-600 hover:text-brand-700">Brand Assets</button>
+                    <button onClick={() => handleNavigation('/media/contacts')} className="block w-full text-left text-brand-600 hover:text-brand-700">Media Contacts</button>
+                  </div>
+                </div>
+                <div>
+                  <button onClick={() => handleNavigation('/csr')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">CSR</button>
+                  <div className="pl-4 mt-1 space-y-1 text-sm">
+                    <button onClick={() => handleNavigation('/csr/initiatives')} className="block w-full text-left text-brand-600 hover:text-brand-700">Initiatives</button>
+                    <button onClick={() => handleNavigation('/csr/reports')} className="block w-full text-left text-brand-600 hover:text-brand-700">Reports</button>
+                    <button onClick={() => handleNavigation('/csr/partnerships')} className="block w-full text-left text-brand-600 hover:text-brand-700">Partnerships</button>
+                    <button onClick={() => handleNavigation('/csr/volunteering')} className="block w-full text-left text-brand-600 hover:text-brand-700">Volunteering</button>
+                  </div>
+                </div>
+                <div>
+                  <button onClick={() => handleNavigation('/sustainability')} className="block w-full text-left text-brand-700 hover:text-brand-600 font-medium">SUSTAINABILITY</button>
+                  <div className="pl-4 mt-1 space-y-1 text-sm">
+                    <button onClick={() => handleNavigation('/sustainability/strategy')} className="block w-full text-left text-brand-600 hover:text-brand-700">ESG Strategy</button>
+                    <button onClick={() => handleNavigation('/sustainability/policies')} className="block w-full text-left text-brand-600 hover:text-brand-700">Policies & Standards</button>
+                    <button onClick={() => handleNavigation('/sustainability/reports')} className="block w-full text-left text-brand-600 hover:text-brand-700">Reports & Disclosures</button>
+                    <button onClick={() => handleNavigation('/sustainability/impact')} className="block w-full text-left text-brand-600 hover:text-brand-700">Impact</button>
+                  </div>
+                </div>
               </div>
               <Button 
                 onClick={() => setShowLoginModal(true)}

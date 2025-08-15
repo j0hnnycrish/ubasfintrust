@@ -104,8 +104,8 @@ export const env = {
   SMTP_PORT: process.env['SMTP_PORT'] || '587',
   SMTP_USER: process.env['SMTP_USER'],
   SMTP_PASS: process.env['SMTP_PASS'],
-  FROM_EMAIL: process.env['FROM_EMAIL'] || 'noreply@ubasfintrust.com',
-  FROM_NAME: process.env['FROM_NAME'] || 'UBAS Financial Trust',
+  FROM_EMAIL: process.env['FROM_EMAIL'] || 'no-reply@alerts.ubasfintrust.com',
+  FROM_NAME: process.env['FROM_NAME'] || 'UBAS Alerts',
 
   // Email Service Providers
   SENDGRID_API_KEY: process.env['SENDGRID_API_KEY'],

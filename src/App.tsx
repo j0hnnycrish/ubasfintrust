@@ -58,10 +58,27 @@ import PrivateEstate from "./pages/private/Estate";
 import PrivateWealth from "./pages/private/Wealth";
 import PrivateAdvisory from "./pages/private/Advisory";
 import PrivateBankingPage from "./pages/private/Banking";
-import Investors from "./pages/investors/Index";
-import Media from "./pages/media/Index";
-import CSR from "./pages/csr/Index";
-import Sustainability from "./pages/sustainability/Index";
+import { lazy, Suspense } from "react";
+const Investors = lazy(() => import("./pages/investors/Index"));
+const Media = lazy(() => import("./pages/media/Index"));
+const CSR = lazy(() => import("./pages/csr/Index"));
+const Sustainability = lazy(() => import("./pages/sustainability/Index"));
+const InvestorReports = lazy(() => import("./pages/investors/Reports"));
+const Governance = lazy(() => import("./pages/investors/Governance"));
+const InvestorAnnouncements = lazy(() => import("./pages/investors/Announcements"));
+const ShareholderServices = lazy(() => import("./pages/investors/Shareholder"));
+const PressReleases = lazy(() => import("./pages/media/Press"));
+const News = lazy(() => import("./pages/media/News"));
+const BrandAssets = lazy(() => import("./pages/media/Brand"));
+const MediaContacts = lazy(() => import("./pages/media/Contacts"));
+const CSRInitiatives = lazy(() => import("./pages/csr/Initiatives"));
+const CSRReports = lazy(() => import("./pages/csr/Reports"));
+const CSRPartnerships = lazy(() => import("./pages/csr/Partnerships"));
+const CSRVolunteering = lazy(() => import("./pages/csr/Volunteering"));
+const ESGStrategy = lazy(() => import("./pages/sustainability/Strategy"));
+const Policies = lazy(() => import("./pages/sustainability/Policies"));
+const SustainabilityReports = lazy(() => import("./pages/sustainability/Reports"));
+const Impact = lazy(() => import("./pages/sustainability/Impact"));
 
 const queryClient = new QueryClient();
 
@@ -74,6 +91,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <Suspense fallback={<div className="p-8 text-center text-gray-600">Loading…</div>}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/personal" element={<PersonalBanking />} />
@@ -83,9 +101,25 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/investors" element={<Investors />} />
+              <Route path="/investors/reports" element={<InvestorReports />} />
+              <Route path="/investors/governance" element={<Governance />} />
+              <Route path="/investors/announcements" element={<InvestorAnnouncements />} />
+              <Route path="/investors/shareholder" element={<ShareholderServices />} />
               <Route path="/media" element={<Media />} />
+              <Route path="/media/press" element={<PressReleases />} />
+              <Route path="/media/news" element={<News />} />
+              <Route path="/media/brand" element={<BrandAssets />} />
+              <Route path="/media/contacts" element={<MediaContacts />} />
               <Route path="/csr" element={<CSR />} />
+              <Route path="/csr/initiatives" element={<CSRInitiatives />} />
+              <Route path="/csr/reports" element={<CSRReports />} />
+              <Route path="/csr/partnerships" element={<CSRPartnerships />} />
+              <Route path="/csr/volunteering" element={<CSRVolunteering />} />
               <Route path="/sustainability" element={<Sustainability />} />
+              <Route path="/sustainability/strategy" element={<ESGStrategy />} />
+              <Route path="/sustainability/policies" element={<Policies />} />
+              <Route path="/sustainability/reports" element={<SustainabilityReports />} />
+              <Route path="/sustainability/impact" element={<Impact />} />
               <Route path="/leadership" element={<Leadership />} />
               <Route path="/careers" element={<Careers />} />
               <Route path="/awards" element={<Awards />} />
@@ -133,6 +167,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
             <AIChatbot />
             <OnboardingModal />
           </BrowserRouter>

@@ -345,6 +345,14 @@ export const adminAPI = {
     const response = await api.post('/admin/email/test', data);
     return response.data;
   },
+  getEmailHealth: async (): Promise<ApiResponse<{ providers: Array<{ name: string; healthy: boolean }> }>> => {
+    const response = await api.get('/admin/email/health');
+    return response.data;
+  },
+  sendTestNotification: async (data: { userId: string; channel?: 'email'|'sms'|'in_app'|'push' }): Promise<ApiResponse<any>> => {
+    const response = await api.post('/admin/notifications/test', data);
+    return response.data;
+  },
   completeOnboarding: async (): Promise<ApiResponse<any>> => {
     const response = await api.post('/users/onboarding/complete');
     return response.data;

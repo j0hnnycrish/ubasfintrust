@@ -5,6 +5,7 @@
  *
  * Env Vars (optional):
  *  API_BASE (default http://localhost:5000/api/v1)
+ *    Aliases: api_url, VITE_API_URL (first non-empty is used)
  *  ADMIN_EMAIL / ADMIN_PASSWORD (required for admin feature tests)
  *  TEST_RECIPIENT (email to receive test message for /admin/email/test)
  *  DIAGNOSTICS_TOKEN (if server requires x-diagnostics-token header)
@@ -17,7 +18,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-const API_BASE = process.env.API_BASE || 'http://localhost:5000/api/v1';
+const API_BASE = process.env.API_BASE || process.env.api_url || process.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const TEST_RECIPIENT = process.env.TEST_RECIPIENT || ADMIN_EMAIL;
