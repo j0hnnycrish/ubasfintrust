@@ -11,6 +11,9 @@ on:
         required: false
   schedule:
     - cron: '15 */6 * * *' # every 6 hours at :15
+  push:
+    paths:
+      - '.github/workflows/render-smoke.yml'
 
 jobs:
   smoke:
@@ -38,6 +41,8 @@ jobs:
 
           FB="${INPUT_FALLBACK_URL:-}"
           if [ -z "$FB" ]; then FB="${SECRET_FALLBACK_URL:-}"; fi
+          # If still empty, try a sensible default for Render based on our service name
+          if [ -z "$FB" ]; then FB="https://ubas-backend.onrender.com"; fi
           if [ -n "$FB" ]; then
             echo "FALLBACK_URL=$FB" >> "$GITHUB_ENV"
             echo "Fallback: $FB"
