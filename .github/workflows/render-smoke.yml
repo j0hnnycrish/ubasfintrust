@@ -6,6 +6,9 @@ on:
       backend_url:
         description: "Backend base URL (e.g. https://ubas-backend.onrender.com)"
         required: false
+      fallback_backend_url:
+        description: "Optional fallback base URL (e.g. direct onrender.com origin)"
+        required: false
   schedule:
     - cron: '15 */6 * * *' # every 6 hours at :15
 
@@ -20,6 +23,8 @@ jobs:
         env:
           INPUT_BACKEND_URL: ${{ inputs.backend_url }}
           SECRET_BACKEND_URL: ${{ secrets.RENDER_BACKEND_URL }}
+          INPUT_FALLBACK_URL: ${{ inputs.fallback_backend_url }}
+          SECRET_FALLBACK_URL: ${{ secrets.RENDER_BACKEND_FALLBACK_URL }}
         run: |
           set -euo pipefail
           TARGET="${INPUT_BACKEND_URL:-}"
@@ -31,14 +36,68 @@ jobs:
           echo "BACKEND_URL=$TARGET" >> "$GITHUB_ENV"
           echo "Target: $TARGET"
 
+          FB="${INPUT_FALLBACK_URL:-}"
+          if [ -z "$FB" ]; then FB="${SECRET_FALLBACK_URL:-}"; fi
+          if [ -n "$FB" ]; then
+            echo "FALLBACK_URL=$FB" >> "$GITHUB_ENV"
+            echo "Fallback: $FB"
+          fi
+
       - name: Quick health probes
         env:
           DIAGNOSTICS_TOKEN: ${{ secrets.DIAGNOSTICS_TOKEN }}
         run: |
           set -euo pipefail
-          curl -fSL "${BACKEND_URL}/health" -o /dev/null
-          curl -fSL "${BACKEND_URL}/health/readiness" -o /dev/null
-          curl -fSL -H "x-diagnostics-token: ${DIAGNOSTICS_TOKEN:-}" "${BACKEND_URL}/api/v1/_diagnostics" -o /dev/null || true
+          attempts=12
+          sleep_secs=10
+
+          probe_once() {
+            local url="$1"; shift
+            echo "Probing: $url"
+            # shorter timeouts to avoid waiting full CF timeout windows
+            curl --connect-timeout 10 --max-time 20 -fsSL "$url" -o /dev/null
+          }
+
+          probe_with_retry() {
+            local label="$1"; shift
+            local path="$1"; shift
+            local tried_fb=0
+            for i in $(seq 1 "$attempts"); do
+              echo "[${label}] Attempt $i/$attempts"
+              if probe_once "${BACKEND_URL}${path}"; then
+                echo "[${label}] OK via primary"
+                return 0
+              fi
+              status=$?
+              echo "[${label}] Primary failed (exit $status)"
+              if [ -n "${FALLBACK_URL:-}" ] && [ "$tried_fb" -eq 0 ]; then
+                echo "[${label}] Trying fallback: ${FALLBACK_URL}${path}"
+                if probe_once "${FALLBACK_URL}${path}"; then
+                  echo "[${label}] OK via fallback"
+                  return 0
+                fi
+                echo "[${label}] Fallback failed"
+                tried_fb=1
+              fi
+              if [ "$i" -lt "$attempts" ]; then
+                echo "[${label}] Sleeping ${sleep_secs}s before retry..."
+                sleep "$sleep_secs"
+              fi
+            done
+            echo "[${label}] All attempts failed"
+            return 1
+          }
+
+          # Liveness and readiness
+          probe_with_retry "liveness" "/health" || exit 1
+          probe_with_retry "readiness" "/health/readiness" || exit 1
+          # Diagnostics is optional; don't fail the job if forbidden or missing token
+          set +e
+          probe_once "${BACKEND_URL}/api/v1/_diagnostics" || true
+          if [ -n "${FALLBACK_URL:-}" ]; then
+            probe_once "${FALLBACK_URL}/api/v1/_diagnostics" || true
+          fi
+          set -e
 
       - name: Setup Node
         uses: actions/setup-node@v4
