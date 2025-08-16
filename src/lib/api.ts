@@ -1,8 +1,11 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import { DemoStore } from './demo/mock';
 import { toast } from 'sonner';
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const DEMO_FRONTEND_ONLY = (import.meta.env.VITE_DEMO_FRONTEND_ONLY || 'false') === 'true';
+const demoUid = () => Math.random().toString(36).slice(2);
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -84,14 +87,74 @@ api.interceptors.response.use(
       }
     }
 
-    // Handle other errors
+    // If backend is unreachable and we are in demo-only mode, return mocked responses for key endpoints
+    const status = error.response?.status;
+    const code = (error as any).code;
+    const url = (originalRequest?.url || '') as string;
+    const method = (originalRequest?.method || 'get').toLowerCase();
+    const isNetwork = !status || status === 404 || code === 'ECONNABORTED';
+    if (DEMO_FRONTEND_ONLY && isNetwork) {
+      try {
+        // Auth endpoints
+        if (url.endsWith('/auth/login') && method === 'post') {
+          const body = originalRequest.data && typeof originalRequest.data === 'string' ? JSON.parse(originalRequest.data) : originalRequest.data;
+          const user = DemoStore.login(body.email, body.password);
+          if (!user) {
+            return Promise.resolve({ data: { success: false, message: 'Invalid credentials (demo)' } } as any);
+          }
+          return Promise.resolve({ data: { success: true, data: { user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, accountType: user.accountType, isVerified: user.isVerified, kycStatus: user.kycStatus }, accessToken: 'demo-token', refreshToken: 'demo-refresh' } } } as any);
+        }
+        if (url.endsWith('/auth/register') && method === 'post') {
+          const body = originalRequest.data && typeof originalRequest.data === 'string' ? JSON.parse(originalRequest.data) : originalRequest.data;
+          const user = DemoStore.createUser(body.email, body.password, body.firstName, body.lastName, body.accountType);
+          return Promise.resolve({ data: { success: true, data: { userId: user.id, accountNumber: DemoStore.getAccounts(user.id)[0].accountNumber } } } as any);
+        }
+        // User endpoints
+        if (url.endsWith('/users/accounts') && method === 'get') {
+          const tokenUser = localStorage.getItem('ubas_user');
+          const parsed = tokenUser ? (JSON.parse(tokenUser) as any) : null;
+          const userId = parsed?.id || (Object.values((DemoStore as any).users ?? {})[0] as any)?.id;
+          const accounts = userId ? DemoStore.getAccounts(userId) : [];
+          return Promise.resolve({ data: { success: true, data: accounts } } as any);
+        }
+        if (url.includes('/users/transactions') && method === 'get') {
+          // For demo, return transactions of the first account of current user
+          const tokenUser = localStorage.getItem('ubas_user');
+          const parsed = tokenUser ? (JSON.parse(tokenUser) as any) : null;
+          const userId = parsed?.id || (Object.values((DemoStore as any).users ?? {})[0] as any)?.id;
+          const acc = userId ? DemoStore.getAccounts(userId)[0] : undefined;
+          const list = acc ? DemoStore.getTransactions(acc.id, originalRequest.params?.limit || 20) : [];
+          return Promise.resolve({ data: { success: true, data: list } } as any);
+        }
+        // Transfers
+        if (url.endsWith('/transactions/transfer') && method === 'post') {
+          const body = originalRequest.data && typeof originalRequest.data === 'string' ? JSON.parse(originalRequest.data) : originalRequest.data;
+          const result = DemoStore.transfer(body.fromAccountId, body.toAccountNumber, body.amount, body.description);
+          return Promise.resolve({ data: { success: true, data: result } } as any);
+        }
+        // Payments (simulate)
+        if (url.endsWith('/payments/deposit/create-intent') && method === 'post') {
+          return Promise.resolve({ data: { success: true, data: { id: 'sim_' + demoUid(), amount: 100, currency: 'USD', status: 'requires_confirmation' } } } as any);
+        }
+        if (url.endsWith('/payments/simulate-completion') && method === 'post') {
+          return Promise.resolve({ data: { success: true, data: { message: 'Simulated completion' } } } as any);
+        }
+        // Fallback generic success for other GETs to keep UI flowing
+        if (method === 'get') {
+          return Promise.resolve({ data: { success: true, data: [] } } as any);
+        }
+      } catch (e) {
+        // ignore and fall through
+      }
+    }
+
+    // Handle other errors (toast)
     const respData: any = error.response?.data;
     if (respData?.message) {
       toast.error(respData.message);
     } else if (error.message) {
       toast.error(error.message);
     }
-
     return Promise.reject(error);
   }
 );

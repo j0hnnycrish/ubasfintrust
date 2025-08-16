@@ -9,7 +9,7 @@ const config: { [key: string]: Knex.Config } = {
     connection: {
       host: process.env['DB_HOST'] || 'localhost',
       port: parseInt(process.env['DB_PORT'] || '5432'),
-      database: process.env['DB_NAME'] || 'provi_banking',
+      database: process.env['DB_NAME'] || 'ubasfintrust-db',
       user: process.env['DB_USER'] || 'postgres',
       password: process.env['DB_PASSWORD'] || '',
     },

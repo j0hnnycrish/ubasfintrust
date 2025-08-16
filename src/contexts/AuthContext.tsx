@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../lib/api';
 
 interface User {
   id: string;
@@ -103,42 +104,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Use real API authentication
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: credentials.username, // Using username as email for now
-          password: credentials.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        return { success: false, error: data.message || 'Invalid credentials' };
-      }
-
-      // Store authentication data
+      const resp = await authAPI.login({ email: credentials.username, password: credentials.password });
+      if (!resp.success) return { success: false, error: resp.message || 'Invalid credentials' };
+      const u = (resp as any).data.user;
       const userData = {
-        id: data.data.user.id,
-        username: data.data.user.email,
-        email: data.data.user.email,
-        accountType: data.data.user.accountType,
-        accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`, // Will be fetched from accounts API
-        fullName: `${data.data.user.firstName} ${data.data.user.lastName}`,
-        phoneNumber: data.data.user.phone || '',
-        isVerified: data.data.user.isVerified || false,
-        kycStatus: data.data.user.kycStatus || 'pending',
+        id: u.id,
+        username: u.email,
+        email: u.email,
+        accountType: u.accountType,
+        accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
+        fullName: `${u.firstName} ${u.lastName}`,
+        phoneNumber: u.phone || '',
+        isVerified: u.isVerified || false,
+        kycStatus: u.kycStatus || 'pending',
         createdAt: new Date().toISOString().split('T')[0]
       };
-
       localStorage.setItem('ubas_user', JSON.stringify(userData));
-      localStorage.setItem('ubas_token', data.data.accessToken);
-      localStorage.setItem('ubas_refresh_token', data.data.refreshToken);
-
+      localStorage.setItem('ubas_token', (resp as any).data.accessToken);
+      localStorage.setItem('ubas_refresh_token', (resp as any).data.refreshToken);
       setUser(userData);
       return { success: true };
 
@@ -163,36 +146,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: 'Password must be at least 8 characters long' };
       }
 
-      // Use real API registration
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userData.email,
-          password: userData.password,
-          firstName: userData.fullName.split(' ')[0],
-          lastName: userData.fullName.split(' ').slice(1).join(' ') || userData.fullName.split(' ')[0],
-          phone: userData.phoneNumber,
-          dateOfBirth: '1990-01-01', // Default for now
-          accountType: userData.accountType,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        return { success: false, error: data.message || 'Registration failed' };
-      }
+      const resp = await authAPI.register({
+        email: userData.email,
+        password: userData.password,
+        firstName: userData.fullName.split(' ')[0],
+        lastName: userData.fullName.split(' ').slice(1).join(' ') || userData.fullName.split(' ')[0],
+        phone: userData.phoneNumber,
+        dateOfBirth: '1990-01-01',
+        accountType: userData.accountType,
+      } as any);
+      if (!resp.success) return { success: false, error: resp.message || 'Registration failed' };
 
       // Create user object for frontend
       const newUser: User = {
-        id: data.data.userId,
+        id: (resp as any).data.userId,
         username: userData.email,
         email: userData.email,
         accountType: userData.accountType,
-        accountNumber: data.data.accountNumber,
+        accountNumber: (resp as any).data.accountNumber,
         fullName: userData.fullName,
         phoneNumber: userData.phoneNumber,
         isVerified: false,

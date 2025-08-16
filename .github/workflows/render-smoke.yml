@@ -93,8 +93,8 @@ jobs:
             return 1
           }
 
-          # Liveness and readiness
-          probe_with_retry "liveness" "/health" || exit 1
+          # Liveness and readiness (use pure liveness path)
+          probe_with_retry "liveness" "/health/liveness" || exit 1
           probe_with_retry "readiness" "/health/readiness" || exit 1
           # Diagnostics is optional; don't fail the job if forbidden or missing token
           set +e

@@ -52,12 +52,15 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
 
-  - type: web
+  - type: static
     name: ubas-frontend
-    runtime: static
     plan: free
     buildCommand: "npm ci && npm run build"
-    publishPath: ./dist
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /(.*)
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://api.ubasfintrust.com/api/v1
