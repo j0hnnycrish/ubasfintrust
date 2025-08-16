@@ -1,0 +1,57 @@
+name: Render Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      backend_url:
+        description: "Backend base URL (e.g. https://ubas-backend.onrender.com)"
+        required: false
+  schedule:
+    - cron: '15 */6 * * *' # every 6 hours at :15
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve target URL
+        env:
+          INPUT_BACKEND_URL: ${{ inputs.backend_url }}
+          SECRET_BACKEND_URL: ${{ secrets.RENDER_BACKEND_URL }}
+        run: |
+          set -euo pipefail
+          TARGET="${INPUT_BACKEND_URL:-}"
+          if [ -z "$TARGET" ]; then TARGET="${SECRET_BACKEND_URL:-}"; fi
+          if [ -z "$TARGET" ]; then
+            echo "No BACKEND_URL provided (input or secret)." >&2
+            exit 1
+          fi
+          echo "BACKEND_URL=$TARGET" >> "$GITHUB_ENV"
+          echo "Target: $TARGET"
+
+      - name: Quick health probes
+        env:
+          DIAGNOSTICS_TOKEN: ${{ secrets.DIAGNOSTICS_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl -fSL "${BACKEND_URL}/health" -o /dev/null
+          curl -fSL "${BACKEND_URL}/health/readiness" -o /dev/null
+          curl -fSL -H "x-diagnostics-token: ${DIAGNOSTICS_TOKEN:-}" "${BACKEND_URL}/api/v1/_diagnostics" -o /dev/null || true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Full system-check scenario
+        env:
+          API_BASE: ${{ env.BACKEND_URL }}/api/v1
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          DIAGNOSTICS_TOKEN: ${{ secrets.DIAGNOSTICS_TOKEN }}
+        run: node scripts/system-check.mjs

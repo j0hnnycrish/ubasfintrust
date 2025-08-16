@@ -48,12 +48,11 @@ services:
       - key: ADMIN_EMAIL
         sync: false
 
-  - type: web
+  - type: static
     name: ubas-frontend
-    runtime: static
     plan: free
-    rootDir: .
     buildCommand: "npm ci && npm run build"
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://api.ubasfintrust.com/api/v1

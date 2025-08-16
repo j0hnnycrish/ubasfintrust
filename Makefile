@@ -27,6 +27,9 @@ help:
 	@echo "  gen-secrets              - Generate strong secrets (export lines)"
 	@echo "  auto-config              - Update configs for DOMAIN (make auto-config DOMAIN=ubasfintrust.com)"
 	@echo "  smoke                    - Post-deploy smoke tests (requires BACKEND_URL, API_BASE, ADMIN_*)"
+	@echo "  dev-db-up                - Start local Postgres & Redis via docker-compose"
+	@echo "  dev-db-down              - Stop local Postgres & Redis"
+	@echo "  dev-api                  - Build server, ensure .env, run migrations, and start API"
 	@echo "  install-cli              - Install Railway, Vercel, Netlify, Fly.io CLIs locally (no sudo)"
 	@echo "  install-cli-vercel       - Install Vercel CLI (local npm prefix)"
 	@echo "  install-cli-netlify      - Install Netlify CLI (local npm prefix)"
@@ -78,6 +81,17 @@ smoke:
 	  ADMIN_EMAIL="$(or $(ADMIN_EMAIL),admin@$(DOMAIN))" \
 	  ADMIN_PASSWORD="$(or $(ADMIN_PASSWORD),Strong#Password1)" \
 	  bash ./scripts/post-deploy-smoke.sh
+
+# --- Local development helpers ---
+
+dev-db-up:
+	@cd server && npm run db:up
+
+dev-db-down:
+	@cd server && npm run db:down
+
+dev-api:
+	@cd server && npm install && npm run build && npm run env:init && ENABLE_REDIS=false npm run migrate && ENABLE_REDIS=false npm run start
 
 # --- CLI installers (no sudo, safe local prefixes) ---
 

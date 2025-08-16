@@ -49,6 +49,9 @@ redisClient.on('end', () => {
 });
 
 export const isRedisConfigured = (): boolean => {
+  // Explicit opt-in to avoid accidental local env noise
+  const enabled = (process.env['ENABLE_REDIS'] || '').toLowerCase() === 'true';
+  if (!enabled) return false;
   return Boolean(sanitizedUrl || process.env['REDIS_HOST'] || process.env['REDIS_PORT']);
 };
 

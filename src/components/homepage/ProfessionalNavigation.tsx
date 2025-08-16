@@ -146,7 +146,7 @@ export function ProfessionalNavigation() {
   };
 
   return (
-    <nav className="bg-white shadow-lg relative z-50">
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
       {/* Top Bar */}
       <div className="bg-red-600 text-white py-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
