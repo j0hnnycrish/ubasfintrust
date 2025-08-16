@@ -7,7 +7,7 @@ import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface DashboardProps {
   onTransfer: () => void;

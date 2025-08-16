@@ -32,7 +32,7 @@ import {
   Phone,
   Calendar
 } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface RegisterModalProps {
   isOpen: boolean;

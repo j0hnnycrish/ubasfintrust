@@ -32,7 +32,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import bankingLogo from '@/assets/banking-logo.jpg';
+// Use a public asset to avoid bundling missing file issues
+const bankingLogoUrl = '/placeholder.svg';
 
 export function ProfessionalNavigation() {
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ export function ProfessionalNavigation() {
             {/* Logo */}
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <img
-                src={bankingLogo}
+                src={bankingLogoUrl}
                 alt="UBAS Financial Trust"
                 className="w-12 h-12 rounded-full"
               />

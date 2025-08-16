@@ -15,7 +15,7 @@ import {
   Settings,
   Lock
 } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 export function AdminLogin() {
   const { adminLogin } = useAdmin();

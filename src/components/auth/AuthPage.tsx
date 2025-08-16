@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);

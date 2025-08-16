@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
 import { Eye, EyeOff, Lock, User, CreditCard, ArrowLeft, Shield, Building } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface ProfessionalLoginProps {
   onBack: () => void;

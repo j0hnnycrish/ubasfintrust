@@ -51,9 +51,14 @@ import { db } from './config/db';
 
 const app = express();
 const server = createServer(app);
+// Support multiple Socket.IO CORS origins (comma-separated)
+const socketCorsOrigins = (process.env.SOCKET_IO_CORS_ORIGIN
+  ? process.env.SOCKET_IO_CORS_ORIGIN.split(',').map(s => s.trim()).filter(Boolean)
+  : ["http://localhost:8080"]);
+
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.SOCKET_IO_CORS_ORIGIN || "http://localhost:8080",
+    origin: socketCorsOrigins,
     methods: ["GET", "POST"]
   }
 });

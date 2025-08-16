@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft, User, Shield } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface PersonalLoginProps {
   onBack: () => void;

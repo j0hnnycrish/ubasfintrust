@@ -36,7 +36,7 @@ import {
   Shield,
   Download
 } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface ComprehensiveDashboardProps {
   onLogout: () => void;

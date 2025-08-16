@@ -39,7 +39,7 @@ import {
   Crown
 } from 'lucide-react';
 import { ACCOUNT_TYPES, BANKING_PRODUCTS, BANKING_SERVICES } from '@/types/accountTypes';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface NavigationProps {
   onAccountLogin: (accountType: string) => void;

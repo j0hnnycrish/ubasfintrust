@@ -30,7 +30,7 @@ import {
   AlertCircle,
   CheckCircle
 } from 'lucide-react';
-import bankingLogo from '@/assets/banking-logo.jpg';
+const bankingLogo = '/placeholder.svg';
 
 interface LoginModalProps {
   isOpen: boolean;
