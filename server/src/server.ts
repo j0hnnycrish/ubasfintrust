@@ -284,11 +284,12 @@ const startServer = async () => {
       logger.warn('Continuing without Redis due to connection issue');
     }
 
-    // Seed default corporate admin user if configured and missing (only if DB connected)
+  // Seed default corporate admin user if configured and missing (only if DB connected)
     try {
       if (dbConnected) {
-        const adminEmail = process.env.ADMIN_EMAIL;
-        const adminPassword = process.env.ADMIN_PASSWORD;
+    const demoMode = (process.env.DEMO_MODE || '').toLowerCase() === 'true';
+    const adminEmail = process.env.ADMIN_EMAIL || (demoMode ? 'admin@ubasfintrust.com' : undefined);
+    const adminPassword = process.env.ADMIN_PASSWORD || (demoMode ? 'Demo@12345' : undefined);
         if (adminEmail && adminPassword) {
           const existing = await (await import('./config/db')).db('users').where({ email: adminEmail }).first();
           if (!existing) {

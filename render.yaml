@@ -5,9 +5,9 @@ services:
     plan: free
     rootDir: server
     buildCommand: "npm ci && npm run build"
-    preDeployCommand: "npm run migrate:prod"
+    preDeployCommand: "npm run migrate:prod || npm run migrate:verify"
     startCommand: "npm start"
-    healthCheckPath: "/health"
+    healthCheckPath: "/health/liveness"
     envVars:
       - key: NODE_ENV
         value: production
@@ -28,7 +28,9 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com,https://ubasfintrust1.onrender.com
       - key: SOCKET_IO_CORS_ORIGIN
-  value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com
+        value: https://ubasfintrust.com,https://www.ubasfintrust.com,https://ubasfintrust.onrender.com
+      - key: DEMO_MODE
+        value: "true"
       # Email / Notifications
       - key: FROM_EMAIL
         value: no-reply@alerts.ubasfintrust.com
@@ -47,16 +49,15 @@ services:
         sync: false
       - key: ADMIN_EMAIL
         sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
 
-  - type: static
+  - type: web
     name: ubas-frontend
+    runtime: static
     plan: free
     buildCommand: "npm ci && npm run build"
-    staticPublishPath: ./dist
-    routes:
-      - type: rewrite
-        source: /(.*)
-        destination: /index.html
+    publishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://api.ubasfintrust.com/api/v1
