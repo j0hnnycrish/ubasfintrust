@@ -11,6 +11,3 @@ NODE_ENV = "production"
 JWT_AUD = "ubas"
 RATE_LIMIT_WINDOW_SEC = "60"
 RATE_LIMIT_MAX = "60"
-# Secrets (SET VIA CLI, DO NOT COMMIT):
-# wrangler secret put JWT_SECRET
-# wrangler secret put DATABASE_URL
