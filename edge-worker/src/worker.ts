@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { cors } from 'hono/cors'
 import { verifyBearer, getBearer } from './auth'
 import { getNeonClient } from './neon'
+import bcrypt from 'bcryptjs'
 
 export interface Env {
   DB: D1Database
@@ -181,6 +182,56 @@ app.get('/api/v1/auth/whoami', async (c: Context<AppEnv>) => {
     return c.json({ authenticated: true, id, email, aud })
   } catch {
     return c.json({ authenticated: false }, 200)
+  }
+})
+
+// Password login → issues JWT on success
+app.post('/api/v1/auth/login', async (c: Context<AppEnv>) => {
+  try {
+    const { email, password } = await c.req.json().catch(() => ({}))
+    if (!email || !password) return c.json({ success: false, message: 'email and password required' }, 400)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+
+    const rows = await sql`
+      SELECT id, email, password_hash, COALESCE(role, 'user') AS role
+      FROM users
+      WHERE email = ${email}
+      LIMIT 1
+    `
+    const user = (rows as any)[0]
+    if (!user || !user.password_hash) return c.json({ success: false, message: 'Invalid credentials' }, 401)
+    const ok = await bcrypt.compare(password, user.password_hash)
+    if (!ok) return c.json({ success: false, message: 'Invalid credentials' }, 401)
+
+    const key = new TextEncoder().encode(jwtSecret)
+    const { SignJWT } = await import('jose')
+    const token = await new SignJWT({ id: user.id, email: user.email, role: user.role, aud: c.env.JWT_AUD })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(key)
+    return c.json({ success: true, token })
+  } catch (e) {
+    return c.json({ success: false, message: 'Login failed' }, 500)
+  }
+})
+
+// Admin-only example route
+app.get('/api/v1/admin/ping', async (c: Context<AppEnv>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
+    if ((payload as any).role !== 'admin') return c.json({ success: false, message: 'Forbidden' }, 403)
+    return c.json({ success: true, message: 'admin-ok' })
+  } catch {
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
   }
 })
 

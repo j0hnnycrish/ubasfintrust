@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { neon } from '@neondatabase/serverless'
+import bcrypt from 'bcryptjs'
 
 const url = process.env.DATABASE_URL
 if (!url) {
@@ -21,8 +22,12 @@ async function main() {
     is_verified boolean DEFAULT false,
     two_factor_enabled boolean DEFAULT false,
     password_hash text,
+    role text DEFAULT 'user',
     created_at timestamptz DEFAULT now()
   )`
+
+  // Ensure role column exists (for older schema versions)
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS role text DEFAULT 'user'`
 
   await sql`CREATE TABLE IF NOT EXISTS accounts (
     id uuid PRIMARY KEY,
@@ -58,6 +63,16 @@ async function main() {
   const txId = crypto.randomUUID()
   await sql`INSERT INTO transactions (id, from_account_id, to_account_id, amount, type)
             VALUES (${txId}, ${acctId}, ${acctId}, 0, 'self')`
+
+  // Seed default admin (configurable via env)
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@ubasfintrust.local'
+  const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeMe123!'
+  const adminId = crypto.randomUUID()
+  const salt = bcrypt.genSaltSync(10)
+  const hash = bcrypt.hashSync(adminPassword, salt)
+  await sql`INSERT INTO users (id, email, first_name, last_name, is_verified, role, password_hash)
+            VALUES (${adminId}, ${adminEmail}, 'Admin', 'User', true, 'admin', ${hash})
+            ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role, password_hash = EXCLUDED.password_hash`
 
   console.log('Neon setup complete.')
 }

@@ -19,6 +19,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^0.10.3",
     "hono": "^4.6.7",
-    "jose": "^5.2.4"
+  "jose": "^5.2.4",
+  "bcryptjs": "^2.4.3"
   }
 }
