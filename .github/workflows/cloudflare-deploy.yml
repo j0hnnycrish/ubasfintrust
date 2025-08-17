@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.19.0
 
       - name: Install frontend deps and build
         run: |
@@ -31,18 +31,24 @@ jobs:
 
       - name: Create Pages project if missing
         run: |
-          set -e
-          if ! wrangler pages project list --json | jq -e --arg NAME "${{ secrets.CLOUDFLARE_PAGES_PROJECT }}" '.[] | select(.name == $NAME)' >/dev/null; then
-            wrangler pages project create "${{ secrets.CLOUDFLARE_PAGES_PROJECT }}" --production-branch=main --compatibility-date=$(date +%Y-%m-%d)
-          fi
+          NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          echo "Using Pages project: $NAME"
+          # Create will fail if the project already exists; that's fine.
+          wrangler pages project create "$NAME" --production-branch=main || echo "Pages project exists or could not be created"
         env:
+          PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT }}
+          REPO_NAME: ${{ github.event.repository.name }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Publish to Cloudflare Pages (wrangler)
         run: |
-          wrangler pages deploy dist --project-name="${{ secrets.CLOUDFLARE_PAGES_PROJECT }}" --branch=main
+          NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          echo "Deploying to Pages project: $NAME"
+          wrangler pages deploy dist --project-name="$NAME" --branch=main
         env:
+          PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT }}
+          REPO_NAME: ${{ github.event.repository.name }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -51,6 +57,10 @@ jobs:
       - name: Publish Worker
         working-directory: edge-worker
         run: |
+          if grep -q 'REPLACE_WITH_KV_ID' wrangler.toml || grep -q 'REPLACE_WITH_D1_ID' wrangler.toml; then
+            echo "Skipping Worker deploy: wrangler.toml still has placeholder KV/D1 IDs. Update KV and/or D1 IDs and push to deploy the Worker."
+            exit 0
+          fi
           npm ci
           if [ -n "${{ secrets.JWT_SECRET }}" ]; then echo "${{ secrets.JWT_SECRET }}" | wrangler secret put JWT_SECRET; fi
           if [ -n "${{ secrets.DATABASE_URL }}" ]; then echo "${{ secrets.DATABASE_URL }}" | wrangler secret put DATABASE_URL; fi
