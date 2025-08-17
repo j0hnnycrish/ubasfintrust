@@ -90,7 +90,7 @@ jobs:
             echo "Skipping Worker deploy: wrangler.toml still has placeholder KV/D1 IDs. Update KV and/or D1 IDs and push to deploy the Worker."
             exit 0
           fi
-          npm ci
+          npm install --no-audit --no-fund
           if [ -n "${{ secrets.JWT_SECRET }}" ]; then echo "${{ secrets.JWT_SECRET }}" | wrangler secret put JWT_SECRET; fi
           if [ -n "${{ secrets.DATABASE_URL }}" ]; then echo "${{ secrets.DATABASE_URL }}" | wrangler secret put DATABASE_URL; fi
           wrangler deploy
