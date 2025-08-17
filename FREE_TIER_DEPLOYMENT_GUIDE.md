@@ -1,5 +1,7 @@
 # Free‑Tier Deployments Guide (UBAS Financial Trust)
 
+Looking for a 5‑minute, picture‑first version? See `QUICK_DEPLOY_VISUAL_GUIDE.md`.
+
 This guide explains how to deploy your API (Node/Express) and frontend (Vite/React) using only free or nearly‑free services, step‑by‑step, in plain language—with the exact commands you can copy and paste.
 
 If you can read, click, paste, and wait a little, you can ship a live app.

@@ -409,7 +409,7 @@ export function ProfessionalNavigation() {
           setShowRegisterModal(false);
           setShowLoginModal(true);
         }}
-        defaultAccountType={selectedAccountType}
+        defaultAccountType={selectedAccountType as any}
       />
 
       <PasswordResetModal

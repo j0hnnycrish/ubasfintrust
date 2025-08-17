@@ -126,7 +126,7 @@ const App = () => (
 
               <Route path="/open-account" element={<OpenAccount />} />
               <Route path="/register" element={<RegistrationFlow />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<ComprehensiveDashboard onLogout={() => (window.location.href = "/")} />} />
               <Route path="/dashboard/private" element={<PrivateBankingDashboard onLogout={() => window.location.href = "/"} />} />
               <Route path="/admin" element={<AdminPortal />} />
               <Route path="/admin/templates" element={<AdminTemplates />} />

@@ -34,12 +34,14 @@ import {
 } from 'lucide-react';
 const bankingLogo = '/placeholder.svg';
 
+type AccountCategory = 'personal' | 'business' | 'corporate' | 'private';
+
 interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   onSwitchToLogin: () => void;
-  defaultAccountType?: string;
+  defaultAccountType?: AccountCategory;
 }
 
 export function RegisterModal({ 
@@ -53,7 +55,7 @@ export function RegisterModal({
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Info
-    accountType: defaultAccountType,
+    accountType: defaultAccountType as AccountCategory,
     fullName: '',
     email: '',
     phoneNumber: '',
@@ -79,7 +81,7 @@ export function RegisterModal({
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const accountTypes = [
+  const accountTypes: { value: AccountCategory; label: string; icon: any; description: string }[] = [
     { value: 'personal', label: 'Personal Banking', icon: User, description: 'Individual accounts' },
     { value: 'business', label: 'Business Banking', icon: Building, description: 'Small to medium business' },
     { value: 'corporate', label: 'Corporate Banking', icon: Building, description: 'Large enterprises' },
@@ -170,7 +172,7 @@ export function RegisterModal({
         <Label htmlFor="accountType">Account Type</Label>
         <Select 
           value={formData.accountType} 
-          onValueChange={(value) => handleInputChange('accountType', value)}
+          onValueChange={(value) => handleInputChange('accountType', value as AccountCategory)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select account type" />

@@ -1,4 +1,4 @@
-import { Account } from '@/types/banking';
+import type { Account as StoreAccount } from '@/lib/bankingStore';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useBankingStore } from '@/lib/bankingStore';
@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface AccountCardProps {
-  account: Account;
+  account: StoreAccount;
 }
 
 export function AccountCard({ account }: AccountCardProps) {
@@ -55,7 +55,7 @@ export function AccountCard({ account }: AccountCardProps) {
           </div>
           
           <Badge className={getAccountTypeColor()}>
-            {account.isActive ? 'Active' : 'Inactive'}
+            {account.status === 'active' ? 'Active' : 'Inactive'}
           </Badge>
         </div>
       </CardHeader>
@@ -97,7 +97,7 @@ export function AccountCard({ account }: AccountCardProps) {
             <div>
               <p className="text-brand-600">Last Activity</p>
               <p className="font-medium text-brand-800">
-                {account.lastActivity.toLocaleDateString()}
+                {new Date(account.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>

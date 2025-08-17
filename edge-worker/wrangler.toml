@@ -1,0 +1,26 @@
+name = "ubasfintrust-edge-api"
+main = "src/worker.ts"
+compatibility_date = "2025-08-16"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "app-db"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "d1"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "app-uploads"
+
+[[kv_namespaces]]
+binding = "APP_KV"
+id = "REPLACE_WITH_KV_ID"
+
+[vars]
+NODE_ENV = "production"
+JWT_AUD = "ubas"
+RATE_LIMIT_WINDOW_SEC = "60"
+RATE_LIMIT_MAX = "60"
+# Secrets (SET VIA CLI, DO NOT COMMIT):
+# wrangler secret put JWT_SECRET
+# wrangler secret put DATABASE_URL
