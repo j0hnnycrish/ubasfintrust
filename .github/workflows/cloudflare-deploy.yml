@@ -31,7 +31,26 @@ jobs:
 
       - name: Create Pages project if missing
         run: |
-          NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          RAW_NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          # Sanitize to meet Cloudflare Pages constraints:
+          # 1-58 chars, lowercase, digits, dashes only; cannot start/end with '-'
+          # Lowercase
+          NAME=$(echo "$RAW_NAME" | tr '[:upper:]' '[:lower:]')
+          # Replace invalid chars with '-'
+          NAME=$(echo "$NAME" | sed -E 's/[^a-z0-9-]+/-/g')
+          # Collapse multiple '-'
+          NAME=$(echo "$NAME" | sed -E 's/-{2,}/-/g')
+          # Trim leading/trailing '-'
+          NAME=$(echo "$NAME" | sed -E 's/^-+//; s/-+$//')
+          # Enforce max length 58
+          NAME=${NAME:0:58}
+          # Trim again just in case
+          NAME=$(echo "$NAME" | sed -E 's/^-+//; s/-+$//')
+          # Fallback to sanitized repo name if empty after sanitization
+          REPO_SAN=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9-]+/-/g' | sed -E 's/-{2,}/-/g' | sed -E 's/^-+//; s/-+$//')
+          REPO_SAN=${REPO_SAN:0:58}
+          REPO_SAN=$(echo "$REPO_SAN" | sed -E 's/^-+//; s/-+$//')
+          if [ -z "$NAME" ]; then NAME="$REPO_SAN"; fi
           echo "Using Pages project: $NAME"
           # Create will fail if the project already exists; that's fine.
           wrangler pages project create "$NAME" --production-branch=main || echo "Pages project exists or could not be created"
@@ -43,7 +62,17 @@ jobs:
 
       - name: Publish to Cloudflare Pages (wrangler)
         run: |
-          NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          RAW_NAME="${PAGES_PROJECT_NAME:-$REPO_NAME}"
+          NAME=$(echo "$RAW_NAME" | tr '[:upper:]' '[:lower:]')
+          NAME=$(echo "$NAME" | sed -E 's/[^a-z0-9-]+/-/g')
+          NAME=$(echo "$NAME" | sed -E 's/-{2,}/-/g')
+          NAME=$(echo "$NAME" | sed -E 's/^-+//; s/-+$//')
+          NAME=${NAME:0:58}
+          NAME=$(echo "$NAME" | sed -E 's/^-+//; s/-+$//')
+          REPO_SAN=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9-]+/-/g' | sed -E 's/-{2,}/-/g' | sed -E 's/^-+//; s/-+$//')
+          REPO_SAN=${REPO_SAN:0:58}
+          REPO_SAN=$(echo "$REPO_SAN" | sed -E 's/^-+//; s/-+$//')
+          if [ -z "$NAME" ]; then NAME="$REPO_SAN"; fi
           echo "Deploying to Pages project: $NAME"
           wrangler pages deploy dist --project-name="$NAME" --branch=main
         env:
