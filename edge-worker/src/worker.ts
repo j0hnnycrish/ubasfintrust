@@ -313,6 +313,74 @@ app.get('/api/v1/admin/ping', async (c: Context<AppEnv>) => {
   }
 })
 
+// Admin: list users with optional search and pagination
+app.get('/api/v1/admin/users', async (c: Context<AppEnv>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
+    if ((payload as any).role !== 'admin') return c.json({ success: false, message: 'Forbidden' }, 403)
+
+    const url = new URL(c.req.url)
+    const page = Math.max(1, Number(url.searchParams.get('page') || '1'))
+    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') || '20')))
+    const q = (url.searchParams.get('q') || '').trim()
+    const offset = (page - 1) * limit
+
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+
+    const where = q ? sql`WHERE email ILIKE ${'%' + q + '%'} OR first_name ILIKE ${'%' + q + '%'} OR last_name ILIKE ${'%' + q + '%'}` : sql``
+    const rows = await sql`
+      SELECT id, email, first_name, last_name, role, is_verified, created_at
+      FROM users
+      ${where}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `
+    const totalRow = await sql`
+      SELECT COUNT(*)::int AS count FROM users
+      ${where}
+    `
+    const total = Number((totalRow as any)[0]?.count || 0)
+    return c.json({ success: true, data: rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } })
+  } catch (e) {
+    return c.json({ success: false, message: 'Failed to list users' }, 500)
+  }
+})
+
+// Admin: create user (optionally set role), with initial password
+app.post('/api/v1/admin/users', async (c: Context<AppEnv>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
+    if ((payload as any).role !== 'admin') return c.json({ success: false, message: 'Forbidden' }, 403)
+
+    const { email, password, first_name = null, last_name = null, role = 'user', is_verified = true } = await c.req.json().catch(() => ({}))
+    if (!email || !password) return c.json({ success: false, message: 'email and password required' }, 400)
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+    // Check exists
+    const exists = await sql`SELECT 1 FROM users WHERE email = ${email} LIMIT 1`
+    if ((exists as any[])[0]) return c.json({ success: false, message: 'email already exists' }, 409)
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+    const id = crypto.randomUUID()
+    await sql`INSERT INTO users (id, email, first_name, last_name, password_hash, role, is_verified)
+              VALUES (${id}, ${email}, ${first_name}, ${last_name}, ${hash}, ${role}, ${is_verified})`
+    return c.json({ success: true, id })
+  } catch (e) {
+    return c.json({ success: false, message: 'Failed to create user' }, 500)
+  }
+})
+
 // Dev-only: mint token (guard with DEV_MINT)
 app.post('/dev/mint-token', async (c: Context<AppEnv>) => {
   const allow = (c.env as any).DEV_MINT === 'true'
