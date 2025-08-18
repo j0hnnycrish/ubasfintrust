@@ -27,7 +27,8 @@
       "@/*": ["./src/*"]
     },
   "esModuleInterop": true,
-  "types": ["react", "react-dom", "node"]
+  "types": ["react", "react-dom", "node", "./types/eslint-plugins"]
   },
-  "include": ["src"]
+  "include": ["src", "types"],
+  "exclude": ["edge-worker/**"]
 }
