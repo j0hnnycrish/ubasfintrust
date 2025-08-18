@@ -1,4 +1,4 @@
-import React from 'react';
+ 
 import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
@@ -13,10 +13,9 @@ import {
   Shield,
   TrendingUp,
   Building,
-  Clock,
-  CheckCircle,
+  
   ArrowRight,
-  Star,
+  
   Target,
   Heart
 } from 'lucide-react';

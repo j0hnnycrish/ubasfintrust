@@ -17,13 +17,13 @@ import {
   Phone,
   Mail,
   MapPin,
-  Clock,
+  
   Send,
   CheckCircle,
   Building,
-  HeadphonesIcon,
+  
   MessageCircle,
-  Globe,
+  
   Shield,
   AlertCircle
 } from 'lucide-react';

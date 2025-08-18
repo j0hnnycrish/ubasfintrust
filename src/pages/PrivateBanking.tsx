@@ -1,4 +1,4 @@
-import { useState } from 'react';
+//
 import { useNavigate } from 'react-router-dom';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import { ScrollingBackground, privateBankingImages } from '@/components/ui/ScrollingBackground';
@@ -9,7 +9,6 @@ import {
   Crown,
   TrendingUp,
   Globe,
-  ArrowRight,
   CheckCircle,
   Shield,
   Star,
@@ -17,12 +16,12 @@ import {
   Award,
   Users,
   Heart,
-  Briefcase
+  
 } from 'lucide-react';
 
 export default function PrivateBanking() {
   const navigate = useNavigate();
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  
 
   const privateServices = [
     {
@@ -41,7 +40,7 @@ export default function PrivateBanking() {
       features: ['Trust Services', 'Succession Planning', 'Tax Structuring', 'Legacy Management'],
       minBalance: '$25,000,000',
       icon: Crown,
-      color: 'bg-gradient-to-br from-purple-600 to-purple-700'
+  color: 'bg-gradient-to-br from-red-700 to-red-800'
     },
     {
       id: 'family',
@@ -59,7 +58,7 @@ export default function PrivateBanking() {
       features: ['Dedicated Relationship Team', 'Priority Access', 'Exclusive Events', 'Global Privileges'],
       minBalance: '$100,000,000',
       icon: Gem,
-      color: 'bg-gradient-to-br from-emerald-600 to-emerald-700'
+  color: 'bg-gradient-to-br from-red-600 to-red-700'
     }
   ];
 
@@ -136,7 +135,7 @@ export default function PrivateBanking() {
       </section>
 
       {/* Services Section */}
-      <section className="py-24 bg-gray-50">
+  <section className="py-24 bg-red-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
@@ -153,8 +152,8 @@ export default function PrivateBanking() {
               return (
                 <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
                   <CardHeader>
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-6 w-6 text-purple-600" />
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <Icon className="h-6 w-6 text-red-600" />
                     </div>
                     <CardTitle className="text-xl">{service.title}</CardTitle>
                   </CardHeader>
@@ -184,7 +183,7 @@ export default function PrivateBanking() {
             {privateServices.map((service) => {
               const Icon = service.icon;
               return (
-                <Card key={service.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-purple-200">
+                <Card key={service.id} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-red-200">
                   <CardHeader>
                     <div className={`w-12 h-12 ${service.color} rounded-lg flex items-center justify-center mb-4`}>
                       <Icon className="h-6 w-6 text-white" />
@@ -207,7 +206,7 @@ export default function PrivateBanking() {
                       </ul>
                       <Button
                         onClick={() => navigate('/open-account')}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                        className="w-full bg-red-700 hover:bg-red-800 text-white"
                       >
                         Learn More
                       </Button>
@@ -221,7 +220,7 @@ export default function PrivateBanking() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 py-24">
+  <section className="bg-gradient-to-r from-red-900 via-red-800 to-red-900 py-24">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
@@ -243,7 +242,7 @@ export default function PrivateBanking() {
               <Crown className="h-6 w-6 mr-2" />
               Begin Your Journey
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-purple-900 text-lg px-8 py-3">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-red-900 text-lg px-8 py-3">
               <Heart className="h-6 w-6 mr-2" />
               Private Consultation
             </Button>

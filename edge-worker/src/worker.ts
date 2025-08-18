@@ -220,6 +220,84 @@ app.post('/api/v1/auth/login', async (c: Context<AppEnv>) => {
   }
 })
 
+// Register: create user with hashed password (Neon only)
+app.post('/api/v1/auth/register', async (c: Context<AppEnv>) => {
+  try {
+    const { email, password, first_name = null, last_name = null } = await c.req.json().catch(() => ({}))
+    if (!email || !password) return c.json({ success: false, message: 'email and password required' }, 400)
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+    // Check exists
+    const exists = await sql`SELECT 1 FROM users WHERE email = ${email} LIMIT 1`
+    if ((exists as any[])[0]) return c.json({ success: false, message: 'email already registered' }, 409)
+    // Hash and insert
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+    const id = crypto.randomUUID()
+    await sql`INSERT INTO users (id, email, first_name, last_name, password_hash, role, is_verified)
+              VALUES (${id}, ${email}, ${first_name}, ${last_name}, ${hash}, 'user', true)`
+    return c.json({ success: true })
+  } catch (e) {
+    return c.json({ success: false, message: 'Registration failed' }, 500)
+  }
+})
+
+// Change password: requires auth, verifies current password
+app.post('/api/v1/auth/change-password', async (c: Context<AppEnv>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
+    const userId = (payload as any).id as string
+    if (!userId) return c.json({ success: false, message: 'Unauthorized' }, 401)
+
+    const { currentPassword, newPassword } = await c.req.json().catch(() => ({}))
+    if (!currentPassword || !newPassword) return c.json({ success: false, message: 'currentPassword and newPassword required' }, 400)
+
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+    const rows = await sql`SELECT password_hash FROM users WHERE id = ${userId} LIMIT 1`
+    const rec = (rows as any)[0]
+    if (!rec || !rec.password_hash) return c.json({ success: false, message: 'No password set' }, 400)
+    const ok = await bcrypt.compare(currentPassword, rec.password_hash)
+    if (!ok) return c.json({ success: false, message: 'Invalid current password' }, 401)
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(newPassword, salt)
+    await sql`UPDATE users SET password_hash = ${hash} WHERE id = ${userId}`
+    return c.json({ success: true })
+  } catch (e) {
+    return c.json({ success: false, message: 'Change password failed' }, 500)
+  }
+})
+
+// Admin: reset another user's password
+app.post('/api/v1/auth/admin/reset-password', async (c: Context<AppEnv>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
+    if ((payload as any).role !== 'admin') return c.json({ success: false, message: 'Forbidden' }, 403)
+
+    const { userId, newPassword } = await c.req.json().catch(() => ({}))
+    if (!userId || !newPassword) return c.json({ success: false, message: 'userId and newPassword required' }, 400)
+
+    const databaseUrl = (c.env as any).DATABASE_URL as string | undefined
+    const sql = getNeonClient(databaseUrl)
+    if (!sql) return c.json({ success: false, message: 'DB not configured' }, 500)
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(newPassword, salt)
+    await sql`UPDATE users SET password_hash = ${hash} WHERE id = ${userId}`
+    return c.json({ success: true })
+  } catch (e) {
+    return c.json({ success: false, message: 'Reset failed' }, 500)
+  }
+})
 // Admin-only example route
 app.get('/api/v1/admin/ping', async (c: Context<AppEnv>) => {
   try {

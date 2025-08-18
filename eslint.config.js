@@ -9,6 +9,7 @@ export default tseslint.config(
     "dist",
     "server/**", // ignore backend for root lint (has its own config/rules)
     "client/**", // legacy folder not part of main app
+  "edge-worker/**", // worker is a separate project with its own deps/types
     "**/*.config.*", // config files (tailwind, vite) often use require()
   ] },
   {

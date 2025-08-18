@@ -3,6 +3,12 @@ import BackgroundCarousel from '@/components/hero/BackgroundCarousel';
 import PageHeader from '@/components/navigation/PageHeader';
 
 export default function Leadership() {
+  const getInitials = (name: string) =>
+    name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase();
   return (
     <div className="min-h-screen bg-white">
       <ProfessionalNavigation />
@@ -20,13 +26,15 @@ export default function Leadership() {
       <section className="py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {[
-            { name: 'Sarah Johnson', role: 'Chief Executive Officer', img: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?auto=format&fit=crop&w=320&q=60' },
-            { name: 'Michael Chen', role: 'Chief Technology Officer', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=320&q=60' },
-            { name: 'Elena Rodriguez', role: 'Chief Risk Officer', img: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=320&q=60' },
-            { name: 'David Thompson', role: 'Chief Operating Officer', img: 'https://images.unsplash.com/photo-1548946526-f69e2424cf45?auto=format&fit=crop&w=320&q=60' },
+            { name: 'Sarah Johnson', role: 'Chief Executive Officer' },
+            { name: 'Michael Chen', role: 'Chief Technology Officer' },
+            { name: 'Elena Rodriguez', role: 'Chief Risk Officer' },
+            { name: 'David Thompson', role: 'Chief Operating Officer' },
           ].map((p) => (
             <div key={p.name} className="border border-red-200 rounded-lg p-6 flex items-center gap-4">
-              <img src={p.img} alt={p.name} className="w-20 h-20 rounded-full object-cover" loading="lazy" />
+              <div className="w-20 h-20 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-xl font-semibold">
+                {getInitials(p.name)}
+              </div>
               <div>
                 <h2 className="text-xl font-semibold text-red-700">{p.name}</h2>
                 <p className="text-red-600/80">{p.role}</p>
