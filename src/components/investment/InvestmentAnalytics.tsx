@@ -105,11 +105,11 @@ export function InvestmentAnalytics() {
     });
 
     const mockAllocationData: AllocationData[] = [
-      { name: 'Stocks', value: 75000, color: '#3B82F6', percentage: 60 },
-      { name: 'ETFs', value: 25000, color: '#10B981', percentage: 20 },
-      { name: 'Bonds', value: 12500, color: '#6B7280', percentage: 10 },
-      { name: 'Crypto', value: 7500, color: '#F59E0B', percentage: 6 },
-      { name: 'Commodities', value: 5000, color: '#EF4444', percentage: 4 }
+      { name: 'Stocks', value: 75000, color: '#E53935', percentage: 60 },
+      { name: 'ETFs', value: 25000, color: '#D32F2F', percentage: 20 },
+      { name: 'Bonds', value: 12500, color: '#C62828', percentage: 10 },
+      { name: 'Crypto', value: 7500, color: '#B71C1C', percentage: 6 },
+      { name: 'Commodities', value: 5000, color: '#FF5252', percentage: 4 }
     ];
 
     const mockMetrics: PerformanceMetrics = {
@@ -310,21 +310,21 @@ export function InvestmentAnalytics() {
                     <Line 
                       type="monotone" 
                       dataKey="portfolioValue" 
-                      stroke="#3B82F6" 
+                      stroke="#E53935" 
                       strokeWidth={3}
                       name="Your Portfolio"
                     />
                     <Line 
                       type="monotone" 
                       dataKey="sp500" 
-                      stroke="#10B981" 
+                      stroke="#D32F2F" 
                       strokeWidth={2}
                       name="S&P 500"
                     />
                     <Line 
                       type="monotone" 
                       dataKey="nasdaq" 
-                      stroke="#F59E0B" 
+                      stroke="#C62828" 
                       strokeWidth={2}
                       name="NASDAQ"
                     />
@@ -501,8 +501,8 @@ export function InvestmentAnalytics() {
                       <Area 
                         type="monotone" 
                         dataKey="amount" 
-                        stroke="#10B981" 
-                        fill="#10B981" 
+                        stroke="#E53935" 
+                        fill="#E53935" 
                         fillOpacity={0.3}
                       />
                     </AreaChart>

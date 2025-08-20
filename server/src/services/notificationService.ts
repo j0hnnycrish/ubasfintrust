@@ -233,10 +233,10 @@ class NotificationService extends EventEmitter {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #1e40af; color: white; padding: 20px; text-align: center; }
+          .header { background: #E53935; color: white; padding: 20px; text-align: center; }
           .content { padding: 20px; background: #f9f9f9; }
           .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
-          .priority-high { border-left: 4px solid #f59e0b; }
+          .priority-high { border-left: 4px solid #D32F2F; }
           .priority-critical { border-left: 4px solid #dc2626; }
         </style>
       </head>

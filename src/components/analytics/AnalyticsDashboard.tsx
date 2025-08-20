@@ -219,10 +219,10 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
     monthlyContribution: 0,
   });
 
-  // Chart colors
+  // Chart colors - UBA Red palette
   const chartColors = [
-    '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-    '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6B7280'
+    '#E53935', '#D32F2F', '#C62828', '#B71C1C', '#FF5252',
+    '#F44336', '#EF5350', '#E57373', '#FFCDD2', '#FFEBEE'
   ];
 
   // Load analytics data
@@ -250,7 +250,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'food',
             name: 'Food & Dining',
             icon: Utensils,
-            color: '#10B981',
+            color: '#E53935',
             amount: 1250,
             percentage: 28.5,
             transactions: 47,
@@ -263,7 +263,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'transportation',
             name: 'Transportation',
             icon: Car,
-            color: '#3B82F6',
+            color: '#D32F2F',
             amount: 980,
             percentage: 22.3,
             transactions: 23,
@@ -276,7 +276,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'shopping',
             name: 'Shopping',
             icon: ShoppingBag,
-            color: '#F59E0B',
+            color: '#C62828',
             amount: 720,
             percentage: 16.4,
             transactions: 31,
@@ -289,7 +289,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'entertainment',
             name: 'Entertainment',
             icon: Film,
-            color: '#8B5CF6',
+            color: '#B71C1C',
             amount: 450,
             percentage: 10.2,
             transactions: 18,
@@ -302,7 +302,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'utilities',
             name: 'Bills & Utilities',
             icon: Home,
-            color: '#EF4444',
+            color: '#FF5252',
             amount: 620,
             percentage: 14.1,
             transactions: 12,
@@ -315,7 +315,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'healthcare',
             name: 'Healthcare',
             icon: Heart,
-            color: '#EC4899',
+            color: '#F44336',
             amount: 280,
             percentage: 6.4,
             transactions: 8,
@@ -328,7 +328,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
             id: 'other',
             name: 'Other',
             icon: Tag,
-            color: '#6B7280',
+            color: '#EF5350',
             amount: 90,
             percentage: 2.1,
             transactions: 15,
@@ -795,19 +795,19 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       <YAxis />
                       <Tooltip formatter={(value: any) => formatCurrency(value)} />
                       <Legend />
-                      <Bar dataKey="budget" fill="#E5E7EB" name="Budget" />
+                      <Bar dataKey="budget" fill="#FFCDD2" name="Budget" />
                       <Area
                         type="monotone"
                         dataKey="spending"
                         stackId="1"
-                        stroke="#EF4444"
-                        fill="#FCA5A5"
+                        stroke="#E53935"
+                        fill="#FFEBEE"
                         name="Spending"
                       />
                       <Line
                         type="monotone"
                         dataKey="income"
-                        stroke="#10B981"
+                        stroke="#D32F2F"
                         strokeWidth={3}
                         name="Income"
                       />
@@ -829,7 +829,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
-                        fill="#8884d8"
+                        fill="#E53935"
                         dataKey="amount"
                         label={({ name, percentage }) => `${name}: ${percentage}%`}
                       >
@@ -937,8 +937,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                         <YAxis />
                         <Tooltip formatter={(value: any) => formatCurrency(value)} />
                         <Legend />
-                        <Bar dataKey="amount" fill="#3B82F6" name="Spent" />
-                        <Bar dataKey="budget" fill="#E5E7EB" name="Budget" />
+                        <Bar dataKey="amount" fill="#E53935" name="Spent" />
+                        <Bar dataKey="budget" fill="#FFCDD2" name="Budget" />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -1034,7 +1034,7 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       <YAxis />
                       <Tooltip formatter={(value: any) => formatCurrency(value)} />
                       <Legend />
-                      <Bar dataKey="budgeted" fill="#10B981" name="Budgeted" />
+                      <Bar dataKey="budgeted" fill="#D32F2F" name="Budgeted" />
                       <Bar dataKey="spent" fill="#EF4444" name="Spent" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -1179,12 +1179,12 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     <YAxis />
                     <Tooltip formatter={(value: any) => formatCurrency(value)} />
                     <Legend />
-                    <Bar dataKey="inflow" fill="#10B981" name="Income" />
+                    <Bar dataKey="inflow" fill="#C62828" name="Income" />
                     <Bar dataKey="outflow" fill="#EF4444" name="Expenses" />
                     <Line 
                       type="monotone" 
                       dataKey="net" 
-                      stroke="#3B82F6" 
+                      stroke="#E53935" 
                       strokeWidth={3}
                       name="Net Cash Flow"
                     />
@@ -1208,8 +1208,8 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                       <Area
                         type="monotone"
                         dataKey="balance"
-                        stroke="#3B82F6"
-                        fill="#93C5FD"
+                        stroke="#E53935"
+                        fill="#FFEBEE"
                         name="Account Balance"
                       />
                     </AreaChart>
@@ -1268,11 +1268,11 @@ export function AnalyticsDashboard({ onBack }: AnalyticsDashboardProps) {
                     <Tooltip formatter={(value: any) => formatCurrency(value)} />
                     <Legend />
                     <Bar dataKey="predictedSpending" fill="#EF4444" name="Predicted Spending" />
-                    <Bar dataKey="predictedIncome" fill="#10B981" name="Predicted Income" />
+                    <Bar dataKey="predictedIncome" fill="#D32F2F" name="Predicted Income" />
                     <Line 
                       type="monotone" 
                       dataKey="confidence" 
-                      stroke="#8B5CF6" 
+                      stroke="#B71C1C" 
                       strokeWidth={2}
                       yAxisId="right"
                       name="Confidence (%)"

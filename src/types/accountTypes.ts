@@ -49,7 +49,7 @@ export const ACCOUNT_TYPES: Record<AccountType, AccountTypeConfig> = {
     },
     supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 5.5,
-    mainColor: '#3B82F6',
+    mainColor: '#E53935',
     loginPath: '/login/personal',
     tier: 'standard'
   },
@@ -80,7 +80,7 @@ export const ACCOUNT_TYPES: Record<AccountType, AccountTypeConfig> = {
     },
     supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 6.0,
-    mainColor: '#10B981',
+    mainColor: '#D32F2F',
     loginPath: '/login/business',
     tier: 'premium'
   },
@@ -112,7 +112,7 @@ export const ACCOUNT_TYPES: Record<AccountType, AccountTypeConfig> = {
     },
     supportedCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'SGD'],
     interestRate: 7.0,
-    mainColor: '#8B5CF6',
+    mainColor: '#C62828',
     loginPath: '/login/corporate',
     tier: 'platinum'
   },
