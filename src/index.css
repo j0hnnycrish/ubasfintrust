@@ -22,17 +22,17 @@ All colors MUST be HSL.
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Monochrome brand red scale */
-    --brand-red-50: 0 86% 97%;
-    --brand-red-100: 0 93% 94%;
-    --brand-red-200: 0 96% 89%;
-    --brand-red-300: 0 94% 82%;
-    --brand-red-400: 0 91% 71%;
-    --brand-red-500: 0 84% 60%; /* core */
-    --brand-red-600: 0 72% 50%; /* primary */
-    --brand-red-700: 0 74% 42%;
-    --brand-red-800: 0 70% 35%;
-    --brand-red-900: 0 63% 31%;
+    /* UBA Official Brand Red Scale - Based on UBA Logo #E53935 */
+    --brand-red-50: 2 100% 97%;
+    --brand-red-100: 2 100% 93%;
+    --brand-red-200: 2 100% 86%;
+    --brand-red-300: 2 89% 76%;
+    --brand-red-400: 2 83% 66%;
+    --brand-red-500: 2 77% 56%; /* UBA Official Red #E53935 - core */
+    --brand-red-600: 2 71% 46%; /* primary */
+    --brand-red-700: 2 75% 36%;
+    --brand-red-800: 2 79% 26%;
+    --brand-red-900: 2 83% 20%;
     --brand-red-foreground: 0 0% 98%;
 
     /* Semantic tokens mapped to red */
@@ -44,20 +44,20 @@ All colors MUST be HSL.
     --accent-foreground: var(--brand-red-foreground);
     --ring: var(--brand-red-500);
 
-    /* Gradients (red only) */
+    /* UBA Brand Gradients */
     --gradient-banking: linear-gradient(135deg, hsl(var(--brand-red-700)), hsl(var(--brand-red-600)), hsl(var(--brand-red-500)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red-800)) 0%, hsl(var(--brand-red-700)) 50%, hsl(var(--brand-red-600)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--brand-red-50)) 0%, hsl(var(--brand-red-100)) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(var(--brand-red-500)) 0%, hsl(var(--brand-red-600)) 100%);
     --gradient-gold: linear-gradient(135deg, hsl(var(--brand-red-700)) 0%, hsl(var(--brand-red-600)) 50%, hsl(var(--brand-red-500)) 100%);
 
-    /* Shadows tuned for red */
-    --shadow-banking: 0 25px 50px -12px hsla(0, 72%, 50%, 0.25);
-    --shadow-card: 0 10px 30px -8px hsla(0, 72%, 50%, 0.12);
-    --shadow-elegant: 0 15px 40px -10px hsla(0, 72%, 50%, 0.18);
-    --shadow-gold: 0 8px 25px -5px hsla(0, 72%, 50%, 0.3);
-    --shadow-floating: 0 20px 60px -15px hsla(0, 72%, 50%, 0.3);
-    --shadow-inset: inset 0 2px 4px 0 hsla(0, 72%, 50%, 0.06);
+    /* UBA Brand Shadows */
+    --shadow-banking: 0 25px 50px -12px hsla(2, 77%, 56%, 0.25);
+    --shadow-card: 0 10px 30px -8px hsla(2, 77%, 56%, 0.12);
+    --shadow-elegant: 0 15px 40px -10px hsla(2, 77%, 56%, 0.18);
+    --shadow-gold: 0 8px 25px -5px hsla(2, 77%, 56%, 0.3);
+    --shadow-floating: 0 20px 60px -15px hsla(2, 77%, 56%, 0.3);
+    --shadow-inset: inset 0 2px 4px 0 hsla(2, 77%, 56%, 0.06);
 
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
@@ -94,9 +94,9 @@ All colors MUST be HSL.
     --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red-900)), hsl(var(--brand-red-800)));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 12%), hsl(0 0% 16%));
     --gradient-accent: linear-gradient(135deg, hsl(var(--brand-red-600)), hsl(var(--brand-red-500)));
-    --shadow-banking: 0 20px 40px -8px hsla(0, 72%, 50%, 0.4);
-    --shadow-card: 0 8px 25px -5px hsla(0, 72%, 50%, 0.3);
-    --shadow-elegant: 0 12px 35px -8px hsla(0, 72%, 50%, 0.5);
+    --shadow-banking: 0 20px 40px -8px hsla(2, 77%, 56%, 0.4);
+    --shadow-card: 0 8px 25px -5px hsla(2, 77%, 56%, 0.3);
+    --shadow-elegant: 0 12px 35px -8px hsla(2, 77%, 56%, 0.5);
     --sidebar-background: 0 0% 12%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: var(--brand-red-600);
@@ -285,7 +285,7 @@ All colors MUST be HSL.
     }
   }
 
-  @keyframes pulseGold { 0%,100% { box-shadow:0 0 0 0 hsla(0,72%,50%,0.7);} 70% { box-shadow:0 0 0 10px hsla(0,72%,50%,0);} }
+  @keyframes pulseGold { 0%,100% { box-shadow:0 0 0 0 hsla(2, 77%, 56%, 0.7);} 70% { box-shadow:0 0 0 10px hsla(2, 77%, 56%, 0);} }
 
   @keyframes shimmer {
     0% {
@@ -298,10 +298,10 @@ All colors MUST be HSL.
 
   @keyframes glow {
     from {
-      box-shadow: 0 0 20px hsla(38, 92%, 50%, 0.5);
+      box-shadow: 0 0 20px hsla(2, 77%, 56%, 0.5);
     }
     to {
-      box-shadow: 0 0 30px hsla(38, 92%, 50%, 0.8);
+      box-shadow: 0 0 30px hsla(2, 77%, 56%, 0.8);
     }
   }
 
@@ -367,7 +367,7 @@ All colors MUST be HSL.
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .hover-glow:hover { box-shadow:0 0 30px hsla(0,72%,50%,0.6); }
+  .hover-glow:hover { box-shadow:0 0 30px hsla(2, 77%, 56%, 0.6); }
 
   /* Professional Typography Enhancements */
   .text-gradient-gold { background: var(--gradient-accent); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
@@ -384,7 +384,7 @@ All colors MUST be HSL.
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .focus-ring:focus { outline:none; box-shadow:0 0 0 3px hsla(0,72%,50%,0.3); border-color: hsl(var(--brand-red-600)); }
+  .focus-ring:focus { outline:none; box-shadow:0 0 0 3px hsla(2, 77%, 56%, 0.3); border-color: hsl(var(--brand-red-600)); }
 
   /* Professional Status Indicators */
   .status-indicator {
@@ -408,7 +408,7 @@ All colors MUST be HSL.
 
   .status-indicator.offline::before { background: hsl(var(--brand-red-300)); }
 
-  @keyframes pulseGreen { 0% { box-shadow:0 0 0 0 hsla(0,72%,50%,0.7);} 70% { box-shadow:0 0 0 10px hsla(0,72%,50%,0);} 100% { box-shadow:0 0 0 0 hsla(0,72%,50%,0);} }
+  @keyframes pulseGreen { 0% { box-shadow:0 0 0 0 hsla(2, 77%, 56%, 0.7);} 70% { box-shadow:0 0 0 10px hsla(2, 77%, 56%, 0);} 100% { box-shadow:0 0 0 0 hsla(2, 77%, 56%, 0);} }
 
   /* Scrolling Background Animations */
   @keyframes slow-scroll {
