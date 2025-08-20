@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAdmin } from '@/contexts/AdminContext';
+import { useBankingData } from '@/hooks/useBankingData';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,18 +22,18 @@ import {
 
 export function AccountsView() {
   const { user } = useAuth();
-  const { customers, transactions } = useAdmin();
+  const { accounts, transactions, totalBalance, isLoading, createAccount } = useBankingData();
   const [showBalances, setShowBalances] = useState(true);
 
-  // Get customer data
-  const customer = customers.find(c => c.username === user?.username);
-  const accounts = customer?.accounts || [];
+  const handleCreateAccount = async (accountType: string) => {
+    await createAccount(accountType);
+  };
 
   // Get transactions for each account
   const getAccountTransactions = (accountId: string) => {
     return transactions
-      .filter(txn => txn.accountId === accountId)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .filter(txn => txn.fromAccountId === accountId || txn.toAccountId === accountId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 3); // Show last 3 transactions
   };
 
@@ -46,7 +46,7 @@ export function AccountsView() {
   };
 
   const getAccountIcon = (type: string) => {
-    switch (type) {
+    switch (type?.toLowerCase()) {
       case 'checking': return CreditCard;
       case 'savings': return PiggyBank;
       case 'business': return Building;
@@ -57,18 +57,18 @@ export function AccountsView() {
   };
 
   const getAccountColor = (type: string) => {
-    switch (type) {
-      case 'checking': return 'bg-red-100 text-red-700 border-red-200';
-      case 'savings': return 'bg-red-50 text-red-700 border-red-200';
-      case 'business': return 'bg-red-100 text-red-700 border-red-200';
-      case 'investment': return 'bg-red-50 text-red-700 border-red-200';
-      case 'credit': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
+    switch (type?.toLowerCase()) {
+      case 'checking': return 'bg-red-100 text-red-700 border-red-300';
+      case 'savings': return 'bg-green-100 text-green-700 border-green-300';
+      case 'business': return 'bg-blue-100 text-blue-700 border-blue-300';
+      case 'investment': return 'bg-purple-100 text-purple-700 border-purple-300';
+      case 'credit': return 'bg-orange-100 text-orange-700 border-orange-300';
+      default: return 'bg-gray-100 text-gray-700 border-gray-300';
     }
   };
 
   const getAccountTypeDescription = (type: string) => {
-    switch (type) {
+    switch (type?.toLowerCase()) {
       case 'checking': return 'Everyday banking and transactions';
       case 'savings': return 'Earn interest on your deposits';
       case 'business': return 'Business banking and operations';
@@ -94,9 +94,13 @@ export function AccountsView() {
             {showBalances ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             <span>{showBalances ? 'Hide' : 'Show'} Balances</span>
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => handleCreateAccount('savings')}
+            disabled={isLoading}
+          >
             <Plus className="h-4 w-4 mr-2" />
-            Open New Account
+            {isLoading ? 'Creating...' : 'Open New Account'}
           </Button>
         </div>
       </div>
@@ -122,27 +126,27 @@ export function AccountsView() {
       {/* Individual Accounts */}
       <div className="grid gap-6">
         {accounts.map((account) => {
-          const Icon = getAccountIcon(account.type);
+          const Icon = getAccountIcon(account.accountType);
           const accountTransactions = getAccountTransactions(account.id);
-          const isCredit = account.type === 'credit';
+          const isCredit = account.accountType?.toLowerCase() === 'credit';
           
           return (
             <Card key={account.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${getAccountColor(account.type)}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${getAccountColor(account.accountType)}`}>
                       <Icon className="h-6 w-6" />
                     </div>
                     <div>
-                      <CardTitle className="text-xl">{account.name}</CardTitle>
+                      <CardTitle className="text-xl">{account.accountType?.charAt(0).toUpperCase() + account.accountType?.slice(1)} Account</CardTitle>
                       <CardDescription>
-                        {getAccountTypeDescription(account.type)} • {account.accountNumber}
+                        {getAccountTypeDescription(account.accountType)} • {account.accountNumber}
                       </CardDescription>
                     </div>
                   </div>
                   <Badge variant="outline" className="capitalize">
-                    {account.status}
+                    active
                   </Badge>
                 </div>
               </CardHeader>
@@ -168,23 +172,12 @@ export function AccountsView() {
                     </div>
                   )}
                   
-                  {account.creditLimit && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-sm text-gray-600 mb-1">Credit Limit</p>
-                      <p className="text-2xl font-bold">
-                        {formatCurrency(account.creditLimit)}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {account.interestRate && (
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <p className="text-sm text-green-600 mb-1">Interest Rate</p>
-                      <p className="text-2xl font-bold text-green-700">
-                        {account.interestRate}% APY
-                      </p>
-                    </div>
-                  )}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">Currency</p>
+                    <p className="text-2xl font-bold">
+                      {account.currency || 'USD'}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Recent Transactions */}
@@ -196,28 +189,28 @@ export function AccountsView() {
                         <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                           <div className="flex items-center space-x-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'
+                              transaction.amount > 0 ? 'bg-green-100' : 'bg-red-100'
                             }`}>
-                              {transaction.type === 'credit' ? (
+                              {transaction.amount > 0 ? (
                                 <ArrowDownLeft className="h-4 w-4 text-green-600" />
                               ) : (
                                 <ArrowUpRight className="h-4 w-4 text-red-600" />
                               )}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{transaction.description}</p>
-                              <p className="text-sm text-gray-500">{transaction.category} • {transaction.date}</p>
+                              <p className="font-medium text-gray-900">{transaction.description || 'Transaction'}</p>
+                              <p className="text-sm text-gray-500">{transaction.type || 'transfer'} • {new Date(transaction.createdAt).toLocaleDateString()}</p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className={`font-semibold ${
-                              transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
+                              transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
                             }`}>
-                              {transaction.type === 'credit' ? '+' : ''}
+                              {transaction.amount > 0 ? '+' : ''}
                               {formatCurrency(Math.abs(transaction.amount))}
                             </p>
                             <Badge variant="outline" className="text-xs">
-                              {transaction.status}
+                              {transaction.status || 'completed'}
                             </Badge>
                           </div>
                         </div>

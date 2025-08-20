@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EnhancedInvestmentDashboard } from '@/components/investment/EnhancedInvestmentDashboard';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -13,7 +14,9 @@ import {
   Building,
   Coins,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Settings,
+  Zap
 } from 'lucide-react';
 
 interface Investment {
@@ -38,6 +41,7 @@ interface Portfolio {
 export function InvestmentDashboard() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [showEnhancedView, setShowEnhancedView] = useState(false);
 
   useEffect(() => {
     // Simulate portfolio data
@@ -107,6 +111,11 @@ export function InvestmentDashboard() {
     setPortfolio(mockPortfolio);
   }, []);
 
+  // Show enhanced dashboard if enabled
+  if (showEnhancedView) {
+    return <EnhancedInvestmentDashboard onBack={() => setShowEnhancedView(false)} />;
+  }
+
   const getInvestmentIcon = (type: Investment['type']) => {
     switch (type) {
       case 'stock':
@@ -141,8 +150,20 @@ export function InvestmentDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header with Enhanced View Toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Investment Portfolio</h2>
+          <p className="text-muted-foreground">Track and manage your investments</p>
+        </div>
+        <Button onClick={() => setShowEnhancedView(true)} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+          <Zap className="h-4 w-4 mr-2" />
+          Enhanced Trading View
+        </Button>
+      </div>
+
       {/* Portfolio Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{/* ... rest of component stays the same */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>
@@ -346,7 +367,7 @@ export function InvestmentDashboard() {
       </Tabs>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Button className="h-12">
           <TrendingUp className="h-4 w-4 mr-2" />
           Buy Investments
@@ -358,6 +379,10 @@ export function InvestmentDashboard() {
         <Button variant="outline" className="h-12">
           <BarChart3 className="h-4 w-4 mr-2" />
           View Analytics
+        </Button>
+        <Button variant="outline" className="h-12" onClick={() => setShowEnhancedView(true)}>
+          <Settings className="h-4 w-4 mr-2" />
+          Advanced Tools
         </Button>
       </div>
     </div>

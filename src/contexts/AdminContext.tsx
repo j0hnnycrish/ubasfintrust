@@ -162,27 +162,36 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       // Treat username field as email for backend auth
       const email = credentials.username;
-      const resp = await authAPI.login({ email, password: credentials.password });
-      if (!resp.success || !resp.data) {
+      const resp = await authAPI.adminLogin({ email, password: credentials.password });
+      if (!resp.success) {
         return { success: false, error: resp.message || 'Login failed' };
       }
-  const { user } = resp.data;
-      if (user.accountType !== 'corporate') {
-        return { success: false, error: 'Insufficient role: corporate required' };
+      
+      const token = resp.token;
+      if (!token) return { success: false, error: 'No token received' };
+      
+      // Store token
+      localStorage.setItem('ubas_token', token);
+      
+      // For admin login, check if user has admin role from the backend response
+      if (!resp.user || resp.user.role !== 'admin') {
+        return { success: false, error: 'Insufficient privileges: admin role required' };
       }
+      
       const admin: AdminUser = {
-        id: user.id,
-        username: user.email.split('@')[0],
-        email: user.email,
+        id: resp.user.id,
+        username: resp.user.email.split('@')[0],
+        email: resp.user.email,
         role: 'super_admin',
         permissions: ['all'],
         lastLogin: new Date().toISOString()
       };
       localStorage.setItem('ubas_admin', JSON.stringify(admin));
       setAdminUser(admin);
-  // After login load backend data
-  await fetchAdminData();
-  return { success: true };
+      
+      // After login load backend data
+      await fetchAdminData();
+      return { success: true };
     } catch (error: any) {
       return { success: false, error: error?.response?.data?.message || 'Admin login failed' };
     }

@@ -9,6 +9,7 @@ export interface User {
   accountType: AccountType;
   createdAt: Date;
   avatar?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface Account {

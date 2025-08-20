@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { kycAPI } from '@/lib/api';
 import { 
   Upload, 
   FileText, 
@@ -217,25 +218,44 @@ export function KYCVerificationFlow({ onComplete, onCancel }: KYCVerificationFlo
         formData.append(`agreement_${key}`, value.toString());
       });
 
-      // Submit to API
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/kyc/submit`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('ubas_token')}`,
+      // Submit to API using our kycAPI
+      const response = await kycAPI.submit({
+        personalInfo: {
+          firstName: personalInfo.firstName,
+          lastName: personalInfo.lastName,
+          dateOfBirth: personalInfo.dateOfBirth,
+          nationality: personalInfo.nationality,
         },
-        body: formData,
+        addressInfo: {
+          street: addressInfo.street,
+          city: addressInfo.city,
+          state: addressInfo.state,
+          country: addressInfo.country,
+        },
+        employmentInfo: {
+          employmentStatus: employmentInfo.employmentStatus,
+          monthlyIncome: employmentInfo.monthlyIncome,
+        },
+        documents: {
+          primaryId: documents.primaryId,
+          proofOfAddress: documents.addressProof,
+          incomeProof: documents.incomeProof,
+          selfie: documents.selfie,
+        },
+        agreements: {
+          termsAndConditions: agreements.termsAndConditions,
+          privacyPolicy: agreements.privacyPolicy,
+        },
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (response.success) {
         toast({
           title: 'KYC Application Submitted',
           description: 'Your verification documents have been submitted successfully. We will review them within 24-48 hours.',
         });
         onComplete();
       } else {
-        throw new Error(data.message || 'Submission failed');
+        throw new Error(response.message || 'Submission failed');
       }
     } catch (error) {
       console.error('KYC submission error:', error);

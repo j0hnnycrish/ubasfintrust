@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeftRight, Download, CreditCard, MessageSquare, Plus, Send, Receipt, Wallet, TrendingUp } from 'lucide-react';
+import { ArrowLeftRight, Download, CreditCard, MessageSquare, Plus, Send, Receipt, Wallet, TrendingUp, BarChart3 } from 'lucide-react';
 
 interface QuickActionsProps {
   onTransfer: () => void;
@@ -9,9 +9,10 @@ interface QuickActionsProps {
   onBillPay: () => void;
   onDeposit: () => void;
   onInvest: () => void;
+  onAnalytics?: () => void;
 }
 
-export function QuickActions({ onTransfer, onViewTransactions, onAIChat, onBillPay, onDeposit, onInvest }: QuickActionsProps) {
+export function QuickActions({ onTransfer, onViewTransactions, onAIChat, onBillPay, onDeposit, onInvest, onAnalytics }: QuickActionsProps) {
   const actions = [
     {
       icon: <Send className="h-5 w-5" />,
@@ -39,6 +40,13 @@ export function QuickActions({ onTransfer, onViewTransactions, onAIChat, onBillP
       label: 'Invest',
       description: 'Start investing for your future',
       onClick: onInvest,
+      variant: 'banking-outline' as const,
+    },
+    {
+      icon: <BarChart3 className="h-5 w-5" />,
+      label: 'Analytics',
+      description: 'View spending insights and budgets',
+      onClick: onAnalytics || (() => {}),
       variant: 'banking-outline' as const,
     },
     {

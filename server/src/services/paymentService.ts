@@ -1,485 +1,118 @@
-import { logger, logTransaction, logAudit } from '../utils/logger';
-import { db } from '../config/db';
-import { v4 as uuidv4 } from 'uuid';
-
-export interface PaymentIntent {
+interface PaymentMethod {
   id: string;
-  amount: number;
-  currency: string;
-  status: string;
-  clientSecret?: string;
-  metadata?: Record<string, string>;
+  type: string;
+  name: string;
+  enabled: boolean;
+  description: string;
 }
 
-export interface BankTransfer {
-  id: string;
-  fromAccountId: string;
-  toAccountId: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  simulationId?: string;
-  metadata?: Record<string, any>;
+interface BankInfo {
+  code: string;
+  name: string;
+}
+
+interface AccountVerification {
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  bankName: string;
 }
 
 export class PaymentService {
-  // Create a simulated payment intent for deposits
-  static async createDepositIntent(
-    userId: string,
-    accountId: string,
-    amount: number,
-    currency: string = 'USD'
-  ): Promise<PaymentIntent> {
-    try {
-      // Validate minimum amount ($1 equivalent in minor units)
-      if (amount < 100) {
-        throw new Error('Minimum deposit amount is 1.00');
+  static getPaymentMethods(): PaymentMethod[] {
+    return [
+      {
+        id: 'card',
+        type: 'credit_card',
+        name: 'Credit/Debit Card',
+        enabled: true,
+        description: 'Visa, Mastercard, American Express'
+      },
+      {
+        id: 'bank_transfer',
+        type: 'bank_transfer',
+        name: 'Bank Transfer',
+        enabled: true,
+        description: 'Direct bank account transfer'
+      },
+      {
+        id: 'wire',
+        type: 'wire_transfer',
+        name: 'Wire Transfer',
+        enabled: true,
+        description: 'International wire transfers'
       }
-
-      // Create simulated payment intent
-      const simulationId = `sim_${uuidv4()}`;
-      const paymentIntent = {
-        id: simulationId,
-  amount: amount,
-  currency: currency.toUpperCase(),
-        status: 'requires_payment_method',
-        clientSecret: `${simulationId}_secret_${Date.now()}`,
-        metadata: {
-          userId,
-          accountId,
-          type: 'deposit',
-          timestamp: new Date().toISOString(),
-        }
-      };
-
-      // Store payment intent in database
-      const transactionId = uuidv4();
-      await db('transactions').insert({
-        id: transactionId,
-        to_account_id: accountId,
-  amount: amount / 100, // Convert back to major units for storage
-  currency: currency.toUpperCase(),
-        type: 'deposit',
-        status: 'pending',
-        description: 'Simulated Deposit',
-        reference: paymentIntent.id,
-        category: 'Deposit',
-        metadata: {
-          simulationId: paymentIntent.id,
-          paymentMethod: 'simulation',
-        },
-      });
-
-      logTransaction(
-        transactionId,
-        'deposit',
-        amount / 100,
-        undefined,
-        accountId,
-        'pending',
-        { simulationId: paymentIntent.id }
-      );
-
-      return {
-        id: paymentIntent.id,
-  amount: amount / 100,
-  currency: currency.toUpperCase(),
-        status: paymentIntent.status,
-        clientSecret: paymentIntent.clientSecret || undefined,
-        metadata: paymentIntent.metadata,
-      };
-    } catch (error) {
-      logger.error('Failed to create deposit intent:', error);
-      throw new Error('Failed to create payment intent');
-    }
+    ];
   }
 
-  // Process simulated successful deposit
-  static async processDeposit(simulationId: string): Promise<void> {
-    try {
-      // Retrieve transaction from database
-      const transaction = await db('transactions')
-        .where({ reference: simulationId })
-        .first();
-
-      if (!transaction) {
-        throw new Error('Transaction not found');
-      }
-
-      if (transaction.status !== 'pending') {
-        throw new Error('Transaction already processed');
-      }
-
-      const { to_account_id: accountId } = transaction;
-      const amount = transaction.amount;
-
-      await db.transaction(async (trx) => {
-        // Update account balance
-        const account = await trx('accounts')
-          .where({ id: accountId })
-          .first();
-
-        if (!account) {
-          throw new Error('Account not found');
-        }
-
-        await trx('accounts')
-          .where({ id: accountId })
-          .update({
-            balance: account.balance + amount,
-            available_balance: account.available_balance + amount,
-            updated_at: new Date(),
-          });
-
-        // Update transaction status
-        await trx('transactions')
-          .where({ reference: simulationId })
-          .update({
-            status: 'completed',
-            processed_at: new Date(),
-          });
-
-        logTransaction(
-          simulationId,
-          'deposit',
-          amount,
-          undefined,
-          accountId,
-          'completed',
-          { simulationId }
-        );
-
-        logAudit('DEPOSIT_COMPLETED', account.user_id, 'transaction', {
-          accountId,
-          amount,
-          simulationId,
-        });
-      });
-    } catch (error) {
-      logger.error('Failed to process deposit:', error);
-      throw error;
-    }
+  static getBanks(): BankInfo[] {
+    return [
+      { code: 'CHB', name: 'Chase Bank' },
+      { code: 'BOA', name: 'Bank of America' },
+      { code: 'WFC', name: 'Wells Fargo' },
+      { code: 'USB', name: 'US Bank' },
+      { code: 'PNC', name: 'PNC Bank' }
+    ];
   }
 
-  // Create withdrawal to bank account
-  static async createWithdrawal(
-    userId: string,
-    accountId: string,
-    amount: number,
-    bankDetails: {
-      accountNumber: string;
-      bankCode: string;
-      accountName: string;
-    }
-  ): Promise<{ transferId: string; status: string }> {
-    try {
-      // Validate account and balance
-      const account = await db('accounts')
-        .where({ id: accountId, user_id: userId })
-        .first();
-
-      if (!account) {
-        throw new Error('Account not found');
-      }
-
-      if (account.available_balance < amount) {
-        throw new Error('Insufficient funds');
-      }
-
-  // For now, we'll simulate the withdrawal process
-      const transferId = uuidv4();
-
-      await db.transaction(async (trx) => {
-        // Deduct from account balance
-        await trx('accounts')
-          .where({ id: accountId })
-          .update({
-            balance: account.balance - amount,
-            available_balance: account.available_balance - amount,
-            updated_at: new Date(),
-          });
-
-        // Create withdrawal transaction
-        const transactionId = uuidv4();
-        await trx('transactions').insert({
-          id: transactionId,
-          from_account_id: accountId,
-          amount,
-          currency: (account.currency || 'USD').toUpperCase(),
-          type: 'withdrawal',
-          status: 'processing',
-          description: `Withdrawal to ${bankDetails.accountName}`,
-          reference: transferId,
-          category: 'Withdrawal',
-          metadata: {
-            bankDetails,
-            transferId,
-          },
-        });
-
-        logTransaction(
-          transactionId,
-          'withdrawal',
-          amount,
-          accountId,
-          undefined,
-          'processing',
-          { transferId, bankDetails }
-        );
-      });
-
-    // In a real implementation, integrate with regional transfer APIs as appropriate
-
-      return {
-        transferId,
-        status: 'processing',
-      };
-    } catch (error) {
-      logger.error('Failed to create withdrawal:', error);
-      throw error;
-    }
-  }
-
-  // Process real bank transfer between accounts
-  static async processRealBankTransfer(
-    fromAccountId: string,
-    toAccountNumber: string,
-    amount: number,
-    description: string,
-    userId: string
-  ): Promise<BankTransfer> {
-    try {
-      const transferId = uuidv4();
-
-      // Check if it's an internal transfer (within our bank)
-      const toAccount = await db('accounts')
-        .where({ account_number: toAccountNumber })
-        .first();
-
-      if (toAccount) {
-        // Internal transfer - instant
-        return await this.processInternalTransfer(
-          fromAccountId,
-          toAccount.id,
-          amount,
-          description,
-          userId
-        );
-      } else {
-        // External transfer - use real banking APIs
-        return await this.processExternalTransfer(
-          fromAccountId,
-          toAccountNumber,
-          amount,
-          description,
-          userId
-        );
-      }
-    } catch (error) {
-      logger.error('Failed to process bank transfer:', error);
-      throw error;
-    }
-  }
-
-  // Internal transfer between accounts in our system
-  private static async processInternalTransfer(
-    fromAccountId: string,
-    toAccountId: string,
-    amount: number,
-    description: string,
-    userId: string
-  ): Promise<BankTransfer> {
-    const transferId = uuidv4();
-    let transferCurrency = 'USD';
-
-    await db.transaction(async (trx) => {
-      // Get source account
-      const fromAccount = await trx('accounts')
-        .where({ id: fromAccountId, user_id: userId })
-        .first();
-
-      if (!fromAccount || fromAccount.available_balance < amount) {
-        throw new Error('Insufficient funds');
-      }
-
-      // Get destination account
-      const toAccount = await trx('accounts')
-        .where({ id: toAccountId })
-        .first();
-
-      if (!toAccount) {
-        throw new Error('Destination account not found');
-      }
-
-      // Enforce same-currency transfers for internal transfers (no FX implemented yet)
-      if (toAccount.currency && fromAccount.currency && toAccount.currency !== fromAccount.currency) {
-        throw new Error('Currency mismatch: internal transfers must use the same currency');
-      }
-
-      transferCurrency = (fromAccount.currency || 'USD').toUpperCase();
-
-      // Update balances
-      await trx('accounts')
-        .where({ id: fromAccountId })
-        .update({
-          balance: fromAccount.balance - amount,
-          available_balance: fromAccount.available_balance - amount,
-          updated_at: new Date(),
-        });
-
-      await trx('accounts')
-        .where({ id: toAccountId })
-        .update({
-          balance: toAccount.balance + amount,
-          available_balance: toAccount.available_balance + amount,
-          updated_at: new Date(),
-        });
-
-      // Create transaction record
-      const transactionId = uuidv4();
-      await trx('transactions').insert({
-        id: transactionId,
-        from_account_id: fromAccountId,
-        to_account_id: toAccountId,
-  amount,
-  currency: transferCurrency,
-        type: 'transfer',
-        status: 'completed',
-        description,
-        reference: transferId,
-        category: 'Transfer',
-        processed_at: new Date(),
-      });
-    });
-
+  static async verifyBankAccount(
+    accountNumber: string,
+    routingNumber: string,
+    bankCode: string
+  ): Promise<AccountVerification> {
+    // Simulate bank verification API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const banks = this.getBanks();
+    const bank = banks.find(b => b.code === bankCode);
+    
     return {
-      id: transferId,
-      fromAccountId,
-      toAccountId,
-      amount,
-  currency: transferCurrency,
-      status: 'completed',
+      accountNumber: accountNumber.slice(-4).padStart(accountNumber.length, '*'),
+      accountName: 'John Doe', // Would come from actual verification
+      bankCode,
+      bankName: bank?.name || 'Unknown Bank'
     };
   }
 
-  // External transfer to other banks
-  private static async processExternalTransfer(
-    fromAccountId: string,
-    toAccountNumber: string,
+  static async processPayment(
+    method: string,
     amount: number,
-    description: string,
-    userId: string
-  ): Promise<BankTransfer> {
-    const transferId = uuidv4();
-    let transferCurrency = 'USD';
-
-  // In a real implementation, integrate with appropriate interbank/clearing APIs for the region
-
-    await db.transaction(async (trx) => {
-      // Deduct from source account
-      const fromAccount = await trx('accounts')
-        .where({ id: fromAccountId, user_id: userId })
-        .first();
-
-      if (!fromAccount || fromAccount.available_balance < amount) {
-        throw new Error('Insufficient funds');
-      }
-
-      transferCurrency = (fromAccount.currency || 'USD').toUpperCase();
-
-      await trx('accounts')
-        .where({ id: fromAccountId })
-        .update({
-          balance: fromAccount.balance - amount,
-          available_balance: fromAccount.available_balance - amount,
-          updated_at: new Date(),
-        });
-
-      // Create pending transaction
-      const transactionId = uuidv4();
-      await trx('transactions').insert({
-        id: transactionId,
-        from_account_id: fromAccountId,
-  amount,
-  currency: transferCurrency,
-        type: 'transfer',
-        status: 'processing',
-        description: `Transfer to ${toAccountNumber}`,
-        reference: transferId,
-        category: 'External Transfer',
-        metadata: {
-          toAccountNumber,
-          transferType: 'external',
-        },
-      });
-    });
-
-    // Simulate external processing delay
-    setTimeout(async () => {
-      try {
-        await db('transactions')
-          .where({ reference: transferId })
-          .update({
-            status: 'completed',
-            processed_at: new Date(),
-          });
-
-        logTransaction(
-          transferId,
-          'transfer',
-          amount,
-          fromAccountId,
-          undefined,
-          'completed',
-          { toAccountNumber, transferType: 'external' }
-        );
-      } catch (error) {
-        logger.error('Failed to complete external transfer:', error);
-      }
-    }, 5000); // 5 second delay to simulate processing
-
-    return {
-      id: transferId,
-      fromAccountId,
-      toAccountId: toAccountNumber,
-      amount,
-  currency: transferCurrency,
-      status: 'processing',
-    };
-  }
-
-  // Simulate payment completion (replaces webhook)
-  static async simulatePaymentCompletion(
-    simulationId: string,
-    success: boolean = true
-  ): Promise<void> {
+    currency: string = 'USD',
+    details: any
+  ): Promise<{ success: boolean; transactionId?: string; error?: string }> {
     try {
-      if (success) {
-        await this.processDeposit(simulationId);
-      } else {
-        await this.handleFailedPayment(simulationId);
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate random failure for demo
+      if (Math.random() < 0.1) {
+        throw new Error('Payment failed due to insufficient funds');
       }
-
-      logger.info(`Simulated payment ${success ? 'success' : 'failure'} for ${simulationId}`);
+      
+      return {
+        success: true,
+        transactionId: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
     } catch (error) {
-      logger.error('Payment simulation error:', error);
-      throw error;
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Payment processing failed'
+      };
     }
   }
 
-  // Handle failed payments
-  private static async handleFailedPayment(paymentIntentId: string): Promise<void> {
-    try {
-      await db('transactions')
-        .where({ reference: paymentIntentId })
-        .update({
-          status: 'failed',
-          updated_at: new Date(),
-        });
-
-      logger.info(`Payment failed: ${paymentIntentId}`);
-    } catch (error) {
-      logger.error('Failed to handle failed payment:', error);
-    }
+  static async getPaymentHistory(userId: string, limit: number = 10): Promise<any[]> {
+    // Simulate payment history retrieval
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    return Array.from({ length: Math.min(limit, 20) }, (_, i) => ({
+      id: `pay_${Date.now() - i * 86400000}`,
+      amount: Math.floor(Math.random() * 1000) + 50,
+      currency: 'USD',
+      method: ['card', 'bank_transfer', 'wire'][Math.floor(Math.random() * 3)],
+      status: ['completed', 'pending', 'failed'][Math.floor(Math.random() * 3)],
+      description: `Payment ${i + 1}`,
+      createdAt: new Date(Date.now() - i * 86400000).toISOString()
+    }));
   }
 }

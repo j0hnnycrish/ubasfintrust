@@ -1,11 +1,33 @@
 import { useState } from 'react';
-import { useBankingStore } from '@/lib/bankingStore';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBankingData } from '@/hooks/useBankingData';
 import { AccountCard } from './AccountCard';
 import { QuickActions } from './QuickActions';
 import { TransactionHistory } from './TransactionHistory';
+import { EnhancedTransactionHistory } from './EnhancedTransactionHistory';
+import { EnhancedBillPayment } from '@/components/banking/EnhancedBillPayment';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { KYCManager } from '@/components/kyc/KYCManager';
+import { AdvancedTransactionHistory } from '@/components/transactions/AdvancedTransactionHistory';
+import { BillPaymentSystem } from '@/components/payments/BillPaymentSystem';
+import { AccountManagement } from '@/components/account/AccountManagement';
+import { AccountProfile } from '@/components/profile/AccountProfile';
+import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, Search } from 'lucide-react';
+import {
+  User,
+  CreditCard,
+  PiggyBank,
+  Receipt,
+  Shield,
+  Bell,
+  LogOut,
+  Settings,
+  ChevronDown,
+  TrendingUp,
+  BarChart3,
+  Search,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 const bankingLogo = '/placeholder.svg';
 
@@ -20,10 +42,29 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay, onDeposit, onInvest, onLogout }: DashboardProps) {
-  const { user, accounts, formatCurrency } = useBankingStore();
+  const { user } = useAuth();
+  const { accounts, totalBalance, formatCurrency, isLoading } = useBankingData();
   const [searchQuery, setSearchQuery] = useState('');
+    const [currentView, setCurrentView] = useState<'dashboard' | 'transactions' | 'payments' | 'account' | 'profile' | 'analytics'>('dashboard');
 
-  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+  const handleKYCView = () => setCurrentView('dashboard'); // KYC is integrated into dashboard
+  const handleTransactionsView = () => setCurrentView('transactions');
+  const handleBillsView = () => setCurrentView('payments');
+  const handleAccountView = () => setCurrentView('account');
+  const handleProfileView = () => setCurrentView('profile');
+  const handleAnalyticsView = () => setCurrentView('analytics');
+  const handleBackToDashboard = () => setCurrentView('dashboard');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-banking-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-banking-gold mx-auto mb-4"></div>
+          <p className="text-banking-dark">Loading your banking data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-banking-bg">
@@ -60,13 +101,28 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
             {/* User menu */}
             <div className="flex items-center space-x-4">
               <NotificationBell />
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" onClick={handleBillsView} title="Enhanced Bill Payment">
+                <CreditCard className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleTransactionsView} title="Enhanced Transaction History">
+                <Receipt className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleKYCView} title="Identity Verification">
+                <Shield className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleProfileView} title="User Profile">
+                <User className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleAccountView} title="Account Settings">
                 <Settings className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleAnalyticsView} title="Analytics Dashboard">
+                <BarChart3 className="h-4 w-4" />
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-banking-dark">
-                    {user?.firstName} {user?.lastName}
+                    {user?.fullName || user?.username}
                   </p>
                   <p className="text-xs text-banking-gray">{user?.email}</p>
                 </div>
@@ -86,12 +142,19 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {currentView === 'transactions' ? (
+        <AdvancedTransactionHistory onBack={handleBackToDashboard} />
+      ) : currentView === 'payments' ? (
+        <BillPaymentSystem onBack={handleBackToDashboard} />
+      ) : currentView === 'analytics' ? (
+        <AnalyticsDashboard onBack={handleBackToDashboard} />
+      ) : (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <div className="bg-gradient-banking rounded-xl p-6 text-banking-dark shadow-banking">
             <h2 className="text-2xl font-bold mb-2">
-              Welcome back, {user?.firstName}!
+              Welcome back, {user?.fullName?.split(' ')[0] || user?.username}!
             </h2>
             <p className="text-lg opacity-90">
               Your total balance: <span className="font-bold">{formatCurrency(totalBalance)}</span>
@@ -121,6 +184,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
             onBillPay={onBillPay}
             onDeposit={onDeposit}
             onInvest={onInvest}
+            onAnalytics={handleAnalyticsView}
           />
         </div>
 
@@ -136,7 +200,27 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
             ))}
           </div>
         )}
-      </main>
+        </main>
+      )}
+
+      {/* Account Management View */}
+      {currentView === 'account' && (
+        <AccountManagement onBack={handleBackToDashboard} />
+      )}
+
+      {/* Profile View */}
+      {currentView === 'profile' && (
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="mb-6">
+            <Button variant="ghost" onClick={handleBackToDashboard} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">User Profile</h1>
+            <p className="text-gray-600">Manage your personal information and account details</p>
+          </div>
+          <AccountProfile />
+        </div>
+      )}
     </div>
   );
 }

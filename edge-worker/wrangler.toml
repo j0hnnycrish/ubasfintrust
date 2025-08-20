@@ -6,6 +6,12 @@ compatibility_date = "2025-08-16"
 binding = "APP_KV"
 id = "acb18fc63b9e4e42a6124b11c5c0e1f7"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "app-db"
+database_id = "508c304a-fa6b-4ecc-be04-fa70418bd377"
+migrations_dir = "d1"
+
 [vars]
 NODE_ENV = "production"
 JWT_AUD = "ubas"

@@ -9,6 +9,7 @@ import { TransactionManagement } from './TransactionManagement';
 import { SystemSettings } from './SystemSettings';
 import { TemplatesManager } from './TemplatesManager';
 import { BackdatedTransactionGenerator } from './BackdatedTransactionGenerator';
+import { EnhancedAdminOperations } from './EnhancedAdminOperations';
 import { 
   Users, 
   CreditCard, 
@@ -81,12 +82,13 @@ export function AdminDashboard() {
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'enhanced', label: 'User Management', icon: Users },
     { id: 'customers', label: 'Customer Management', icon: Users },
     { id: 'accounts', label: 'Account Management', icon: CreditCard },
     { id: 'transactions', label: 'Transaction Management', icon: FileText },
     { id: 'generator', label: 'Transaction Generator', icon: Activity },
-  { id: 'templates', label: 'Templates', icon: FileText },
-  { id: 'settings', label: 'System Settings', icon: Settings }
+    { id: 'templates', label: 'Templates', icon: FileText },
+    { id: 'settings', label: 'System Settings', icon: Settings }
   ];
 
   const handleLogout = () => {
@@ -360,6 +362,7 @@ export function AdminDashboard() {
           {/* Main Content */}
           <div className="flex-1">
             {activeTab === 'overview' && renderOverview()}
+            {activeTab === 'enhanced' && <EnhancedAdminOperations />}
             {activeTab === 'customers' && <CustomerManagement />}
             {activeTab === 'accounts' && <AccountManagement />}
             {activeTab === 'transactions' && <TransactionManagement />}

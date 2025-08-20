@@ -106,22 +106,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const resp = await authAPI.login({ email: credentials.username, password: credentials.password });
       if (!resp.success) return { success: false, error: resp.message || 'Invalid credentials' };
-      const u = (resp as any).data.user;
+      
+      const token = resp.token;
+      if (!token) return { success: false, error: 'No token received' };
+      
+      // Store token and fetch user profile using whoami
+      localStorage.setItem('ubas_token', token);
+      
+      // Get user profile from whoami endpoint
+      const whoamiResp = await userAPI.whoami();
+      if (whoamiResp.authenticated && whoamiResp.id && whoamiResp.email) {
+        // Get full profile
+        const profileResp = await userAPI.getProfile();
+        if (profileResp.success && profileResp.data) {
+          const u = profileResp.data;
+          const userData = {
+            id: u.id,
+            username: u.email,
+            email: u.email,
+            accountType: u.account_type || 'personal',
+            accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
+            fullName: `${u.first_name || ''} ${u.last_name || ''}`.trim(),
+            phoneNumber: u.phone || '',
+            isVerified: u.is_verified || false,
+            kycStatus: u.kyc_status || 'pending',
+            createdAt: new Date(u.created_at || Date.now()).toISOString().split('T')[0]
+          };
+          localStorage.setItem('ubas_user', JSON.stringify(userData));
+          setUser(userData);
+          return { success: true };
+        }
+      }
+      
+      // Fallback to minimal user data from whoami if profile fails
       const userData = {
-        id: u.id,
-        username: u.email,
-        email: u.email,
-        accountType: u.accountType,
+        id: whoamiResp.id || '',
+        username: whoamiResp.email || credentials.username,
+        email: whoamiResp.email || credentials.username,
+        accountType: 'personal' as const,
         accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
-        fullName: `${u.firstName} ${u.lastName}`,
-        phoneNumber: u.phone || '',
-        isVerified: u.isVerified || false,
-        kycStatus: u.kycStatus || 'pending',
+        fullName: credentials.username,
+        phoneNumber: '',
+        isVerified: false,
+        kycStatus: 'pending' as const,
         createdAt: new Date().toISOString().split('T')[0]
       };
       localStorage.setItem('ubas_user', JSON.stringify(userData));
-      localStorage.setItem('ubas_token', (resp as any).data.accessToken);
-      localStorage.setItem('ubas_refresh_token', (resp as any).data.refreshToken);
       setUser(userData);
       return { success: true };
 
