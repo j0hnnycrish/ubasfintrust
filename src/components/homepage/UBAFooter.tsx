@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 import { 
   Facebook, 
   Twitter, 
@@ -11,7 +12,6 @@ import {
   MapPin,
   Download
 } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
 
 export function Footer() {
   const navigate = useNavigate();
@@ -56,16 +56,9 @@ export function Footer() {
           {/* Company Info */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
-              <img
-                src={bankingLogo}
-                alt="UBAS Financial Trust"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h3 className="text-2xl font-bold">UBAS</h3>
-                <p className="text-red-100 text-sm">UBAS FINANCIAL TRUST</p>
-              </div>
+              <UBASLogoCompact width={140} height={36} className="hover:opacity-90 transition-opacity" />
             </div>
+            
             <p className="text-red-100 leading-relaxed">
               A global financial platform delivering secure, innovative banking and wealth solutions across the Americas, Europe & Asia.
             </p>

@@ -13,6 +13,7 @@ import { BillPaymentSystem } from '@/components/payments/BillPaymentSystem';
 import { AccountManagement } from '@/components/account/AccountManagement';
 import { AccountProfile } from '@/components/profile/AccountProfile';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 import { Button } from '@/components/ui/button';
 import {
   User,
@@ -74,15 +75,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
           <div className="flex items-center justify-between h-16">
             {/* Logo and Brand */}
             <div className="flex items-center space-x-4">
-              <img
-                src={bankingLogo}
-                alt="UBAS Financial Trust"
-                className="w-10 h-10 rounded-full shadow-md"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-banking-dark">UBAS Financial Trust</h1>
-                <p className="text-xs text-banking-gray">Global Excellence in Banking</p>
-              </div>
+              <UBASLogoCompact width={160} height={40} className="hover:opacity-90 transition-opacity" />
             </div>
 
             {/* Search */}

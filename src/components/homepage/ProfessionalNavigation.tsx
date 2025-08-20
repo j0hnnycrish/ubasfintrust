@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { RegisterModal } from '@/components/auth/RegisterModal';
 import { PasswordResetModal } from '@/components/auth/PasswordResetModal';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 
 import {
   Search,
@@ -179,15 +180,7 @@ export function ProfessionalNavigation() {
             
             {/* Logo */}
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <img
-                src={bankingLogoUrl}
-                alt="UBAS Financial Trust"
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="ml-3">
-                <h1 className="text-2xl font-bold text-red-600">UBAS</h1>
-                <p className="text-xs text-brand-600 -mt-1">UBAS FINANCIAL TRUST</p>
-              </div>
+              <UBASLogoCompact width={140} height={36} className="hover:opacity-90 transition-opacity" />
             </div>
 
             {/* Desktop Navigation */}

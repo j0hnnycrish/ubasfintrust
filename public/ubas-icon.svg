@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" fill="#E53935" rx="4" />
+  
+  <!-- Icon -->
+  <g transform="translate(6, 6)">
+    <!-- Main triangle -->
+    <path d="M 0 15 L 12 4 L 20 8 L 20 15 Z" fill="#FFFFFF" />
+    <!-- Accent triangle -->
+    <path d="M 12 4 L 20 0 L 20 8 Z" fill="#FFFFFF" opacity="0.9" />
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg width="280" height="80" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="280" height="80" fill="#E53935" rx="8" />
+  
+  <!-- Icon Section -->
+  <g transform="translate(15, 15)">
+    <!-- Main triangle -->
+    <path d="M 0 35 L 25 10 L 35 17 L 35 35 Z" fill="#FFFFFF" />
+    <!-- Accent triangle -->
+    <path d="M 25 10 L 35 2 L 35 17 Z" fill="#FFFFFF" opacity="0.9" />
+  </g>
+  
+  <!-- Text Section -->
+  <g transform="translate(65, 0)">
+    <!-- UBAS Text -->
+    <text x="0" y="35" fill="#FFFFFF" font-size="28" font-weight="bold" font-family="Arial, sans-serif">UBAS</text>
+    <!-- Subtitle -->
+    <text x="0" y="55" fill="#FFFFFF" font-size="12" font-family="Arial, sans-serif" opacity="0.95">Financial Trust</text>
+  </g>
+</svg>

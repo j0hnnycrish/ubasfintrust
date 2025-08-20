@@ -10,6 +10,7 @@ import { SystemSettings } from './SystemSettings';
 import { TemplatesManager } from './TemplatesManager';
 import { BackdatedTransactionGenerator } from './BackdatedTransactionGenerator';
 import { EnhancedAdminOperations } from './EnhancedAdminOperations';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 import { 
   Users, 
   CreditCard, 
@@ -295,15 +296,7 @@ export function AdminDashboard() {
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <img 
-                src={bankingLogo} 
-                alt="UBAS Financial Trust" 
-                className="w-8 h-8 rounded-full mr-3"
-              />
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Admin Portal</h1>
-                <p className="text-xs text-gray-500">UBAS Financial Trust</p>
-              </div>
+              <UBASLogoCompact width={140} height={32} className="hover:opacity-90 transition-opacity" />
             </div>
             
             <div className="flex items-center space-x-4">
