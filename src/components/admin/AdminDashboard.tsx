@@ -28,7 +28,6 @@ import {
   RefreshCw,
   Mail
 } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
 
 export function AdminDashboard() {
   const { adminUser, adminLogout, customers, transactions } = useAdmin();

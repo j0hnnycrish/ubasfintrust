@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft, Building, Shield, TrendingUp } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 
 interface BusinessLoginProps {
   onBack: () => void;
@@ -66,11 +66,7 @@ export function BusinessLogin({ onBack, onSwitchToRegister }: BusinessLoginProps
             </Button>
             
             <div className="flex items-center space-x-4">
-              <img 
-                src={bankingLogo} 
-                alt="Providus Bank" 
-                className="w-16 h-16 rounded-full shadow-lg"
-              />
+              <UBASLogo variant="icon" width={64} height={64} className="shadow-lg rounded-lg" />
               <div>
                 <h1 className="text-4xl font-bold">Business Banking</h1>
                 <p className="text-xl text-green-600">Grow your business with us</p>

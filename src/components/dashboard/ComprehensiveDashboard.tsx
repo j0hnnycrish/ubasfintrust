@@ -13,6 +13,7 @@ import { DepositModal } from '../banking/DepositModal';
 import { InvestmentModal } from '../banking/InvestmentModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 
 import { 
   Bell,
@@ -36,7 +37,6 @@ import {
   Shield,
   Download
 } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
 
 interface ComprehensiveDashboardProps {
   onLogout: () => void;
@@ -148,12 +148,7 @@ export function ComprehensiveDashboard({ onLogout }: ComprehensiveDashboardProps
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <img 
-                src={bankingLogo} 
-                alt="UBAS Financial Trust" 
-                className="w-8 h-8 rounded-full mr-3"
-              />
-              <h1 className="text-xl font-semibold text-gray-900">UBAS Banking</h1>
+              <UBASLogoCompact width={120} height={32} className="mr-3" />
             </div>
             
             <div className="flex items-center space-x-4">

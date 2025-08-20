@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,14 +13,10 @@ export function AuthPage() {
         <div className="hidden lg:flex flex-col justify-center space-y-8 text-white">
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
-              <img 
-                src={bankingLogo} 
-                alt="Providus Bank" 
-                className="w-16 h-16 rounded-full shadow-banking"
-              />
+              <UBASLogo variant="icon" width={64} height={64} className="shadow-banking" />
               <div>
-                <h1 className="text-4xl font-bold">Providus Bank</h1>
-                <p className="text-xl text-brand-600">AI Banking Simulation</p>
+                <h1 className="text-4xl font-bold">UBAS Financial Trust</h1>
+                <p className="text-xl text-brand-600">Trusted Banking Platform</p>
               </div>
             </div>
             
@@ -68,14 +64,10 @@ export function AuthPage() {
         {/* Mobile branding */}
         <div className="lg:hidden col-span-full text-center text-white space-y-4">
           <div className="flex items-center justify-center space-x-4">
-            <img 
-              src={bankingLogo} 
-              alt="Providus Bank" 
-              className="w-12 h-12 rounded-full shadow-banking"
-            />
+            <UBASLogo variant="icon" width={48} height={48} className="shadow-banking" />
             <div>
-              <h1 className="text-2xl font-bold">Providus Bank</h1>
-              <p className="text-brand-600">AI Banking Simulation</p>
+              <h1 className="text-2xl font-bold">UBAS Financial Trust</h1>
+              <p className="text-brand-600">Trusted Banking Platform</p>
             </div>
           </div>
         </div>

@@ -39,7 +39,7 @@ import {
   Crown
 } from 'lucide-react';
 import { ACCOUNT_TYPES, BANKING_PRODUCTS, BANKING_SERVICES } from '@/types/accountTypes';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 
 interface NavigationProps {
   onAccountLogin: (accountType: string) => void;
@@ -149,15 +149,7 @@ export function Navigation({ onAccountLogin }: NavigationProps) {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Left Side - Logo & Branding */}
           <div className="flex items-center space-x-3 flex-shrink-0">
-            <img
-              src={bankingLogo}
-              alt="UBAS Financial Trust"
-              className="w-10 h-10 rounded-full shadow-md"
-            />
-            <div className="hidden sm:block">
-              <h1 className="text-lg font-bold text-brand-800">UBAS FINANCIAL TRUST</h1>
-              <p className="text-xs text-brand-700/70">Global Excellence in Banking</p>
-            </div>
+            <UBASLogoCompact width={140} height={36} className="hover:opacity-90 transition-opacity" />
           </div>
 
           {/* Center - Navigation Menu (Desktop Only) */}

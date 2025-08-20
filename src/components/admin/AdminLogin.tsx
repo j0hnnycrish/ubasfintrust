@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 import { 
   Shield, 
   Eye, 
@@ -15,7 +16,6 @@ import {
   Settings,
   Lock
 } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
 
 export function AdminLogin() {
   const { adminLogin } = useAdmin();
@@ -70,11 +70,7 @@ export function AdminLogin() {
           <CardHeader className="text-center pb-8">
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <img 
-                  src={bankingLogo} 
-                  alt="UBAS Financial Trust" 
-                  className="w-20 h-20 rounded-full shadow-lg"
-                />
+                <UBASLogo variant="icon" width={80} height={80} className="shadow-lg rounded-lg" />
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
                   <Settings className="h-4 w-4 text-white" />
                 </div>

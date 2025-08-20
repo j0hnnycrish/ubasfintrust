@@ -32,7 +32,7 @@ import {
   Phone,
   Calendar
 } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 
 type AccountCategory = 'personal' | 'business' | 'corporate' | 'private';
 
@@ -398,11 +398,7 @@ export function RegisterModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img 
-              src={bankingLogo} 
-              alt="UBAS Financial Trust" 
-              className="w-16 h-16 rounded-full shadow-md"
-            />
+            <UBASLogo variant="icon" width={64} height={64} className="shadow-md rounded-lg" />
           </div>
           <DialogTitle className="text-2xl font-bold text-gray-900">
             Open Your Account

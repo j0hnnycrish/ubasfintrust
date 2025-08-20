@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft, User, Shield } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 
 interface PersonalLoginProps {
   onBack: () => void;
@@ -66,11 +66,7 @@ export function PersonalLogin({ onBack, onSwitchToRegister }: PersonalLoginProps
             </Button>
             
             <div className="flex items-center space-x-4">
-              <img 
-                src={bankingLogo} 
-                alt="Providus Bank" 
-                className="w-16 h-16 rounded-full shadow-lg"
-              />
+              <UBASLogo variant="icon" width={64} height={64} className="shadow-lg rounded-lg" />
               <div>
                 <h1 className="text-4xl font-bold">Personal Banking</h1>
                 <p className="text-xl text-blue-600">Your financial partner for life</p>

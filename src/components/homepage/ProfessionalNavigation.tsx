@@ -33,8 +33,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-// Use a public asset to avoid bundling missing file issues
-const bankingLogoUrl = '/placeholder.svg';
 
 export function ProfessionalNavigation() {
   const navigate = useNavigate();

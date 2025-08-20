@@ -30,7 +30,6 @@ import {
   Search,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-const bankingLogo = '/placeholder.svg';
 
 interface DashboardProps {
   onTransfer: () => void;

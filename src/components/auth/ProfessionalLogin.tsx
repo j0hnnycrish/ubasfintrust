@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
 import { Eye, EyeOff, Lock, User, CreditCard, ArrowLeft, Shield, Building } from 'lucide-react';
-const bankingLogo = '/placeholder.svg';
+import { UBASLogo } from '@/components/ui/UBASLogo';
 
 interface ProfessionalLoginProps {
   onBack: () => void;
@@ -124,11 +124,7 @@ export function ProfessionalLogin({ onBack, onSwitchToRegister }: ProfessionalLo
           </Button>
           
           <div className="flex justify-center mb-4">
-            <img 
-              src={bankingLogo} 
-              alt="UBAS Financial Trust" 
-              className="w-16 h-16 rounded-full shadow-md"
-            />
+            <UBASLogo variant="icon" width={64} height={64} className="shadow-md rounded-lg" />
           </div>
           
           <CardTitle className="text-2xl font-bold text-red-900">
