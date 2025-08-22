@@ -250,7 +250,7 @@ References
     `).bind(amount, amount, accountId).run()
     
     // Record transaction
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       INSERT INTO transactions (id, to_account_id, amount, currency, type, status, created_at)
       VALUES (?, ?, ?, ?, 'deposit', 'completed', datetime('now'))
     `).bind(txId, accountId, amount, (account as any).currency).run()
@@ -285,7 +285,7 @@ app.post('/api/v1/accounts/:id/withdraw', async (c: Context<{ Bindings: Env }>) 
     }
 
     // Verify user owns the account and has sufficient balance
-  const account = await env.DB.prepare(`
+  const account = await env.ubasfintrust.prepare(`
       SELECT * FROM accounts WHERE id = ? AND user_id = ?
     `).bind(accountId, userId).first()
     
@@ -300,14 +300,14 @@ app.post('/api/v1/accounts/:id/withdraw', async (c: Context<{ Bindings: Env }>) 
     const txId = crypto.randomUUID()
     
     // Update account balance
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       UPDATE accounts 
       SET balance = balance - ?, available_balance = available_balance - ?
       WHERE id = ?
     `).bind(amount, amount, accountId).run()
     
     // Record transaction
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       INSERT INTO transactions (id, from_account_id, amount, currency, type, status, created_at)
       VALUES (?, ?, ?, ?, 'withdrawal', 'completed', datetime('now'))
     `).bind(txId, accountId, amount, (account as any).currency).run()
@@ -351,7 +351,7 @@ app.put('/api/v1/users/profile', async (c: Context<{ Bindings: Env }>) => {
       return c.json({ success: false, message: 'No fields to update' }, 400)
     }
     
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       UPDATE users 
       SET ${updates.join(', ')} 
       WHERE id = ?
@@ -375,7 +375,7 @@ app.get('/api/v1/kyc/status', async (c: Context<{ Bindings: Env }>) => {
   const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
     const userId = (payload as any).id as string
 
-  const kycApplication = await env.DB.prepare(`
+  const kycApplication = await env.ubasfintrust.prepare(`
       SELECT status, submitted_at, reviewed_at, rejection_reason
       FROM kyc_applications 
       WHERE user_id = ? 
@@ -383,7 +383,7 @@ app.get('/api/v1/kyc/status', async (c: Context<{ Bindings: Env }>) => {
       LIMIT 1
     `).bind(userId).first()
     
-  const documents = await env.DB.prepare(`
+  const documents = await env.ubasfintrust.prepare(`
       SELECT document_type, verification_status, file_name
       FROM kyc_documents 
       WHERE user_id = ?
@@ -428,7 +428,7 @@ app.put('/api/v1/admin/kyc/:id/status', async (c: Context<{ Bindings: Env }>) =>
       params.push(rejection_reason)
     }
     
-  const result = await env.DB.prepare(`
+  const result = await env.ubasfintrust.prepare(`
       UPDATE kyc_applications 
       SET ${updates.join(', ')}
       WHERE id = ?
@@ -440,9 +440,9 @@ app.put('/api/v1/admin/kyc/:id/status', async (c: Context<{ Bindings: Env }>) =>
     
     // Update user KYC status
     if (status === 'approved') {
-  const kycApp = await env.DB.prepare('SELECT user_id FROM kyc_applications WHERE id = ?').bind(kycId).first()
+  const kycApp = await env.ubasfintrust.prepare('SELECT user_id FROM kyc_applications WHERE id = ?').bind(kycId).first()
       if (kycApp) {
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
           UPDATE users SET kyc_status = 'verified' WHERE id = ?
         `).bind((kycApp as any).user_id).run()
       }
@@ -479,7 +479,7 @@ app.get('/api/v1/admin/kyc', async (c: Context<{ Bindings: Env }>) => {
       params = [status]
     }
 
-  const applications = await env.DB.prepare(`
+  const applications = await env.ubasfintrust.prepare(`
       SELECT k.*, u.email, u.first_name, u.last_name
       FROM kyc_applications k
       JOIN users u ON k.user_id = u.id
@@ -488,7 +488,7 @@ app.get('/api/v1/admin/kyc', async (c: Context<{ Bindings: Env }>) => {
       LIMIT ? OFFSET ?
     `).bind(...params, limit, offset).all()
 
-  const totalResult = await env.DB.prepare(`
+  const totalResult = await env.ubasfintrust.prepare(`
       SELECT COUNT(*) as count FROM kyc_applications k ${whereClause}
     `).bind(...params).first()
     
@@ -955,15 +955,15 @@ app.get('/api/v1/notifications', async (c: Context<{ Bindings: Env }>) => {
     query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`
     params.push(limit, offset)
 
-  const notifications = await env.DB.prepare(query).bind(...params).all()
+  const notifications = await env.ubasfintrust.prepare(query).bind(...params).all()
 
-  const totalResult = await env.DB.prepare(`
+  const totalResult = await env.ubasfintrust.prepare(`
       SELECT COUNT(*) as count FROM notifications WHERE user_id = ?
       ${type ? 'AND type = ?' : ''}
       ${read !== null ? 'AND read = ?' : ''}
     `).bind(userId, ...(type ? [type] : []), ...(read !== null ? [read === 'true'] : [])).first()
 
-  const unreadResult = await env.DB.prepare(`
+  const unreadResult = await env.ubasfintrust.prepare(`
       SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND read = false
     `).bind(userId).first()
 
@@ -1000,7 +1000,7 @@ app.patch('/api/v1/notifications/:id/read', async (c: Context<{ Bindings: Env }>
     const userId = (payload as any).id as string
     const notificationId = c.req.param('id')
 
-  const notification = await env.DB.prepare(`
+  const notification = await env.ubasfintrust.prepare(`
       SELECT id FROM notifications WHERE id = ? AND user_id = ?
     `).bind(notificationId, userId).first()
 
@@ -1011,7 +1011,7 @@ app.patch('/api/v1/notifications/:id/read', async (c: Context<{ Bindings: Env }>
       }, 404)
     }
 
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       UPDATE notifications 
       SET read = true, read_at = datetime('now')
       WHERE id = ?
@@ -1040,7 +1040,7 @@ app.patch('/api/v1/notifications/read-all', async (c: Context<{ Bindings: Env }>
   const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
     const userId = (payload as any).id as string
 
-  await env.DB.prepare(`
+  await env.ubasfintrust.prepare(`
       UPDATE notifications 
       SET read = true, read_at = datetime('now')
       WHERE user_id = ? AND read = false
@@ -1140,7 +1140,7 @@ app.post('/api/v1/auth/admin/login', async (c: Context<{ Bindings: Env }>) => {
 
     // Find user by username or phone, must be admin/super_admin
   const env = c.env as Env;
-  const user = await env.DB.prepare(
+  const user = await env.ubasfintrust.prepare(
       `SELECT * FROM admin_users WHERE (username = ? OR email = ?) AND (role = 'admin' OR role = 'super_admin') LIMIT 1`
     ).bind(identifier, identifier).first()
     if (!user) {
@@ -1252,7 +1252,7 @@ app.get('/api/v1/admin/users', async (c: Context<{ Bindings: Env }>) => {
       params = [`%${q}%`, `%${q}%`, `%${q}%`]
     }
 
-  const rows = await env.DB.prepare(`
+  const rows = await env.ubasfintrust.prepare(`
       SELECT id, email, first_name, last_name, account_type, kyc_status, is_verified, created_at
       FROM users
       ${whereClause}
@@ -1260,7 +1260,7 @@ app.get('/api/v1/admin/users', async (c: Context<{ Bindings: Env }>) => {
       LIMIT ? OFFSET ?
     `).bind(...params, limit, offset).all()
 
-  const totalResult = await env.DB.prepare(`
+  const totalResult = await env.ubasfintrust.prepare(`
       SELECT COUNT(*) as count FROM users ${whereClause}
     `).bind(...params).first()
     
@@ -1316,18 +1316,18 @@ app.post('/api/v1/auth/admin/seed', async (c: Context<{ Bindings: Env }>) => {
     const first_name = 'System';
     const last_name = 'Administrator';
     // Check if admin user exists
-    const existing = await env.DB.prepare(
+  const existing = await env.ubasfintrust.prepare(
       `SELECT id FROM admin_users WHERE email = ? LIMIT 1`
     ).bind(email).first();
     if (existing) {
       // Update password and role if needed
-      await env.DB.prepare(
+  await env.ubasfintrust.prepare(
         `UPDATE admin_users SET password_hash = ?, role = ?, status = 'active' WHERE email = ?`
       ).bind(password_hash, role, email).run();
       return c.json({ success: true, message: 'Admin user updated.' });
     } else {
       // Insert new admin user
-      await env.DB.prepare(
+  await env.ubasfintrust.prepare(
         `INSERT INTO admin_users (username, email, password_hash, first_name, last_name, role, status) VALUES (?, ?, ?, ?, ?, ?, 'active')`
       ).bind(username, email, password_hash, first_name, last_name, role).run();
       return c.json({ success: true, message: 'Admin user created.' });
