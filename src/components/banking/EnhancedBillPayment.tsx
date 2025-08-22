@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBankingData } from '@/hooks/useBankingData';
 import { billPaymentAPI } from '@/lib/api';
@@ -36,18 +36,10 @@ import {
   CreditCard, 
   GraduationCap,
   Shield,
-  Calendar as CalendarIcon,
   Clock,
   CheckCircle,
-  AlertCircle,
   DollarSign,
-  Search,
-  Filter,
   Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Download,
   RefreshCw,
   TrendingUp,
   TrendingDown,
@@ -464,7 +456,7 @@ export function EnhancedBillPayment({ onBack }: EnhancedBillPaymentProps) {
   const getFrequencyIcon = (frequency: string) => {
     switch (frequency) {
       case 'weekly': return <Clock className="h-4 w-4" />;
-      case 'monthly': return <CalendarIcon className="h-4 w-4" />;
+      case 'monthly': return <Clock className="h-4 w-4" />;
       case 'quarterly': return <Activity className="h-4 w-4" />;
       default: return <Repeat className="h-4 w-4" />;
     }

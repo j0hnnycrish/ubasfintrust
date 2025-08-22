@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBankingData } from '@/hooks/useBankingData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+// Removed unused Textarea import
 import {
   Select,
   SelectContent,
@@ -36,11 +36,8 @@ import {
   TrendingUp,
   TrendingDown,
   Eye,
-  ExternalLink,
-  RefreshCw,
   SortAsc,
   SortDesc,
-  Archive,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';

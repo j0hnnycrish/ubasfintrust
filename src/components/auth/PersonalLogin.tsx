@@ -14,7 +14,7 @@ interface PersonalLoginProps {
 }
 
 export function PersonalLogin({ onBack, onSwitchToRegister }: PersonalLoginProps) {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export function PersonalLogin({ onBack, onSwitchToRegister }: PersonalLoginProps
     setIsLoading(true);
 
     try {
-      const success = await login(email, password, 'personal');
+  const success = await login(identifier, password, 'personal');
       if (success) {
         toast({
           title: 'Welcome to Personal Banking',
@@ -121,17 +121,17 @@ export function PersonalLogin({ onBack, onSwitchToRegister }: PersonalLoginProps
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-blue-900 font-medium">
-                    Email Address
+                  <Label htmlFor="identifier" className="text-blue-900 font-medium">
+                    Username or Phone
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-blue-500" />
+                    <User className="absolute left-3 top-3 h-4 w-4 text-blue-500" />
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="identifier"
+                      type="text"
+                      placeholder="Enter your username or phone number"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
                       className="pl-9 border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                       required
                     />

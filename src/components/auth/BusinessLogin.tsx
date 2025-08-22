@@ -14,7 +14,7 @@ interface BusinessLoginProps {
 }
 
 export function BusinessLogin({ onBack, onSwitchToRegister }: BusinessLoginProps) {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export function BusinessLogin({ onBack, onSwitchToRegister }: BusinessLoginProps
     setIsLoading(true);
 
     try {
-      const success = await login(email, password, 'business');
+  const success = await login(identifier, password, 'business');
       if (success) {
         toast({
           title: 'Welcome to Business Banking',
@@ -138,23 +138,22 @@ export function BusinessLogin({ onBack, onSwitchToRegister }: BusinessLoginProps
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-green-900 font-medium">
-                    Business Email Address
+                  <Label htmlFor="identifier" className="text-green-900 font-medium">
+                    Username or Phone
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-green-500" />
+                    <Building className="absolute left-3 top-3 h-4 w-4 text-green-500" />
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your business email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="identifier"
+                      type="text"
+                      placeholder="Enter your username or phone number"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
                       className="pl-9 border-green-200 focus:border-green-500 focus:ring-green-500"
                       required
                     />
                   </div>
                 </div>
-                
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-green-900 font-medium">
                     Password

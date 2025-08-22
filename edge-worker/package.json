@@ -1,26 +1,18 @@
 {
   "name": "ubasfintrust-edge-worker",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+  "version": "1.0.0",
+  "main": "src/worker.ts",
   "scripts": {
-    "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "deploy:d1:migrate": "wrangler d1 migrations apply app-db",
-    "neon:setup": "node ./scripts/neon-setup.mjs",
-    "mint:token": "node ./scripts/mint-token.mjs",
-    "smoke:transfer": "node ./scripts/smoke-transfer.mjs"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240821.0",
-    "@types/bcryptjs": "^3.0.0",
-    "typescript": "^5.5.3",
-    "wrangler": "^4.30.0"
+    "dev": "wrangler dev",
+    "d1:migrate": "wrangler d1 migrations apply app-db --remote"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.10.3",
     "bcryptjs": "^2.4.3",
-    "hono": "^4.6.7",
-    "jose": "^5.2.4"
+    "hono": "^4.9.4",
+    "jose": "^4.14.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
   }
 }

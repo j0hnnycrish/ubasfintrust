@@ -1,11 +1,11 @@
 import React from 'react';
-import SupportChat from './components/SupportChat';
+import SmartsuppChatWidget from './components/SmartsuppChatWidget';
 
 function App() {
   return (
     <div className="App">
-      {/* ...other components and routes... */}
-      <SupportChat />
+  {/* ...other components and routes... */}
+  <SmartsuppChatWidget />
     </div>
   );
 }

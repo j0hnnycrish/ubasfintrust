@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBankingData } from '@/hooks/useBankingData';
 import { useNotificationTriggers } from '@/contexts/NotificationContext';

@@ -16,5 +16,5 @@ export async function verifyBearer(token: string, secret: string, expectedAud?: 
 export function getBearer(req: Request): string | null {
   const auth = req.headers.get('authorization') || ''
   const m = auth.match(/^Bearer\s+(.+)$/i)
-  return m ? m[1] : null
+  return m ? m[1] ?? null : null
 }

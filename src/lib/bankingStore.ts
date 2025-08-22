@@ -1,20 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AccountType } from '@/types/accountTypes';
-import { authAPI, userAPI, transactionAPI, User as ApiUser, Account as ApiAccount, Transaction as ApiTransaction } from '@/lib/api';
+import { authAPI, userAPI, transactionAPI } from '@/lib/api';
 import { socketService } from '@/lib/socket';
 import { toast } from 'sonner';
 
 // Updated types to match API
 export interface User {
   id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
   // Match API shape: string; we still track userAccountType separately as AccountType
-  accountType: string;
-  kycStatus: string;
-  twoFactorEnabled: boolean;
+  accountType?: string;
+  kycStatus?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface Account {
@@ -57,17 +57,9 @@ interface BankingStore extends AuthState {
   isLoading: boolean;
   
   // Auth actions
-  login: (email: string, password: string, twoFactorToken?: string) => Promise<{ success: boolean; requiresTwoFactor?: boolean; error?: string }>;
+  login: (username: string, password: string, twoFactorToken?: string) => Promise<{ success: boolean; requiresTwoFactor?: boolean; error?: string }>;
   logout: () => Promise<void>;
-  register: (userData: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    dateOfBirth: string;
-    accountType: AccountType;
-  }) => Promise<{ success: boolean; error?: string }>;
+  register: (userData: any) => Promise<{ success: boolean; error?: string }>;
   
   // Account actions
   fetchAccounts: () => Promise<void>;
@@ -123,10 +115,10 @@ export const useBankingStore = create<BankingStore>()(
       isLoading: false,
 
       // Auth actions
-      login: async (email: string, password: string, twoFactorToken?: string) => {
+    login: async (username: string, password: string, twoFactorToken?: string) => {
         set({ isLoading: true });
         try {
-          const response = await authAPI.login({ email, password, twoFactorToken });
+      const response = await authAPI.login({ username, password, twoFactorToken });
           
           if (response.success) {
       if (response.data?.user) {
@@ -176,10 +168,19 @@ export const useBankingStore = create<BankingStore>()(
         }
       },
 
-      register: async (userData) => {
+      register: async (userData: any) => {
         set({ isLoading: true });
         try {
-          const response = await authAPI.register(userData);
+          const payload = {
+            username: userData.username || (userData.email ? String(userData.email).split('@')[0] : `${(userData.firstName || 'user').toString().toLowerCase()}${(userData.lastName || '').toString().toLowerCase()}`),
+            password: userData.password || 'Password123!',
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            phone: userData.phone || userData.phoneNumber || '',
+            dateOfBirth: userData.dateOfBirth || '1990-01-01',
+            accountType: (userData.accountType as string) || 'personal',
+          };
+          const response = await authAPI.register(payload);
           set({ isLoading: false });
           
           if (response.success) {

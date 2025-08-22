@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useBankingData } from '@/hooks/useBankingData';
 import { useNotificationTriggers } from '@/contexts/NotificationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -22,7 +20,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
@@ -30,35 +27,22 @@ import {
   ArrowLeft,
   User,
   Shield,
-  CreditCard,
   Bell,
-  Settings,
-  Eye,
-  EyeOff,
   Edit,
   Save,
   X,
   Plus,
   Trash2,
-  Camera,
-  Upload,
   Download,
   Smartphone,
   Mail,
-  Phone,
-  MapPin,
   Calendar,
   Building,
   Globe,
-  Lock,
   Key,
-  Fingerprint,
   AlertTriangle,
   CheckCircle,
-  Clock,
   DollarSign,
-  Percent,
-  Target,
   History,
   FileText,
   Link,
@@ -146,8 +130,7 @@ interface AccountManagementProps {
 }
 
 export function AccountManagement({ onBack }: AccountManagementProps) {
-  const { user, updateUser } = useAuth();
-  const { accounts, formatCurrency } = useBankingData();
+  const { user } = useAuth();
   const { notifySecurityEvent, notifySystem } = useNotificationTriggers();
   const { toast } = useToast();
 
@@ -184,11 +167,11 @@ export function AccountManagement({ onBack }: AccountManagementProps) {
     setLoading(true);
     try {
       // Mock data - in real app, this would come from API
-      const mockProfile: UserProfile = {
-        id: user?.id || '1',
-        firstName: user?.firstName || 'John',
-        lastName: user?.lastName || 'Doe',
-        email: user?.email || 'john.doe@example.com',
+  const mockProfile: UserProfile = {
+    id: user?.id || '1',
+  firstName: 'John',
+  lastName: 'Doe',
+    email: (user?.username ? `${user.username}@example.com` : 'john.doe@example.com'),
         phone: '+1 (555) 123-4567',
         dateOfBirth: '1985-06-15',
         address: {
@@ -680,10 +663,9 @@ export function AccountManagement({ onBack }: AccountManagementProps) {
                   </div>
 
                   <div>
-                    <Label>Email Address</Label>
+                    <Label>Username</Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <p className="text-sm text-gray-900">{profile.email}</p>
-                      {profile.emailVerified && <CheckCircle className="h-4 w-4 text-green-600" />}
+                      <p className="text-sm text-gray-900">{user?.username || 'user'}</p>
                     </div>
                   </div>
 
@@ -990,7 +972,7 @@ export function AccountManagement({ onBack }: AccountManagementProps) {
 
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                           <div className="flex items-center space-x-2">
-                            <MessageSquare className="h-4 w-4" />
+                            {/* MessageSquare icon removed */}
                             <span>SMS</span>
                           </div>
                           <Switch
@@ -1198,7 +1180,7 @@ export function AccountManagement({ onBack }: AccountManagementProps) {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button variant="outline" className="w-full justify-start">
-                    <MessageSquare className="h-4 w-4 mr-2" />
+                    {/* MessageSquare icon removed */}
                     Contact Support
                   </Button>
                   <Button variant="outline" className="w-full justify-start">

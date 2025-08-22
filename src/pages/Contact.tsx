@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import api from '@/lib/api';
 import { ProfessionalNavigation } from '@/components/homepage/ProfessionalNavigation';
 import { Button } from '@/components/ui/button';

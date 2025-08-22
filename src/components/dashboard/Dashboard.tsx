@@ -8,10 +8,10 @@ import { EnhancedTransactionHistory } from './EnhancedTransactionHistory';
 import { EnhancedBillPayment } from '@/components/banking/EnhancedBillPayment';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { KYCManager } from '@/components/kyc/KYCManager';
-import { AdvancedTransactionHistory } from '@/components/transactions/AdvancedTransactionHistory';
-import { BillPaymentSystem } from '@/components/payments/BillPaymentSystem';
+// import AdvancedTransactionHistory from '@/components/transactions/AdvancedTransactionHistory';
+// import BillPaymentSystem from '@/components/payments/BillPaymentSystem';
 import { AccountManagement } from '@/components/account/AccountManagement';
-import { AccountProfile } from '@/components/profile/AccountProfile';
+import AccountProfile from '@/components/profile/AccountProfile';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { UBASLogoCompact } from '@/components/ui/UBASLogo';
 import { Button } from '@/components/ui/button';
@@ -116,7 +116,7 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
                   <p className="text-sm font-medium text-banking-dark">
                     {user?.fullName || user?.username}
                   </p>
-                  <p className="text-xs text-banking-gray">{user?.email}</p>
+                  <p className="text-xs text-banking-gray">{user?.phoneNumber}</p>
                 </div>
                 <Button
                   variant="banking-outline"
@@ -135,9 +135,9 @@ export function Dashboard({ onTransfer, onViewTransactions, onAIChat, onBillPay,
 
       {/* Main Content */}
       {currentView === 'transactions' ? (
-        <AdvancedTransactionHistory onBack={handleBackToDashboard} />
+        <EnhancedTransactionHistory />
       ) : currentView === 'payments' ? (
-        <BillPaymentSystem onBack={handleBackToDashboard} />
+        <EnhancedBillPayment onBack={handleBackToDashboard} />
       ) : currentView === 'analytics' ? (
         <AnalyticsDashboard onBack={handleBackToDashboard} />
       ) : (

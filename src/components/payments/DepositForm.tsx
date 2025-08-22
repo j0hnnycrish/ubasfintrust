@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,7 @@ interface DepositFormProps {
 const DepositFormContent: React.FC<DepositFormProps> = ({ onSuccess, onCancel }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { accounts, user, fetchAccounts } = useBankingStore();
+  const { accounts, fetchAccounts } = useBankingStore();
   
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
@@ -65,14 +65,14 @@ const DepositFormContent: React.FC<DepositFormProps> = ({ onSuccess, onCancel })
         throw new Error(response.message || 'Failed to create payment intent');
       }
 
-      if (SIMULATE_PAYMENTS) {
+  if (SIMULATE_PAYMENTS) {
         // Call simulation endpoint to complete the payment
         const sim = await paymentAPI.simulateCompletion(response.data.id, true);
         if (!sim.success) throw new Error(sim.message || 'Simulation failed');
         toast.success('Deposit successful!');
         await fetchAccounts();
         onSuccess?.();
-      } else if (stripe && elements && response.data.clientSecret) {
+  } else if (stripe && elements && response.data.clientSecret) {
         const cardElement = elements.getElement(CardElement);
         if (!cardElement) {
           throw new Error('Card element not found');
@@ -83,8 +83,7 @@ const DepositFormContent: React.FC<DepositFormProps> = ({ onSuccess, onCancel })
             payment_method: {
               card: cardElement,
               billing_details: {
-                name: `${user?.firstName} ${user?.lastName}`,
-                email: user?.email,
+        name: 'UBAS User',
               },
             },
           }
@@ -206,7 +205,7 @@ const DepositFormContent: React.FC<DepositFormProps> = ({ onSuccess, onCancel })
             </Button>
             <Button
               type="submit"
-              disabled={!stripe || isLoading}
+              disabled={(!SIMULATE_PAYMENTS && !stripe) || isLoading}
               className="flex-1"
             >
               {isLoading ? (

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect } from 'react';
 import { useNotificationTriggers } from '@/contexts/NotificationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -25,55 +23,19 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import {
-  Settings,
-  Globe,
-  Clock,
-  DollarSign,
-  Palette,
-  Moon,
   Sun,
+  Moon,
   Monitor,
-  Lock,
-  Eye,
-  EyeOff,
-  Shield,
-  Smartphone,
-  Mail,
-  Bell,
-  CreditCard,
-  Building,
-  Users,
-  Target,
-  Percent,
-  TrendingUp,
-  PieChart,
-  BarChart3,
-  Calendar,
-  Filter,
-  SortAsc,
-  FileText,
-  Download,
-  Upload,
-  Save,
-  RefreshCw,
   CheckCircle,
   AlertCircle,
-  Info,
-  X,
+  DollarSign,
+  BarChart3,
+  FileText,
+  Filter,
+  Save,
+  RefreshCw,
   Plus,
-  Minus,
-  Edit,
-  Trash2,
-  Copy,
-  ExternalLink,
-  HelpCircle,
-  MessageSquare,
-  Phone,
-  Camera,
-  Mic,
-  Video,
-  Speaker,
-  Volume2
+  Trash2
 } from 'lucide-react';
 
 interface AccountSettings {
@@ -146,7 +108,6 @@ interface AccountSettingsProps {
 }
 
 export function AccountSettings({ onSettingsChange }: AccountSettingsProps) {
-  const { user } = useAuth();
   const { notifySystem } = useNotificationTriggers();
   const { toast } = useToast();
 

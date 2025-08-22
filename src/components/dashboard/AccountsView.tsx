@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBankingData } from '@/hooks/useBankingData';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

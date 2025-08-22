@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../lib/api';
 
 interface User {
   id: string;
   username: string;
-  email: string;
   accountType: 'personal' | 'business' | 'corporate' | 'private';
   accountNumber: string;
   fullName: string;
@@ -32,7 +31,6 @@ interface LoginCredentials {
 
 interface RegisterData {
   username: string;
-  email: string;
   password: string;
   confirmPassword: string;
   fullName: string;
@@ -58,7 +56,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     {
       id: '1',
       username: 'john.doe',
-      email: 'john.doe@email.com',
       accountType: 'personal',
       accountNumber: 'UBAS001234567',
       fullName: 'John Doe',
@@ -70,7 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     {
       id: '2',
       username: 'business.user',
-      email: 'contact@business.com',
       accountType: 'business',
       accountNumber: 'UBAS002345678',
       fullName: 'Business Account',
@@ -104,45 +100,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      const resp = await authAPI.login({ email: credentials.username, password: credentials.password });
+      const resp = await authAPI.login({ username: credentials.username, password: credentials.password });
       if (!resp.success) return { success: false, error: resp.message || 'Invalid credentials' };
       
-      const token = resp.token;
-      if (!token) return { success: false, error: 'No token received' };
-      
-      // Store token and fetch user profile using whoami
-      localStorage.setItem('ubas_token', token);
-      
-      // Get user profile from whoami endpoint
-      const whoamiResp = await userAPI.whoami();
-      if (whoamiResp.authenticated && whoamiResp.id && whoamiResp.email) {
-        // Get full profile
-        const profileResp = await userAPI.getProfile();
-        if (profileResp.success && profileResp.data) {
-          const u = profileResp.data;
-          const userData = {
-            id: u.id,
-            username: u.email,
-            email: u.email,
-            accountType: u.account_type || 'personal',
-            accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
-            fullName: `${u.first_name || ''} ${u.last_name || ''}`.trim(),
-            phoneNumber: u.phone || '',
-            isVerified: u.is_verified || false,
-            kycStatus: u.kyc_status || 'pending',
-            createdAt: new Date(u.created_at || Date.now()).toISOString().split('T')[0]
-          };
-          localStorage.setItem('ubas_user', JSON.stringify(userData));
-          setUser(userData);
-          return { success: true };
-        }
+      const token = resp.data?.token;
+      if (token) {
+  localStorage.setItem('ubas_token', token);
       }
-      
-      // Fallback to minimal user data from whoami if profile fails
+      // Use login response user data if available
+      if (resp.data && resp.data.user) {
+        const u = resp.data.user;
+        const userData = {
+          id: u.id,
+          username: credentials.username,
+          accountType: (u.accountType as 'personal' | 'business' | 'corporate' | 'private') || 'personal',
+          accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
+          fullName: `${u.firstName || ''} ${u.lastName || ''}`.trim() || credentials.username,
+          phoneNumber: '',
+          isVerified: false,
+          kycStatus: (u.kycStatus as 'pending' | 'approved' | 'rejected') || 'pending',
+          createdAt: new Date().toISOString().split('T')[0]
+        };
+        localStorage.setItem('ubas_user', JSON.stringify(userData));
+        setUser(userData);
+        return { success: true };
+      }
+      // Fallback to minimal user data if login response lacks user
       const userData = {
-        id: whoamiResp.id || '',
-        username: whoamiResp.email || credentials.username,
-        email: whoamiResp.email || credentials.username,
+        id: '',
+        username: credentials.username,
         accountType: 'personal' as const,
         accountNumber: `UBAS${Math.random().toString().substr(2, 9)}`,
         fullName: credentials.username,
@@ -177,12 +163,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const resp = await authAPI.register({
-        email: userData.email,
+        username: userData.username,
         password: userData.password,
         firstName: userData.fullName.split(' ')[0],
         lastName: userData.fullName.split(' ').slice(1).join(' ') || userData.fullName.split(' ')[0],
         phone: userData.phoneNumber,
-        dateOfBirth: '1990-01-01',
+        dateOfBirth: userData.dateOfBirth || '1990-01-01',
         accountType: userData.accountType,
       } as any);
       if (!resp.success) return { success: false, error: resp.message || 'Registration failed' };
@@ -190,8 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Create user object for frontend
       const newUser: User = {
         id: (resp as any).data.userId,
-        username: userData.email,
-        email: userData.email,
+        username: userData.username,
         accountType: userData.accountType,
         accountNumber: (resp as any).data.accountNumber,
         fullName: userData.fullName,

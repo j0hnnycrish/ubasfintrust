@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { adminAPI, authAPI } from '@/lib/api';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { adminAPI, authAPI, userAPI } from '@/lib/api';
 
 interface AdminUser {
   id: string;
   username: string;
-  email: string;
   role: 'super_admin' | 'admin' | 'manager';
   permissions: string[];
   lastLogin: string;
@@ -160,36 +159,25 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const adminLogin = async (credentials: { username: string; password: string }): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Treat username field as email for backend auth
-      const email = credentials.username;
-      const resp = await authAPI.adminLogin({ email, password: credentials.password });
+      const resp = await authAPI.adminLogin({ username: credentials.username, password: credentials.password });
       if (!resp.success) {
         return { success: false, error: resp.message || 'Login failed' };
       }
-      
       const token = resp.token;
       if (!token) return { success: false, error: 'No token received' };
-      
-      // Store token
       localStorage.setItem('ubas_token', token);
-      
-      // For admin login, check if user has admin role from the backend response
-      if (!resp.user || resp.user.role !== 'admin') {
-        return { success: false, error: 'Insufficient privileges: admin role required' };
+      if (!resp.user || (resp.user.role !== 'admin' && resp.user.role !== 'super_admin')) {
+        return { success: false, error: 'Insufficient privileges: admin/super_admin role required' };
       }
-      
       const admin: AdminUser = {
         id: resp.user.id,
-        username: resp.user.email.split('@')[0],
-        email: resp.user.email,
-        role: 'super_admin',
+        username: resp.user.username,
+        role: resp.user.role,
         permissions: ['all'],
         lastLogin: new Date().toISOString()
       };
       localStorage.setItem('ubas_admin', JSON.stringify(admin));
       setAdminUser(admin);
-      
-      // After login load backend data
       await fetchAdminData();
       return { success: true };
     } catch (error: any) {
@@ -205,7 +193,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const adminChangePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
     try {
       // Reuse user password change endpoint (admin user is just a corporate account type)
-      const resp = await (await import('@/lib/api')).userAPI.changePassword({ currentPassword, newPassword });
+      const resp = await userAPI.changePassword({ currentPassword, newPassword });
       if (!resp.success) return { success: false, error: resp.message || 'Password change failed' };
       return { success: true };
     } catch (e: any) {

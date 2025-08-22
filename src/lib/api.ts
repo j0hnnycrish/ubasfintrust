@@ -113,12 +113,12 @@ export interface ApiResponse<T = any> {
 
 export interface User {
   id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  accountType: string;
-  kycStatus: string;
-  twoFactorEnabled: boolean;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  accountType?: string;
+  kycStatus?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface Account {
@@ -151,7 +151,7 @@ export interface Transaction {
 // Auth API
 export const authAPI = {
   register: async (userData: {
-    email: string;
+    username: string;
     password: string;
     firstName: string;
     lastName: string;
@@ -160,44 +160,42 @@ export const authAPI = {
     accountType: string;
   }): Promise<ApiResponse<{ userId: string; accountNumber: string }>> => {
     const response = await api.post('/auth/register', {
-      email: userData.email,
+      username: userData.username,
       password: userData.password,
       first_name: userData.firstName,
-      last_name: userData.lastName
+      last_name: userData.lastName,
+      phone: userData.phone,
+      account_type: userData.accountType,
+      date_of_birth: userData.dateOfBirth
     });
     return response.data;
   },
 
   login: async (credentials: {
-    email: string;
+    username?: string;
+    phone?: string;
     password: string;
     twoFactorToken?: string;
   }): Promise<ApiResponse<{ user: User; token: string; requiresTwoFactor?: boolean }>> => {
     const response = await api.post('/auth/login', credentials);
-    
     if (response.data.success && response.data.token) {
       const { token } = response.data;
-      // Store just the token - our backend returns token directly
       localStorage.setItem('ubas_token', token);
-      setTokens(token, token); // Use same token for both
+      setTokens(token, token);
     }
-    
     return response.data;
   },
 
   adminLogin: async (credentials: {
-    email: string;
+    username: string;
     password: string;
-  }): Promise<{ success: boolean; token?: string; user?: { id: string; email: string; role: string }; message?: string }> => {
+  }): Promise<{ success: boolean; token?: string; user?: { id: string; username: string; role: string }; message?: string }> => {
     const response = await api.post('/auth/admin/login', credentials);
-    
     if (response.data.success && response.data.token) {
       const { token } = response.data;
-      // Store just the token - our backend returns token directly
       localStorage.setItem('ubas_token', token);
-      setTokens(token, token); // Use same token for both
+      setTokens(token, token);
     }
-    
     return response.data;
   },
 
@@ -268,7 +266,7 @@ export const userAPI = {
   },
 
   // Add whoami endpoint for checking auth status
-  whoami: async (): Promise<ApiResponse<{ authenticated: boolean; id?: string; email?: string }>> => {
+  whoami: async (): Promise<ApiResponse<{ authenticated: boolean; id?: string; username?: string }>> => {
     const response = await api.get('/auth/whoami');
     return response.data;
   },

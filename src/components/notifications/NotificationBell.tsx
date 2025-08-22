@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
-  DropdownMenu,
+  // DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuHeader,
+  DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';

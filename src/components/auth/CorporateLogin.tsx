@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useBankingStore } from '@/lib/bankingStore';
-import { Eye, EyeOff, Lock, Mail, ArrowLeft, Building2, Shield, Globe, Award } from 'lucide-react';
+import { Eye, EyeOff, Lock, ArrowLeft, Building2, Shield, Globe, Award } from 'lucide-react';
 import { UBASLogo } from '@/components/ui/UBASLogo';
 
 interface CorporateLoginProps {
@@ -14,7 +14,7 @@ interface CorporateLoginProps {
 }
 
 export function CorporateLogin({ onBack, onSwitchToRegister }: CorporateLoginProps) {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export function CorporateLogin({ onBack, onSwitchToRegister }: CorporateLoginPro
     setIsLoading(true);
 
     try {
-      const success = await login(email, password, 'corporate');
+  const success = await login(identifier, password, 'corporate');
       if (success) {
         toast({
           title: 'Welcome to Corporate Banking',
@@ -35,7 +35,7 @@ export function CorporateLogin({ onBack, onSwitchToRegister }: CorporateLoginPro
       } else {
         toast({
           title: 'Login Failed',
-          description: 'Invalid credentials. Please check your email and password.',
+           description: 'Invalid credentials. Please check your username/phone and password.',
           variant: 'destructive',
         });
       }
@@ -139,21 +139,20 @@ export function CorporateLogin({ onBack, onSwitchToRegister }: CorporateLoginPro
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-purple-900 font-medium">
-                    Corporate Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-purple-500" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your corporate email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-9 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
+                    <Label htmlFor="identifier" className="text-purple-900 font-medium">
+                      Username or Phone
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="identifier"
+                        type="text"
+                        placeholder="Enter your username or phone number"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        className="pl-9 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
                 </div>
                 
                 <div className="space-y-2">

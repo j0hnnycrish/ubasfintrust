@@ -6,8 +6,8 @@
 const API_BASE_URL = 'https://ubasfintrust.jcrish4eva.workers.dev/api/v1';
 
 // Admin credentials
-const ADMIN_EMAIL = 'admin@ubasfintrust.com';
-const ADMIN_PASSWORD = 'StrongPass123!';
+const ADMIN_EMAIL = 'admin@ubas.com';
+const ADMIN_PASSWORD = 'admin123';
 
 async function testAdminFunctionalities() {
   console.log('🔐 Testing Complete Admin Functionalities\n');
@@ -15,7 +15,7 @@ async function testAdminFunctionalities() {
   try {
     // Step 1: Admin Login
     console.log('1. 🚪 Admin Login...');
-    const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+    const loginResponse = await fetch(`${API_BASE_URL}/auth/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBankingData } from '@/hooks/useBankingData';
 import { investmentAPI } from '@/lib/api';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
+// Removed unused Textarea import
 import {
   Select,
   SelectContent,
@@ -21,7 +21,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
@@ -40,26 +39,18 @@ import {
   Search,
   Plus,
   Minus,
-  Eye,
-  EyeOff,
   Bell,
-  BellOff,
   RefreshCw,
   Download,
   Target,
   Shield,
   Activity,
-  Calendar,
-  LineChart,
-  Zap,
   Star,
   StarOff,
   AlertTriangle,
   CheckCircle,
   Clock,
   Info,
-  Filter,
-  Settings,
   PlusCircle,
   MinusCircle,
   ExternalLink

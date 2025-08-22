@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,10 +25,8 @@ import {
 } from 'lucide-react';
 
 interface ProfileData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
+  fullName: string;
+  phoneNumber: string;
   address: string;
   city: string;
   state: string;
@@ -51,10 +49,8 @@ interface VerificationStats {
 export default function AccountProfile() {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
+    fullName: user?.fullName || '',
+    phoneNumber: user?.phoneNumber || '',
     address: '',
     city: '',
     state: '',
@@ -129,21 +125,6 @@ export default function AccountProfile() {
           <h1 className="text-3xl font-bold text-gray-900">Account Profile</h1>
           <p className="text-gray-600 mt-1">Manage your account information and security settings</p>
         </div>
-        <div className="flex items-center space-x-3">
-          <Badge variant={user?.twoFactorEnabled ? "default" : "secondary"} className="px-3 py-1">
-            {user?.twoFactorEnabled ? (
-              <>
-                <Shield className="w-3 h-3 mr-1" />
-                2FA Enabled
-              </>
-            ) : (
-              <>
-                <AlertCircle className="w-3 h-3 mr-1" />
-                2FA Disabled
-              </>
-            )}
-          </Badge>
-        </div>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
@@ -163,40 +144,21 @@ export default function AccountProfile() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                <div className="md:col-span-2">
+                  <Label htmlFor="fullName">Full Name</Label>
                   <Input
-                    id="firstName"
-                    value={profileData.firstName}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+                    id="fullName"
+                    value={profileData.fullName}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, fullName: e.target.value }))}
                     className="mt-1"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                <div className="md:col-span-2">
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input
-                    id="lastName"
-                    value={profileData.lastName}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profileData.email}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    value={profileData.phone}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                    id="phoneNumber"
+                    value={profileData.phoneNumber}
+                    onChange={(e) => setProfileData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     className="mt-1"
                   />
                 </div>
@@ -289,20 +251,7 @@ export default function AccountProfile() {
                   </Button>
                 </div>
                 
-                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center">
-                    <Shield className="w-5 h-5 mr-3 text-gray-600" />
-                    <div>
-                      <div className="font-medium">Two-Factor Authentication</div>
-                      <div className="text-sm text-gray-600">
-                        {user?.twoFactorEnabled ? 'Enabled via SMS' : 'Not enabled'}
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="outline">
-                    {user?.twoFactorEnabled ? 'Manage' : 'Enable'}
-                  </Button>
-                </div>
+                {/* Two-Factor Authentication removed for username/phone-only login */}
               </div>
             </CardContent>
           </Card>

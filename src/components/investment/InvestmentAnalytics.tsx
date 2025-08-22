@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,7 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  RechartsTooltipProps 
+  // Removed RechartsTooltipProps, not exported by recharts
 } from 'recharts';
 import {
   TrendingUp,
@@ -27,8 +27,7 @@ import {
   DollarSign,
   Percent,
   Target,
-  Calendar,
-  BarChart3,
+  
   Download,
   RefreshCw,
   Award,
@@ -169,7 +168,7 @@ export function InvestmentAnalytics() {
     return isGood ? 'good' : 'average';
   };
 
-  const CustomTooltip: React.FC<RechartsTooltipProps<number, string>> = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color?: string }>; label?: string; }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">

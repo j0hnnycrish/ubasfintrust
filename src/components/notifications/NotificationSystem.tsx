@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -20,38 +18,23 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import {
   Bell,
-  BellOff,
   Settings,
-  Check,
-  X,
-  AlertTriangle,
   DollarSign,
-  CreditCard,
   TrendingUp,
   User,
   Shield,
   Mail,
-  MessageSquare,
   Smartphone,
   Globe,
-  Clock,
   CheckCircle,
-  XCircle,
-  Info,
   Archive,
   Trash2,
-  Send,
-  Users,
-  Filter,
   Search,
-  MoreVertical,
-  Eye,
   Volume2,
   VolumeX,
   Zap
@@ -114,7 +97,6 @@ interface AdminNotification {
 }
 
 export function NotificationSystem() {
-  const { user } = useAuth();
   const { toast } = useToast();
   const ws = useRef<WebSocket | null>(null);
 
@@ -449,12 +431,7 @@ export function NotificationSystem() {
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
-          {user?.role === 'admin' && (
-            <Button onClick={() => setShowAdminCompose(true)}>
-              <Send className="h-4 w-4 mr-2" />
-              Send Notification
-            </Button>
-          )}
+          {/* Admin notification button can be shown based on a separate admin flag, not user.role */}
         </div>
       </div>
 
@@ -478,9 +455,7 @@ export function NotificationSystem() {
             Notifications ({unreadCount})
           </TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          {user?.role === 'admin' && (
-            <TabsTrigger value="admin">Admin Panel</TabsTrigger>
-          )}
+          {/* Admin Panel tab can be shown based on a separate admin flag, not user.role */}
         </TabsList>
 
         {/* Notifications Tab */}
@@ -758,8 +733,8 @@ export function NotificationSystem() {
           </div>
         </TabsContent>
 
-        {/* Admin Panel Tab */}
-        {user?.role === 'admin' && (
+  {/* Admin Panel Tab - gated by a local flag or higher-level prop, not by user.role */}
+  {false && (
           <TabsContent value="admin" className="space-y-6">
             <Card>
               <CardHeader>

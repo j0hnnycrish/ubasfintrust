@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
+import { diagnosticsAPI, adminAPI } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,7 +48,6 @@ export function AdminDashboard() {
   const fetchDiag = async () => {
     setDiagLoading(true);
     try {
-      const { diagnosticsAPI } = await import('@/lib/api');
       const resp = await diagnosticsAPI.get();
       if (resp.success) setDiag(resp.data);
     } catch(e) {}
@@ -64,7 +64,6 @@ export function AdminDashboard() {
   const fetchEmailHealth = async () => {
     setEmailHealthLoading(true);
     try {
-      const { adminAPI } = await import('@/lib/api');
       const resp = await adminAPI.getEmailHealth();
       if ((resp as any).success) setEmailHealth((resp as any).providers || (resp as any).data?.providers || []);
     } catch(e) {}
@@ -74,7 +73,6 @@ export function AdminDashboard() {
   const sendTestEmail = async () => {
     setTestEmailStatus('');
     try {
-      const { adminAPI } = await import('@/lib/api');
       const resp = await adminAPI.sendTestNotification({ userId: adminUser.id, channel: 'email' });
       if (resp.success) setTestEmailStatus('Sent'); else setTestEmailStatus('Failed');
     } catch (e) { setTestEmailStatus('Failed'); }

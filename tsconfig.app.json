@@ -27,8 +27,9 @@
       "@/*": ["./src/*"]
     },
   "esModuleInterop": true,
-  "types": ["react", "react-dom", "node", "./types/eslint-plugins"]
+  "types": ["react", "react-dom", "./types/eslint-plugins"],
+  "allowSyntheticDefaultImports": true
   },
   "include": ["src", "types"],
-  "exclude": ["edge-worker/**"]
+  "exclude": ["edge-worker/**", "test-*.js", "./test-bcrypt.js"]
 }

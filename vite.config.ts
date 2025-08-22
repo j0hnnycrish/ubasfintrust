@@ -12,42 +12,28 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: ["ubasfintrust.com"],
   },
   build: {
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ["react", "react-dom", "react-router-dom"],
-          radix: [
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-alert-dialog",
-            "@radix-ui/react-aspect-ratio",
-            "@radix-ui/react-avatar",
-            "@radix-ui/react-checkbox",
-            "@radix-ui/react-collapsible",
-            "@radix-ui/react-context-menu",
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-hover-card",
-            "@radix-ui/react-label",
-            "@radix-ui/react-menubar",
-            "@radix-ui/react-navigation-menu",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-progress",
-            "@radix-ui/react-radio-group",
-            "@radix-ui/react-scroll-area",
-            "@radix-ui/react-select",
-            "@radix-ui/react-separator",
-            "@radix-ui/react-slider",
-            "@radix-ui/react-slot",
-            "@radix-ui/react-switch",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-toast",
-            "@radix-ui/react-toggle",
-            "@radix-ui/react-toggle-group",
-            "@radix-ui/react-tooltip"
-          ],
-          ui: ["clsx", "class-variance-authority", "tailwind-merge", "embla-carousel-react", "sonner"],
-          charts: ["recharts"],
-          query: ["@tanstack/react-query"],
+        manualChunks(id) {
+          // Third-party vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'react';
+            if (id.includes('@radix-ui')) return 'radix';
+            if (id.includes('recharts')) return 'charts';
+            if (id.includes('@tanstack/react-query')) return 'query';
+            if (id.includes('stripe')) return 'payments';
+            if (id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('embla-carousel-react') || id.includes('sonner')) return 'ui';
+            return 'vendor';
+          }
+          // Feature-based splitting for large app areas
+          if (id.includes('/src/components/admin/')) return 'admin';
+          if (id.includes('/src/components/investment/')) return 'investment';
+          if (id.includes('/src/components/dashboard/')) return 'dashboard';
+          if (id.includes('/src/components/analytics/')) return 'analytics';
+          if (id.includes('/src/components/banking/')) return 'banking';
+          if (id.includes('/src/components/notifications/')) return 'notifications';
+          return undefined;
         }
       }
     }
