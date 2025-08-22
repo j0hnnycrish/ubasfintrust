@@ -1,317 +1,252 @@
-// ...existing code...
+# Cloudflare CI Quick Start (Pages + Worker)
 
-// Robust CORS middleware: handles all requests and preflight
-app.use('*', async (c, next) => {
-  if (c.req.method === 'OPTIONS') {
-    c.header('Access-Control-Allow-Origin', '*');
-    c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  return new Response('', { status: 204 });
-  }
-  await next();
-  c.header('Access-Control-Allow-Origin', '*');
-  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-});
+Use this 1-page guide to deploy the frontend (Pages) and the API (Worker) on every push to `main` using GitHub Actions.
 
-// ...existing code...
+## 1) One-time local setup
 
-// Admin seed endpoint: ensures default admin user exists
-app.post('/api/v1/auth/admin/seed', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const env = c.env as Env;
-    const email = 'admin@ubasfintrust.com';
-    const username = 'admin';
-    const password = 'Admin25@@';
-  const salt = bcryptjs.genSaltSync(12);
-  const password_hash = bcryptjs.hashSync(password, salt);
-    const role = 'super_admin';
-    const first_name = 'System';
-    const last_name = 'Administrator';
-    // Check if admin user exists
-    const existing = await env.DB.prepare(
-      `SELECT id FROM admin_users WHERE email = ? LIMIT 1`
-    ).bind(email).first();
-    if (existing) {
-      // Update password and role if needed
-      await env.DB.prepare(
-        `UPDATE admin_users SET password_hash = ?, role = ?, status = 'active' WHERE email = ?`
-      ).bind(password_hash, role, email).run();
-      return c.json({ success: true, message: 'Admin user updated.' });
-    } else {
-      // Insert new admin user
-      await env.DB.prepare(
-        `INSERT INTO admin_users (username, email, password_hash, first_name, last_name, role, status) VALUES (?, ?, ?, ?, ?, ?, 'active')`
-      ).bind(username, email, password_hash, first_name, last_name, role).run();
-      return c.json({ success: true, message: 'Admin user created.' });
-    }
-  } catch (e) {
-    return c.json({ success: false, message: 'Admin seed failed', error: (e as Error).message }, 500);
-  }
-});
+- Install tools (on your dev machine):
 
-import { Hono, Context } from 'hono';
-import type { Env } from './app-env';
-import { ExternalBankingService } from './services/externalBankingService';
-import { CreditScoreService } from './services/creditScoreService';
-import { InvestmentService } from './services/investmentService';
-import { initializeNotificationServices } from './services/notificationService';
-import { getBearer, verifyBearer } from './auth';
-import * as bcryptjs from 'bcryptjs';
+  ```zsh
+npm i -g wrangler
+```
+- Log in and create/bind resources (IDs will be printed):
 
-const app = new Hono<{ Bindings: Env }>();
-const externalBankingService = new ExternalBankingService();
-const creditScoreService = new CreditScoreService();
-const investmentService = new InvestmentService();
+  ```zsh
+cd edge-worker
+  wrangler login
+  wrangler r2 bucket create app-uploads
+  wrangler d1 create app-db
+  wrangler kv namespace create APP_KV
+```
+- Update `edge-worker/wrangler.toml` with the printed IDs for D1 and KV.
+- Set Worker secrets locally (so you can test dev and also document values for CI):
 
+  ```zsh
+wrangler secret put JWT_SECRET
+  # Optional if using Neon (preferred DB)
+  wrangler secret put DATABASE_URL
+```
+- (Optional) Seed Neon once:
 
-// Change password: requires auth, verifies current password
-app.post('/api/v1/auth/change-password', async (c: Context<{ Bindings: Env }>) => {
-  try {
-  const notificationService = initializeNotificationServices(c.env);
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-  const jwtSecret = c.env.JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
-    const userId = (payload as any).id as string
-    if (!userId) return c.json({ success: false, message: 'Unauthorized' }, 401)
+  ```zsh
+DATABASE_URL='postgresql://USER:PASSWORD@HOST/db?sslmode=require' npm run neon:setup
+```
+- (Optional) Apply D1 migrations once (for demo fallback and /api/items):
 
-    const { currentPassword, newPassword } = await c.req.json().catch(() => ({}))
-    if (!currentPassword || !newPassword) return c.json({ success: false, message: 'currentPassword and newPassword required' }, 400)
+  ```zsh
+npm run deploy:d1:migrate
+```
 
-    // D1 only
-    const { results } = await c.env.DB.prepare(
-      `SELECT password_hash FROM users WHERE id = ? LIMIT 1`
-    ).bind(userId).all()
-    const rec = results?.[0]
-    if (!rec || !rec.password_hash) return c.json({ success: false, message: 'No password set' }, 400)
-    const ok = await bcryptjs.compare(currentPassword, rec.password_hash)
-    if (!ok) return c.json({ success: false, message: 'Invalid current password' }, 401)
-    const salt = bcryptjs.genSaltSync(10)
-    const hash = bcryptjs.hashSync(newPassword, salt)
-    await c.env.DB.prepare(
-      `UPDATE users SET password_hash = ? WHERE id = ?`
-    ).bind(hash, userId).run()
-  notificationService.sendSecurityNotification(userId, 'Password Changed', 'Your account password has been successfully updated')
-    return c.json({ success: true })
-  } catch (e) {
-    return c.json({ success: false, message: 'Change password failed' }, 500)
+## 2) Add GitHub repository secrets
 
+GitHub → repo → Settings → Secrets and variables → Actions → "New repository secret":
 
+- `CLOUDFLARE_API_TOKEN` (deploy token for Pages + Workers)
+- `CLOUDFLARE_ACCOUNT_ID` (your CF account ID)
+- `CLOUDFLARE_PAGES_PROJECT` (exact Pages project name)
+- `VITE_API_URL` (your Worker API base, e.g., <https://your-worker.your-account.workers.dev>)
+- `JWT_SECRET` (same value used to sign your JWTs)
+- `DATABASE_URL` (optional, Neon connection string)
 
-  }
+Notes:
 
-});
+- The CI workflow will push `JWT_SECRET` and `DATABASE_URL` into the Worker using `wrangler secret put` before deploying.
 
+## 3) Push to main
 
+- Ensure the workflow file exists: `.github/workflows/cloudflare-deploy.yml`
+- Commit and push to `main`:
 
+  ```zsh
+git add -A
+  git commit -m "ci: deploy to Cloudflare via GitHub Actions"
+  git push origin main
+```
 
+The workflow will:
 
-// Users: profile (mapped from server/src/routes/users.ts GET /profile)
-app.get('/api/v1/users/profile', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-  const jwtSecret = c.env.JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
-    const userId = (payload.id as string) || ''
-    if (!userId) return c.json({ success: false, message: 'Invalid token' }, 401)
+- Build the frontend and publish to Pages (using `VITE_API_URL`).
+- Install `edge-worker` deps, set Worker secrets, and deploy the Worker.
 
-  // D1 only
+## 4) Quick verification
 
-    // Fallback to D1 if table exists (SQLite schema must match)
-    try {
-  const { results } = await c.env.DB.prepare(
-        `SELECT id, email, first_name, last_name, phone, date_of_birth, account_type, kyc_status, is_verified, two_factor_enabled, created_at FROM users WHERE id = ? LIMIT 1`
-      ).bind(userId).all()
-      const userProfile = results?.[0]
-      if (!userProfile) {
-        return c.json({ success: false, message: 'User not found' }, 404)
-      }
-      return c.json({ success: true, data: userProfile })
-    } catch {
-      return c.json({ success: false, message: 'DB not configured' }, 501)
-    }
-  } catch (err) {
-    return c.json({ success: false, message: 'Unauthorized' }, 401)
-  }
+- Frontend: Open your Pages URL from the dashboard.
+- API health:
 
+  ```zsh
+curl -s https://<your-worker>/health
+  curl -s https://<your-worker>/health/readiness
+```
+- (Optional) WhoAmI: with a valid token
 
+  ```zsh
+curl -s -H "Authorization: Bearer TOKEN" https://<your-worker>/api/v1/auth/whoami
+```
 
-// Update user profile
-app.put('/api/v1/users/profile', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-  const jwtSecret = c.env.JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
-    const userId = (payload as any).id as string
+You’re done. Future pushes to `main` will auto-deploy both the Pages site and the Worker.
 
-    const { first_name, last_name, phone, date_of_birth } = await c.req.json().catch(() => ({}))
-    
-    // Build update query dynamically
-    const updates: string[] = []
-    const params: any[] = []
-    
-    if (first_name !== undefined) { updates.push('first_name = ?'); params.push(first_name) }
-    if (last_name !== undefined) { updates.push('last_name = ?'); params.push(last_name) }
-    if (phone !== undefined) { updates.push('phone = ?'); params.push(phone) }
-  } catch (e) {
-    const error = e instanceof Error ? e.message : 'Unknown error'
-  return c.json({ success: false, message: 'Failed to withdraw', error }, 500)
-}
+# Cloudflare Free Deployment Checklist (Frontend + Edge API)
 
-// ... endpoints continue ...
-  try {
-    // Auth check
-    const kycToken = getBearer(c.req.raw)
-    if (!kycToken) return c.json({ success: false, message: 'Unauthorized' }, 401)
-    const kycJwtSecret = (c.env as any).JWT_SECRET as string | undefined
-    if (!kycJwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-    const kycPayload = await verifyBearer(kycToken, kycJwtSecret, c.env.JWT_AUD)
-    const kycUserId = kycPayload?.id as string | undefined
-    if (!kycUserId) return c.json({ success: false, message: 'Invalid token' }, 401)
+This checklist gets your entire app live on Cloudflare’s free tiers: Pages for the frontend, Workers for the API, and KV/D1/R2 for data and storage. Follow top-to-bottom.
 
-    const form = await c.req.parseBody()
-    // Validate required fields
-    const requiredFields = [
-      'personal_firstName', 'personal_lastName', 'personal_dateOfBirth', 'personal_nationality',
-      'address_street', 'address_city', 'address_state', 'address_country',
-      'employment_status', 'employment_monthlyIncome',
-      'agreement_terms', 'agreement_privacy'
-    ]
-    // Simulate KYC ID and uploadedDocs for demo
-    const kycId = crypto.randomUUID()
-    const uploadedDocs: string[] = []
+Status legend: [ ] todo, [x] done
 
-    // ...existing code for storing KYC...
+## 0) Prereqs
+- [ ] Cloudflare account (free)
+- [ ] GitHub repo connected (optional but recommended)
+- [ ] Node 18+ installed locally
+- [ ] Installed globally: `wrangler` (`npm i -g wrangler`)
 
-    return c.json({
-      success: true,
-      message: 'KYC application submitted successfully'
-    })
-  } catch {
-    return c.json({ success: false, message: 'Unauthorized' }, 401)
-  }
-})
+## 1) Frontend (Cloudflare Pages)
+- [ ] Build locally once to verify
+  ```zsh
+npm ci
+  npm run build
+```
+- [ ] Decide your API base URL
+  - If using your Worker subdomain, example: `https://<worker-name>.<account>.workers.dev`
+  - If using a custom domain/subdomain, example: `https://api.example.com`
+- [ ] Configure frontend to call your API
+  - Set `VITE_API_URL` to the Worker base URL (no trailing slash)
+  - In Cloudflare Pages dashboard → Project → Settings → Environment Variables: add `VITE_API_URL`
+- [ ] Create a Pages project (dashboard)
+  - Connect GitHub repository and select this repo
+  - Build command: `npm ci && npm run build`
+  - Output directory: `dist`
+  - Add environment variable `VITE_API_URL` (same as above)
+- [ ] Trigger a deployment (push to main or click Deploy)
+- [ ] Verify: Your Pages site loads and network calls target your Worker `VITE_API_URL`
 
-// Admin: list users with optional search and pagination
-app.get('/api/v1/admin/users', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-    const payload = await verifyBearer(token, jwtSecret, c.env.JWT_AUD)
-  { const role = (payload as any).role; if (role !== 'admin' && role !== 'super_admin') return c.json({ success: false, message: 'Forbidden' }, 403) }
+## 2) API (Cloudflare Worker)
+Project path: `edge-worker/`
 
-    const url = new URL(c.req.url)
-    const page = Math.max(1, Number(url.searchParams.get('page') || '1'))
-    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') || '20')))
-    const q = (url.searchParams.get('q') || '').trim()
-    const offset = (page - 1) * limit
+- [ ] Install deps and login
+  ```zsh
+cd edge-worker
+  npm ci
+  wrangler login
+```
+- [ ] Create/bind resources (IDs will be output)
+  ```zsh
+wrangler r2 bucket create app-uploads
+  wrangler d1 create app-db
+  wrangler kv namespace create APP_KV
+```
+- [ ] Update `edge-worker/wrangler.toml`
+  - [ ] Set D1 `database_id`
+  - [ ] Set KV `id`
+  - [ ] Confirm these vars (adjust if needed):
+    ```toml
+[vars]
+    NODE_ENV = "production"
+    JWT_AUD = "ubas"
+    RATE_LIMIT_WINDOW_SEC = "60"
+    RATE_LIMIT_MAX = "60"
+```
+- [ ] Set secrets
+  ```zsh
+wrangler secret put JWT_SECRET      # choose a strong secret
+  # Optional for Neon (preferred DB):
+  wrangler secret put DATABASE_URL    # paste your Neon connection string
+  # Optional: enable dev token mint endpoint
+  wrangler secret put DEV_MINT        # set to: true
+```
+- [ ] Apply D1 migrations (for demo fallback and /api/items)
+  ```zsh
+npm run deploy:d1:migrate
+```
+- [ ] (Optional) Seed Neon with demo tables/data (recommended)
+  ```zsh
+DATABASE_URL='postgresql://USER:PASSWORD@HOST/db?sslmode=require' npm run neon:setup
+```
+- [ ] Local smoke test
+  ```zsh
+npm run dev
+  # Optional (if DEV_MINT=true): mint a token for demo-user-0001
+  curl -s -X POST -H "Content-Type: application/json" \
+    -d '{"email":"demo@example.com","id":"demo-user-0001","expiresIn":"7d"}' \
+    http://127.0.0.1:8787/dev/mint-token
+```
+- [ ] Verify key endpoints
+  ```zsh
+# Replace TOKEN if you minted one
+  curl -H "Authorization: Bearer TOKEN" http://127.0.0.1:8787/api/v1/auth/whoami
+  curl -H "Authorization: Bearer TOKEN" http://127.0.0.1:8787/api/v1/users/profile
+  curl -H "Authorization: Bearer TOKEN" http://127.0.0.1:8787/api/v1/users/accounts
+  curl -H "Authorization: Bearer TOKEN" 'http://127.0.0.1:8787/api/v1/users/transactions?page=1&limit=10'
+```
+- [ ] Transfer endpoint idempotency check
+  ```zsh
+API_BASE=http://127.0.0.1:8787 \
+  TOKEN="YOUR_JWT" \
+  FROM=demo-acct-0001 \
+  TO=demo-acct-0001 \
+  AMOUNT=5 \
+  npm run smoke:transfer
+```
+- [ ] Deploy Worker
+  ```zsh
+npm run deploy
+```
 
-    // Use D1 database for admin operations
-    let whereClause = ''
-    let params: string[] = []
-    if (q) {
-      whereClause = `WHERE email LIKE ? OR first_name LIKE ? OR last_name LIKE ?`
-      params = [`%${q}%`, `%${q}%`, `%${q}%`]
-    }
-    // ...existing code...
-  } catch (e) {
-    const error = e instanceof Error ? e.message : 'Unknown error';
-    return c.json({ success: false, message: 'Failed to list users', error }, 500);
-// ===== BANKING OPERATIONS =====
+## 3) Optional DNS and custom domains
+- [ ] Add your domain to Cloudflare (free)
+- [ ] Set DNS records (A/AAAA/CNAME) to Cloudflare’s provided values
+- [ ] Map custom domain to Pages site (Pages → Custom domains)
+- [ ] Map custom domain/subdomain to Worker (Workers → Triggers → Routes)
+  - Example for API: `api.example.com/*` routed to your Worker
 
-// Create new account for user
-app.get('/api/v1/accounts/:id/transactions', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const env = c.env as Env;
-  const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
-    const userId = (payload as any).id as string
-    const accountId = c.req.param('id')
+## 4) CI/CD (optional but recommended)
+- [ ] Add Cloudflare API token, account id, and project info to GitHub secrets if using the included CI workflow
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CLOUDFLARE_PAGES_PROJECT`
+  - `VITE_API_URL` (Pages build time var)
+  - (and your Worker secrets if deploying via CI): `JWT_SECRET`, `DATABASE_URL`
+- [ ] Verify the workflow runs on push to `main`
 
-    // Verify user owns the account
-  const account = await env.DB.prepare(`
-      SELECT id FROM accounts WHERE id = ? AND user_id = ?
-    `).bind(accountId, userId).first()
-    
-    if (!account) {
-      return c.json({ success: false, message: 'Account not found' }, 404)
-    }
+Secrets reference (GitHub → Settings → Secrets and variables → Actions → New repository secret):
 
-    const url = new URL(c.req.url)
-    const page = Math.max(1, Number(url.searchParams.get('page') || '1'))
-    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') || '20')))
-    const offset = (page - 1) * limit
+- `CLOUDFLARE_API_TOKEN`: API token with permissions for Pages and Workers deploys
+- `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID
+- `CLOUDFLARE_PAGES_PROJECT`: The Pages project name (exact)
+- `VITE_API_URL`: The base URL of your Worker API (e.g., <https://your-worker.your-account.workers.dev>)
+- `JWT_SECRET`: The exact JWT signing secret your tokens use
+- `DATABASE_URL` (optional): Neon Postgres connection string for production
 
-  const transactions = await env.DB.prepare(`
-      SELECT * FROM transactions 
-      WHERE from_account_id = ? OR to_account_id = ?
-      ORDER BY created_at DESC
-      LIMIT ? OFFSET ?
-    `).bind(accountId, accountId, limit, offset).all()
+ 
+## 5) Security and limits
+ 
+- [ ] JWT audience aligned: `JWT_AUD` in `wrangler.toml` matches your tokens
+- [ ] Strong `JWT_SECRET` set in Worker secrets
+- [ ] Rate limits tuned for your case (`RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_SEC`)
+- [ ] Idempotency enabled (already in `/api/v1/transfers` via KV)
+- [ ] CORS: included via Hono; restrict origins if needed
 
-  const totalResult = await env.DB.prepare(`
-      SELECT COUNT(*) as count FROM transactions 
-      WHERE from_account_id = ? OR to_account_id = ?
-    `).bind(accountId, accountId).first()
-    
-    const total = Number((totalResult as any)?.count || 0)
-    
-    return c.json({
-      success: true,
-      data: transactions.results,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
-    })
-  } catch (e) {
-    const error = e instanceof Error ? e.message : 'Unknown error'
-    return c.json({ success: false, message: 'Failed to get transactions', error }, 500)
-  }
-})
+ 
+## 6) Observability and readiness
+ 
+- [ ] Health: `GET /health`
+- [ ] Readiness: `GET /health/readiness` (KV ping)
+- [ ] Consider adding basic logs or analytics (Cloudflare includes request logs)
 
-// Deposit money (simulated)
-app.post('/api/v1/accounts/:id/deposit', async (c: Context<{ Bindings: Env }>) => {
-  try {
-    const token = getBearer(c.req.raw)
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
-    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const env = c.env as Env;
-  const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
-    const userId = (payload as any).id as string
-    const accountId = c.req.param('id')
+ 
+## 7) Troubleshooting
+ 
+- Missing types in editor → run `npm ci` in `edge-worker/` and at repo root
+- 401 Unauthorized → token’s audience must match `JWT_AUD`; token must be signed with the same `JWT_SECRET`
+- Neon not used → ensure `DATABASE_URL` secret is set; Worker will fallback to D1 if absent
+- D1 errors on initial queries → run `npm run deploy:d1:migrate`
+- Rate limit hits during tests → increase `RATE_LIMIT_MAX` temporarily in `wrangler.toml`
 
-    const { amount, description = 'Deposit' } = await c.req.json().catch(() => ({}))
-    
-    if (!amount || amount <= 0) {
-      return c.json({ success: false, message: 'Valid amount required' }, 400)
-    }
+---
 
-    // Verify user owns the account
-  const account = await env.DB.prepare(`
-      SELECT * FROM accounts WHERE id = ? AND user_id = ?
-    `).bind(accountId, userId).first()
-    
-    if (!account) {
-      return c.json({ success: false, message: 'Account not found' }, 404)
-    }
-
-    const txId = crypto.randomUUID()
-    
-    // Update account balance
-  await env.DB.prepare(`
-      UPDATE accounts 
-      SET balance = balance + ?, available_balance = available_balance + ?
-      WHERE id = ?
+References
+ 
+- Worker: `edge-worker/src/worker.ts`
+- Neon setup: `docs/NEON_SETUP.md`
+- Pages wiring: `FRONTEND_DEPLOY.md`
+- Always-on free guide: `docs/ALWAYS_ON_FULLY_FREE_DEPLOYMENTS_2025.md`
     `).bind(amount, amount, accountId).run()
     
     // Record transaction
@@ -329,7 +264,7 @@ app.post('/api/v1/accounts/:id/deposit', async (c: Context<{ Bindings: Env }>) =
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to deposit', error }, 500)
   }
-})
+});
 
 // Withdraw money (simulated)
 app.post('/api/v1/accounts/:id/withdraw', async (c: Context<{ Bindings: Env }>) => {
@@ -386,7 +321,7 @@ app.post('/api/v1/accounts/:id/withdraw', async (c: Context<{ Bindings: Env }>) 
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to withdraw', error }, 500)
   }
-})
+});
 
 // ===== USER PROFILE MANAGEMENT =====
 
@@ -427,7 +362,7 @@ app.put('/api/v1/users/profile', async (c: Context<{ Bindings: Env }>) => {
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to update profile', error }, 500)
   }
-})
+});
 
 // Get KYC status
 app.get('/api/v1/kyc/status', async (c: Context<{ Bindings: Env }>) => {
@@ -465,7 +400,7 @@ app.get('/api/v1/kyc/status', async (c: Context<{ Bindings: Env }>) => {
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to get KYC status', error }, 500)
   }
-})
+});
 
 // Admin: Update KYC status
 app.put('/api/v1/admin/kyc/:id/status', async (c: Context<{ Bindings: Env }>) => {
@@ -518,7 +453,7 @@ app.put('/api/v1/admin/kyc/:id/status', async (c: Context<{ Bindings: Env }>) =>
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to update KYC status', error }, 500)
   }
-})
+});
 
 // Admin: Get all KYC applications
 app.get('/api/v1/admin/kyc', async (c: Context<{ Bindings: Env }>) => {
@@ -568,7 +503,7 @@ app.get('/api/v1/admin/kyc', async (c: Context<{ Bindings: Env }>) => {
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to get KYC applications', error }, 500)
   }
-})
+});
 
 // ===== TRANSFERS AND TRANSACTIONS =====
 
@@ -617,7 +552,7 @@ app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
   } catch {
     return c.json({ success: false, message: 'Unauthorized' }, 401)
   }
-})
+});
 
 // Transfers: create transfer with idempotency
 
@@ -685,7 +620,7 @@ app.post('/api/v1/banking/external-banks/verify', async (c: Context<{ Bindings: 
       message: 'Failed to verify bank account'
     }, 500)
   }
-})
+});
 
 // External bank transfer
 app.post('/api/v1/banking/external-transfer', async (c: Context<{ Bindings: Env }>) => {
@@ -775,7 +710,7 @@ app.post('/api/v1/banking/external-transfer', async (c: Context<{ Bindings: Env 
       message: 'Failed to process external transfer'
     }, 500)
   }
-})
+});
 
 // ===== CREDIT SCORE AND BANKING SERVICES =====
 
@@ -838,7 +773,7 @@ app.post('/api/v1/banking/loan-eligibility', async (c: Context<{ Bindings: Env }
       message: 'Failed to assess loan eligibility'
     }, 500)
   }
-})
+});
 
 // ===== INVESTMENT SERVICES =====
 
@@ -928,7 +863,7 @@ app.post('/api/v1/banking/investments', async (c: Context<{ Bindings: Env }>) =>
       message: 'Failed to create investment'
     }, 500)
   }
-})
+});
 
 // Get user investment portfolio
 app.get('/api/v1/banking/investments/portfolio', async (c: Context<{ Bindings: Env }>) => {
@@ -954,7 +889,7 @@ app.get('/api/v1/banking/investments/portfolio', async (c: Context<{ Bindings: E
       message: 'Failed to get investment portfolio'
     }, 500)
   }
-})
+});
 
 // Get market summary
 app.get('/api/v1/banking/investments/market', async (c: Context<{ Bindings: Env }>) => {
@@ -979,7 +914,7 @@ app.get('/api/v1/banking/investments/market', async (c: Context<{ Bindings: Env 
       message: 'Failed to get market summary'
     }, 500)
   }
-})
+});
 
 // ===== NOTIFICATIONS =====
 
@@ -1051,7 +986,7 @@ app.get('/api/v1/notifications', async (c: Context<{ Bindings: Env }>) => {
       message: 'Failed to get notifications'
     }, 500)
   }
-})
+});
 
 // Mark notification as read
 app.patch('/api/v1/notifications/:id/read', async (c: Context<{ Bindings: Env }>) => {
@@ -1092,7 +1027,7 @@ app.patch('/api/v1/notifications/:id/read', async (c: Context<{ Bindings: Env }>
       message: 'Failed to mark notification as read'
     }, 500)
   }
-})
+});
 
 // Mark all notifications as read
 app.patch('/api/v1/notifications/read-all', async (c: Context<{ Bindings: Env }>) => {
@@ -1121,7 +1056,7 @@ app.patch('/api/v1/notifications/read-all', async (c: Context<{ Bindings: Env }>
       message: 'Failed to mark all notifications as read'
     }, 500)
   }
-})
+});
 
 // Test notification endpoint (for testing purposes)
 app.post('/api/v1/notifications/test', async (c: Context<{ Bindings: Env }>) => {
@@ -1166,7 +1101,7 @@ app.post('/api/v1/notifications/test', async (c: Context<{ Bindings: Env }>) => 
       message: 'Failed to send test notification'
     }, 500)
   }
-})
+});
 
 // Get notification provider health status
 app.get('/api/v1/notifications/providers/health', async (c: Context<{ Bindings: Env }>) => {
@@ -1192,7 +1127,7 @@ app.get('/api/v1/notifications/providers/health', async (c: Context<{ Bindings: 
       message: 'Failed to get provider health status'
     }, 500)
   }
-})
+});
 
 // ===== ADMIN ENDPOINTS =====
 // Admin login endpoint
@@ -1253,7 +1188,7 @@ app.post('/api/v1/auth/admin/login', async (c: Context<{ Bindings: Env }>) => {
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Admin login failed', error }, 500)
   }
-})
+});
 
 // Admin: reset another user's password
 app.post('/api/v1/auth/admin/reset-password', async (c: Context<{ Bindings: Env }>) => {
@@ -1338,29 +1273,33 @@ app.get('/api/v1/admin/users', async (c: Context<{ Bindings: Env }>) => {
   } catch (e) {
     const error = e instanceof Error ? e.message : 'Unknown error'
     return c.json({ success: false, message: 'Failed to list users', error }, 500)
+  }
+});
 
 // Dev-only: mint token (guard with DEV_MINT)
 app.post('/dev/mint-token', async (c: Context<{ Bindings: Env }>) => {
-  const allow = (c.env as any).DEV_MINT === 'true'
-  if (!allow) return c.json({ error: 'disabled' }, 403)
+  const allow = (c.env as any).DEV_MINT === 'true';
+  if (!allow) {
+    return c.json({ error: 'disabled' }, 403);
+  }
   try {
-    const { email = 'demo@example.com', id = crypto.randomUUID(), expiresIn = '7d' } = await c.req.json().catch(() => ({}))
-    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
-    if (!jwtSecret) return c.json({ error: 'JWT secret not configured' }, 500)
-    const key = new TextEncoder().encode(jwtSecret)
+    const { email = 'demo@example.com', id = crypto.randomUUID(), expiresIn = '7d' } = await c.req.json().catch(() => ({}));
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined;
+    if (!jwtSecret) {
+      return c.json({ error: 'JWT secret not configured' }, 500);
+    }
+    const key = new TextEncoder().encode(jwtSecret);
     // dynamic import to avoid increasing cold path if unused
-    const { SignJWT } = await import('jose')
-  const env = c.env as Env;
-  const token = await new SignJWT({ id, email, aud: env.JWT_AUD })
+    const { SignJWT } = await import('jose');
+    const env = c.env as Env;
+    const token = await new SignJWT({ id, email, aud: env.JWT_AUD })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime(expiresIn)
-      .sign(key)
-    return c.json({ token, id, email })
+      .sign(key);
+    return c.json({ token, id, email });
   } catch (e) {
-    return c.json({ error: 'failed to mint' }, 500)
-  }
-});
+    return c.json({ error: 'failed to mint' }, 500);
   }
 });
 
@@ -1397,5 +1336,6 @@ app.post('/api/v1/auth/admin/seed', async (c: Context<{ Bindings: Env }>) => {
     return c.json({ success: false, message: 'Admin seed failed', error: (e as Error).message }, 500);
   }
 });
+// END: admin seed endpoint
 
 export default app;

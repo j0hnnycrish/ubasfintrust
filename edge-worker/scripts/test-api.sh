@@ -60,21 +60,22 @@ echo ""
 # Test 2: User Registration
 echo "=== User Registration ==="
 registration_data='{
+    "username": "testuser",
     "email": "'$TEST_EMAIL'",
     "password": "'$TEST_PASSWORD'",
     "firstName": "Test",
     "lastName": "User"
 }'
-test_endpoint "POST" "/api/auth/register" "$registration_data" "" "200"
+test_endpoint "POST" "/api/v1/auth/register" "$registration_data" "" "200"
 echo ""
 
 # Test 3: User Login
 echo "=== User Login ==="
 login_data='{
-    "email": "'$TEST_EMAIL'",
+    "username": "testuser",
     "password": "'$TEST_PASSWORD'"
 }'
-login_response=$(curl -s -X POST "$WORKER_URL/api/auth/login" \
+login_response=$(curl -s -X POST "$WORKER_URL/api/v1/auth/login" \
                  -H "Content-Type: application/json" \
                  -d "$login_data")
 
