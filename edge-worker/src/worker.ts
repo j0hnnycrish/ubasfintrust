@@ -531,7 +531,7 @@ app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
 
     // D1 fallback
     try {
-      const accRes = await c.env.DB.prepare(`SELECT id FROM accounts WHERE user_id = ?`).bind(userId).all()
+  const accRes = await c.env.ubasfintrust.prepare(`SELECT id FROM accounts WHERE user_id = ?`).bind(userId).all()
       const ids = (accRes.results || []).map((r: any) => r.id)
       if (ids.length === 0) return c.json({ success: true, data: [], pagination: { page, limit, total: 0, totalPages: 0 } })
       // dynamic IN clause
@@ -543,7 +543,7 @@ app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
       if (status) { q += ` AND status = ?`; binds.push(status) }
       q += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`
       binds.push(limit, offset)
-      const rows = await c.env.DB.prepare(q).bind(...binds).all()
+  const rows = await c.env.ubasfintrust.prepare(q).bind(...binds).all()
       // For total count (approximate): omit for simplicity in D1 sample
       return c.json({ success: true, data: rows.results || [], pagination: { page, limit, total: 0, totalPages: 0 } })
     } catch {

@@ -209,7 +209,7 @@ export class NotificationService {
       const notificationId = crypto.randomUUID()
       const now = new Date().toISOString()
       
-      await this.env.DB.prepare(`
+  await this.env.ubasfintrust.prepare(`
         INSERT INTO notifications (id, user_id, type, title, message, data, read, created_at)
         VALUES (?, ?, ?, ?, ?, ?, false, ?)
       `).bind(notificationId, userId, type, title, message, JSON.stringify(data || {}), now).run()
@@ -238,7 +238,7 @@ export class NotificationService {
         userEmail = user?.email || ''
         userPhone = user?.phone || ''
       } else {
-        const user = await this.env.DB.prepare('SELECT email, phone FROM users WHERE id = ? LIMIT 1').bind(userId).first()
+  const user = await this.env.ubasfintrust.prepare('SELECT email, phone FROM users WHERE id = ? LIMIT 1').bind(userId).first()
         userEmail = (user as any)?.email || ''
         userPhone = (user as any)?.phone || ''
       }
