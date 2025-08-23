@@ -25,17 +25,61 @@ import { initializeNotificationServices } from './services/notificationService';
 
 const app = new Hono<{ Bindings: Env }>();
 
-// ===== TRANSFERS AND TRANSACTIONS =====
+// ===== USERS =====
+// Profile
+app.get('/api/v1/users/profile', async (c: Context<{ Bindings: Env }>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const env = c.env as Env
+    const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
+    const userId = (payload as any).id as string
+    if (!userId) return c.json({ success: false, message: 'Invalid token' }, 401)
 
-// Users: transactions with pagination and optional type/status filters
+    const user = await env.DB.prepare(
+      `SELECT id, email, first_name, last_name, is_verified, created_at FROM users WHERE id = ? LIMIT 1`
+    ).bind(userId).first()
+    if (!user) return c.json({ success: false, message: 'User not found' }, 404)
+
+    return c.json({ success: true, data: user })
+  } catch {
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
+  }
+})
+
+// Accounts list
+app.get('/api/v1/users/accounts', async (c: Context<{ Bindings: Env }>) => {
+  try {
+    const token = getBearer(c.req.raw)
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
+    const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
+    if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    const env = c.env as Env
+    const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
+    const userId = (payload as any).id as string
+    if (!userId) return c.json({ success: false, message: 'Invalid token' }, 401)
+
+    const rows = await env.DB.prepare(
+      `SELECT id, account_number, account_type, balance, currency, created_at FROM accounts WHERE user_id = ? ORDER BY created_at DESC`
+    ).bind(userId).all()
+
+    return c.json({ success: true, data: rows.results || [] })
+  } catch {
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
+  }
+})
+
+// Transactions with pagination and optional type/status filters
 app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
   try {
     const token = getBearer(c.req.raw)
     if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401)
     const jwtSecret = (c.env as any).JWT_SECRET as string | undefined
     if (!jwtSecret) return c.json({ success: false, message: 'JWT secret not configured' }, 500)
-  const env = c.env as Env;
-  const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
+    const env = c.env as Env;
+    const payload = await verifyBearer(token, jwtSecret, env.JWT_AUD)
     const userId = (payload.id as string) || ''
     if (!userId) return c.json({ success: false, message: 'Invalid token' }, 401)
 
@@ -46,15 +90,10 @@ app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
     const status = url.searchParams.get('status') || undefined
     const offset = (page - 1) * limit
 
-  // Neon/Postgres logic removed. Only D1 logic remains.
-    // Neon/Postgres logic removed. Only D1 logic remains.
-
-    // D1 fallback
     try {
-  const accRes = await c.env.DB.prepare(`SELECT id FROM accounts WHERE user_id = ?`).bind(userId).all()
+      const accRes = await c.env.DB.prepare(`SELECT id FROM accounts WHERE user_id = ?`).bind(userId).all()
       const ids = (accRes.results || []).map((r: any) => r.id)
       if (ids.length === 0) return c.json({ success: true, data: [], pagination: { page, limit, total: 0, totalPages: 0 } })
-      // dynamic IN clause
       const placeholders = ids.map(() => '?').join(',')
       let q = `SELECT id, from_account_id, to_account_id, amount, currency, type, status, created_at FROM transactions
                WHERE (from_account_id IN (${placeholders}) OR to_account_id IN (${placeholders}))`
@@ -63,8 +102,7 @@ app.get('/api/v1/users/transactions', async (c: Context<{ Bindings: Env }>) => {
       if (status) { q += ` AND status = ?`; binds.push(status) }
       q += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`
       binds.push(limit, offset)
-  const rows = await c.env.DB.prepare(q).bind(...binds).all()
-      // For total count (approximate): omit for simplicity in D1 sample
+      const rows = await c.env.DB.prepare(q).bind(...binds).all()
       return c.json({ success: true, data: rows.results || [], pagination: { page, limit, total: 0, totalPages: 0 } })
     } catch {
       return c.json({ success: true, data: [], pagination: { page, limit, total: 0, totalPages: 0 } })
@@ -650,6 +688,30 @@ app.get('/api/v1/notifications/providers/health', async (c: Context<{ Bindings: 
 });
 
 // ===== USER AUTHENTICATION ENDPOINTS =====
+// User register endpoint
+app.post('/api/v1/auth/register', async (c: Context<{ Bindings: Env }>) => {
+  try {
+    const { email, password, first_name = '', last_name = '' } = await c.req.json().catch(() => ({}))
+    if (!email || !password) {
+      return c.json({ success: false, message: 'Email and password required' }, 400)
+    }
+    const env = c.env as Env
+    const exists = await env.DB.prepare(`SELECT id FROM users WHERE email = ? LIMIT 1`).bind(email).first()
+    if (exists) return c.json({ success: false, message: 'Email already registered' }, 409)
+
+    const salt = bcryptjs.genSaltSync(12)
+    const password_hash = bcryptjs.hashSync(password, salt)
+    await env.DB.prepare(
+      `INSERT INTO users (email, password_hash, first_name, last_name, is_verified) VALUES (?, ?, ?, ?, 1)`
+    ).bind(email, password_hash, first_name, last_name).run()
+
+    return c.json({ success: true, message: 'Registered' })
+  } catch (e) {
+    const error = e instanceof Error ? e.message : 'Unknown error'
+    return c.json({ success: false, message: 'Register failed', error }, 500)
+  }
+});
+
 // User login endpoint
 app.post('/api/v1/auth/login', async (c: Context<{ Bindings: Env }>) => {
   try {
@@ -658,7 +720,6 @@ app.post('/api/v1/auth/login', async (c: Context<{ Bindings: Env }>) => {
       return c.json({ success: false, message: 'Identifier and password required' }, 400)
     }
 
-    // Find user by email (username field doesn't exist in current schema)
     const env = c.env as Env;
     const user = await env.DB.prepare(
       `SELECT * FROM users WHERE email = ? LIMIT 1`
@@ -667,14 +728,12 @@ app.post('/api/v1/auth/login', async (c: Context<{ Bindings: Env }>) => {
       return c.json({ success: false, message: 'User not found' }, 404)
     }
 
-    // Verify password
     const ok = await bcryptjs.compare(password, (user as any).password_hash)
     if (!ok) {
       return c.json({ success: false, message: 'Invalid password' }, 401)
     }
 
-    // Issue JWT
-  const jwtSecret = env.JWT_SECRET || 'fallback-secret-for-development'
+    const jwtSecret = env.JWT_SECRET || 'fallback-secret-for-development'
     if (!jwtSecret) {
       return c.json({ success: false, message: 'JWT secret not configured' }, 500)
     }
@@ -881,31 +940,40 @@ app.post('/dev/mint-token', async (c: Context<{ Bindings: Env }>) => {
   }
 });
 
-// Admin seed endpoint: ensures default admin user exists
+// Admin seed endpoint: ensures default admin user exists (DEV only)
 app.post('/api/v1/auth/admin/seed', async (c: Context<{ Bindings: Env }>) => {
   try {
     const env = c.env as Env;
+    const allow = (c.env as any).DEV_SEED === 'true';
+    if (!allow) {
+      return c.json({ success: false, message: 'disabled' }, 403);
+    }
+
+    const adminPassword = (c.env as any).ADMIN_INITIAL_PASSWORD as string | undefined;
+    if (!adminPassword) {
+      return c.json({ success: false, message: 'ADMIN_INITIAL_PASSWORD not configured' }, 500);
+    }
+
     const email = 'admin@ubasfintrust.com';
     const username = 'admin';
-    const password = 'Admin25@@';
     const salt = bcryptjs.genSaltSync(12);
-    const password_hash = bcryptjs.hashSync(password, salt);
+    const password_hash = bcryptjs.hashSync(adminPassword, salt);
     const role = 'super_admin';
     const first_name = 'System';
     const last_name = 'Administrator';
+
     // Check if admin user exists
-  const existing = await env.DB.prepare(
+    const existing = await env.DB.prepare(
       `SELECT id FROM admin_users WHERE email = ? LIMIT 1`
     ).bind(email).first();
+
     if (existing) {
-      // Update password and role if needed
-  await env.DB.prepare(
+      await env.DB.prepare(
         `UPDATE admin_users SET password_hash = ?, role = ?, status = 'active' WHERE email = ?`
       ).bind(password_hash, role, email).run();
       return c.json({ success: true, message: 'Admin user updated.' });
     } else {
-      // Insert new admin user
-  await env.DB.prepare(
+      await env.DB.prepare(
         `INSERT INTO admin_users (username, email, password_hash, first_name, last_name, role, status) VALUES (?, ?, ?, ?, ?, ?, 'active')`
       ).bind(username, email, password_hash, first_name, last_name, role).run();
       return c.json({ success: true, message: 'Admin user created.' });
