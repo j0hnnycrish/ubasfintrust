@@ -1,0 +1,5 @@
+{
+  "name": "ubasfintrust",
+  "compatibility_date": "2025-08-22",
+  "main": "edge-worker/src/worker.ts"
+}

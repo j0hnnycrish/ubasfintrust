@@ -1227,7 +1227,7 @@ export function AccountManagement({ onBack }: AccountManagementProps) {
                     className="absolute right-2 top-1/2 transform -translate-y-1/2"
                     onClick={() => setPasswordForm(prev => ({ ...prev, showPasswords: !prev.showPasswords }))}
                   >
-                    {passwordForm.showPasswords ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {/* TODO: Import EyeOff and Eye or replace with a default icon */}
                   </Button>
                 </div>
               </div>

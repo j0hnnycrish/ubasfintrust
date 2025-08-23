@@ -1,4 +1,12 @@
-import { Env } from '../worker'
+// Define Env type for Cloudflare Worker bindings
+type Env = {
+  DB: any;
+  APP_KV?: any;
+  JWT_SECRET: string;
+  JWT_AUD?: string;
+  [key: string]: any;
+};
+// import type { Env } from '../worker' // Remove or fix if not needed
 
 interface NotificationPayload {
   userId: string
@@ -209,7 +217,7 @@ export class NotificationService {
       const notificationId = crypto.randomUUID()
       const now = new Date().toISOString()
       
-  await this.env.ubasfintrust.prepare(`
+  await this.env.DB.prepare(`
         INSERT INTO notifications (id, user_id, type, title, message, data, read, created_at)
         VALUES (?, ?, ?, ?, ?, ?, false, ?)
       `).bind(notificationId, userId, type, title, message, JSON.stringify(data || {}), now).run()
@@ -238,7 +246,7 @@ export class NotificationService {
         userEmail = user?.email || ''
         userPhone = user?.phone || ''
       } else {
-  const user = await this.env.ubasfintrust.prepare('SELECT email, phone FROM users WHERE id = ? LIMIT 1').bind(userId).first()
+  const user = await this.env.DB.prepare('SELECT email, phone FROM users WHERE id = ? LIMIT 1').bind(userId).first()
         userEmail = (user as any)?.email || ''
         userPhone = (user as any)?.phone || ''
       }

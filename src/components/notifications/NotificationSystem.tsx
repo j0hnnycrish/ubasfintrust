@@ -641,7 +641,7 @@ export function NotificationSystem() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <MessageSquare className="h-5 w-5" />
+                  {/* TODO: Import MessageSquare or replace with a default icon */}
                   <span>SMS Notifications</span>
                 </CardTitle>
               </CardHeader>
@@ -773,11 +773,12 @@ export function NotificationSystem() {
 
                 <div>
                   <Label>Message</Label>
-                  <Textarea
+                  <textarea
                     value={adminForm.message}
                     onChange={(e) => setAdminForm(prev => ({ ...prev, message: e.target.value }))}
                     placeholder="Notification message"
                     rows={4}
+                    className="w-full border rounded p-2"
                   />
                 </div>
 

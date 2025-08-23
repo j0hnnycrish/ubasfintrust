@@ -18,5 +18,6 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
+  // Removed stray 'types' lines and fixed JSON structure
   "include": ["vite.config.ts"]
 }

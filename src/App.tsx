@@ -26,7 +26,6 @@ import { PrivateBankingDashboard } from "./components/dashboard/PrivateBankingDa
 import AdminPortal from "./pages/AdminPortal";
 import AdminTemplates from "./pages/AdminTemplates";
 import Security2FA from "./pages/Security2FA";
-import { AIChatbot } from "./components/support/AIChatbot";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import RegistrationFlow from "./pages/RegistrationFlow";
@@ -168,8 +167,9 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>
-            <AIChatbot />
+            {/* SmartsuppChatWidget replaces AIChatbot globally */}
             <OnboardingModal />
+            {/* SmartsuppChatWidget is already loaded in index.html */}
           </BrowserRouter>
           </TooltipProvider>
           </OnboardingProvider>

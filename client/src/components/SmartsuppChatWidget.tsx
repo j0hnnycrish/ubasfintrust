@@ -1,4 +1,12 @@
+
 import { useEffect } from 'react';
+
+declare global {
+  interface Window {
+    smartsupp?: any;
+    _smartsupp?: any;
+  }
+}
 
 const SMARTSUPP_KEY = 'b173326add6fbcc43818e283ada308c8a21905b0';
 
@@ -8,8 +16,8 @@ export default function SmartsuppChatWidget() {
     window._smartsupp = window._smartsupp || {};
     window._smartsupp.key = SMARTSUPP_KEY;
     (function(d) {
-      var s, c, o = window.smartsupp = function() { o._.push(arguments); };
-      o._ = [];
+  var s, c, o: any = window.smartsupp = function() { o._.push(arguments); };
+  o._ = [];
       s = d.getElementsByTagName('script')[0];
       c = d.createElement('script');
       c.type = 'text/javascript';

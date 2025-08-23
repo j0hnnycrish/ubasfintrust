@@ -664,7 +664,7 @@ export function EnhancedBillPayment({ onBack }: EnhancedBillPaymentProps) {
                         <span className="ml-2">{formatCurrency(payment.amount)}</span>
                       </div>
                       <div className="flex items-center">
-                        <CalendarIcon className="h-4 w-4" />
+                        {/* TODO: Import CalendarIcon or replace with a default icon */}
                         <span className="ml-2">Next: {new Date(payment.nextPaymentDate).toLocaleDateString()}</span>
                       </div>
                     </div>

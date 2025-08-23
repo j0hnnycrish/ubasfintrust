@@ -234,8 +234,8 @@ export class ExternalBankingService {
 
     return {
       success: true,
-      status: randomStatus,
-      message: messages[randomStatus],
+  status: randomStatus ?? 'pending',
+  message: messages[randomStatus ?? 'pending'],
       externalReference: `EXT${Date.now()}`
     }
   }
