@@ -58,4 +58,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Cloudflare Pages specific configuration
+  base: './',
+  publicDir: 'public',
 }));

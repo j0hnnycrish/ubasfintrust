@@ -1,5 +1,5 @@
 {
-  "name": "ubasfintrust",
+  "name": "ubasfintrust-frontend",
   "compatibility_date": "2025-08-22",
-  "main": "edge-worker/src/worker.ts"
+  "pages_build_output_dir": "/"
 }
