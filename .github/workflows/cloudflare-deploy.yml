@@ -3,6 +3,7 @@ name: Deploy Frontend (Pages) and API (Worker) to Cloudflare
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   pages:
@@ -57,9 +58,9 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          echo -n "$JWT_SECRET" | npx --yes wrangler@4.30.0 secret put JWT_SECRET --config wrangler.toml --name ubasfintrust
+          echo -n "$JWT_SECRET" | npx --yes wrangler@4.30.0 secret put JWT_SECRET --config wrangler.toml
           if [ -n "$DATABASE_URL" ]; then
-            echo -n "$DATABASE_URL" | npx --yes wrangler@4.30.0 secret put DATABASE_URL --config wrangler.toml --name ubasfintrust
+            echo -n "$DATABASE_URL" | npx --yes wrangler@4.30.0 secret put DATABASE_URL --config wrangler.toml
           fi
 
       - name: Deploy Worker

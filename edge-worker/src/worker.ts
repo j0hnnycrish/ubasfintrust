@@ -9,6 +9,7 @@ type Env = {
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { cors } from 'hono/cors';
 // Import types only if needed, otherwise reference types.d.ts for type augmentation
 import bcryptjs from 'bcryptjs';
 import { verifyBearer, getBearer } from './auth';
@@ -24,6 +25,15 @@ import { initializeNotificationServices } from './services/notificationService';
 // Example: import { externalBankingService, creditScoreService, investmentService, initializeNotificationServices } from './services';
 
 const app = new Hono<{ Bindings: Env }>();
+
+// CORS for requests from Cloudflare Pages frontend and other allowed origins
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  maxAge: 86400,
+  credentials: false
+}));
 
 // ===== USERS =====
 // Profile
