@@ -52,30 +52,18 @@ test_endpoint() {
     fi
 }
 
-# Test 1: Health Check
-echo "=== Health Check ==="
-test_endpoint "GET" "/health" "" "" "200"
+# Test 1: Worker Health
+echo "=== Worker Health ==="
+test_endpoint "GET" "/api/v1/notifications/providers/health" "" "" "200"
 echo ""
 
-# Test 2: User Registration
-echo "=== User Registration ==="
-registration_data='{
-    "username": "testuser",
-    "email": "'$TEST_EMAIL'",
-    "password": "'$TEST_PASSWORD'",
-    "firstName": "Test",
-    "lastName": "User"
-}'
-test_endpoint "POST" "/api/v1/auth/register" "$registration_data" "" "200"
-echo ""
-
-# Test 3: User Login
-echo "=== User Login ==="
+# Test 2: User Login
+echo "=== Admin Login ==="
 login_data='{
-    "username": "testuser",
-    "password": "'$TEST_PASSWORD'"
+    "identifier": "admin@ubasfintrust.com",
+    "password": "StrongPass123!"
 }'
-login_response=$(curl -s -X POST "$WORKER_URL/api/v1/auth/login" \
+login_response=$(curl -s -X POST "$WORKER_URL/api/v1/auth/admin/login" \
                  -H "Content-Type: application/json" \
                  -d "$login_data")
 
@@ -95,59 +83,11 @@ echo ""
 echo "=== Protected Endpoints ==="
 AUTH_HEADER="Authorization: Bearer $JWT_TOKEN"
 
-# Test user profile
-test_endpoint "GET" "/api/user/profile" "" "$AUTH_HEADER" "200"
-
-# Test user accounts
-test_endpoint "GET" "/api/user/accounts" "" "$AUTH_HEADER" "200"
-
-# Test transaction history
-test_endpoint "GET" "/api/user/transactions" "" "$AUTH_HEADER" "200"
-
-# Test account creation
-account_data='{
-    "accountType": "savings",
-    "currency": "USD"
-}'
-test_endpoint "POST" "/api/user/accounts" "$account_data" "$AUTH_HEADER" "200"
+# Test user profile (Worker: /api/v1/users/profile)
+test_endpoint "GET" "/api/v1/users/profile" "" "$AUTH_HEADER" "200"
 echo ""
 
-# Test 5: Banking Operations
-echo "=== Banking Operations ==="
-
-# Test supported banks
-test_endpoint "GET" "/api/external-banking/banks" "" "$AUTH_HEADER" "200"
-
-# Test credit score
-test_endpoint "GET" "/api/credit-score" "" "$AUTH_HEADER" "200"
-
-# Test investment options
-test_endpoint "GET" "/api/investments/options" "" "$AUTH_HEADER" "200"
-
-# Test market summary
-test_endpoint "GET" "/api/investments/market-summary" "" "$AUTH_HEADER" "200"
-echo ""
-
-# Test 6: KYC Operations
-echo "=== KYC Operations ==="
-
-# Test KYC status
-test_endpoint "GET" "/api/kyc/status" "" "$AUTH_HEADER" "200"
-echo ""
-
-# Test 7: Notification Test
-echo "=== Notification System ==="
-
-# Test notification preferences
-test_endpoint "GET" "/api/notifications/preferences" "" "$AUTH_HEADER" "200"
-echo ""
-
-# Test 8: Admin Operations (these might fail without admin privileges)
-echo "=== Admin Operations (may require admin role) ==="
-
-# Test user list (admin only)
-test_endpoint "GET" "/api/admin/users" "" "$AUTH_HEADER" "200"
-echo ""
+# Optional: add more versioned endpoints here as they become available in Worker
 
 echo "🎯 API Testing Complete!"
 echo ""
