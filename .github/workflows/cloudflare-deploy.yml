@@ -19,7 +19,7 @@ jobs:
           node-version: '20.19.0'
 
       - name: Install deps
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Build frontend
         env:
