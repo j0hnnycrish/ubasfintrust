@@ -1,6 +1,6 @@
 # UbasFin Trust Edge Banking API Documentation
 
-🚀 **Production URL:** https://ubasfintrust.jcrish4eva.workers.dev
+🚀 **Production URL:** https://ubasfintrust-api.jcrish4eva.workers.dev
 
 ## Authentication
 
@@ -263,17 +263,17 @@ Common HTTP status codes:
 ### Test with curl:
 ```bash
 # Register
-curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/register \
+curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"Test123!","firstName":"Test","lastName":"User"}'
 
 # Login & get token
-TOKEN=$(curl -s -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/login \
+TOKEN=$(curl -s -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"Test123!"}' | jq -r '.token')
 
 # Use protected endpoint
-curl -H "Authorization: Bearer $TOKEN" https://ubasfintrust.jcrish4eva.workers.dev/api/v1/users/profile
+curl -H "Authorization: Bearer $TOKEN" https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/users/profile
 ```
 
 ---

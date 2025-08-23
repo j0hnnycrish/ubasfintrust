@@ -29,8 +29,8 @@ fi
 
 # Deploy to Cloudflare Pages
 echo "🚀 Deploying to Cloudflare Pages..."
-npx wrangler pages deploy dist --project-name ubas-financial-trust --compatibility-date 2024-01-01
+npx wrangler pages deploy dist --project-name ubasfintrust-frontend --branch main --commit-dirty=true --compatibility-date 2024-01-01
 
 echo "🎉 Deployment completed!"
-echo "📝 Your site should be available at: https://ubas-financial-trust.pages.dev"
+echo "📝 Your site should be available at: https://ubasfintrust-frontend.pages.dev"
 echo "💡 To set environment variables, visit: https://dash.cloudflare.com/pages"

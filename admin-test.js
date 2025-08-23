@@ -3,7 +3,7 @@
 // Comprehensive Admin Functionality Test
 // This script demonstrates all admin capabilities available in the edge worker
 
-const API_BASE_URL = 'https://ubasfintrust.jcrish4eva.workers.dev/api/v1';
+const API_BASE_URL = 'https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1';
 
 // Admin credentials
 const ADMIN_EMAIL = 'admin@ubas.com';

@@ -6,7 +6,7 @@ echo "Testing KYC submission endpoint..."
 
 # First, login to get a token
 echo "1. Logging in..."
-LOGIN_RESPONSE=$(curl -s -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/login \
+LOGIN_RESPONSE=$(curl -s -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@ubasfintrust.com","password":"StrongPass123!"}')
 
@@ -26,7 +26,7 @@ echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/Pc
 
 # Submit KYC with multipart data
 echo "3. Submitting KYC application..."
-KYC_RESPONSE=$(curl -s -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/kyc/submit \
+KYC_RESPONSE=$(curl -s -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/kyc/submit \
   -H "Authorization: Bearer $TOKEN" \
   -F "personal_firstName=John" \
   -F "personal_lastName=Doe" \

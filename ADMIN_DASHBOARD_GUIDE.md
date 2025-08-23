@@ -4,7 +4,7 @@
 ```
 Email: admin@ubasfintrust.com
 Password: StrongPass123!
-API Base URL: https://ubasfintrust.jcrish4eva.workers.dev/api/v1
+API Base URL: https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1
 ```
 
 ## 🔐 **Available Admin Functionalities**
@@ -39,7 +39,7 @@ API Base URL: https://ubasfintrust.jcrish4eva.workers.dev/api/v1
 
 ### **Step 1: Login as Admin**
 ```bash
-curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/login \
+curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@ubasfintrust.com",
@@ -53,18 +53,18 @@ curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/login \
 ADMIN_TOKEN="your_jwt_token_here"
 
 # Test admin access
-curl -X GET https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/ping \
+curl -X GET https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/ping \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 ```
 
 ### **Step 3: Manage Users**
 ```bash
 # List all users
-curl -X GET https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/users \
+curl -X GET https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/users \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 
 # Create new user
-curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/users \
+curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/users \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -79,11 +79,11 @@ curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/users \
 ### **Step 4: Manage KYC Applications**
 ```bash
 # List KYC applications
-curl -X GET https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/kyc \
+curl -X GET https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/kyc \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 
 # Update KYC status
-curl -X PUT https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/kyc/APPLICATION_ID/status \
+curl -X PUT https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/kyc/APPLICATION_ID/status \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -94,7 +94,7 @@ curl -X PUT https://ubasfintrust.jcrish4eva.workers.dev/api/v1/admin/kyc/APPLICA
 
 ### **Step 5: Reset User Passwords**
 ```bash
-curl -X POST https://ubasfintrust.jcrish4eva.workers.dev/api/v1/auth/admin/reset-password \
+curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/admin/reset-password \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -130,7 +130,7 @@ Your admin panel can now:
 ## 🚀 **Ready for Production**
 
 The admin system is **fully deployed and operational** at:
-**https://ubasfintrust.jcrish4eva.workers.dev**
+**https://ubasfintrust-api.jcrish4eva.workers.dev**
 
 You can now:
 - **Login with admin credentials** and perform administrative tasks

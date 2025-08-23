@@ -4,7 +4,7 @@
 echo "🏦 UBAS Financial Trust - Complete Banking System Test"
 echo "======================================================"
 
-BASE_URL="https://ubasfintrust.jcrish4eva.workers.dev"
+BASE_URL="https://ubasfintrust-api.jcrish4eva.workers.dev"
 
 # Colors for output
 GREEN='\033[0;32m'

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const API_BASE_URL = 'https://ubasfintrust.jcrish4eva.workers.dev/api/v1';
+const API_BASE_URL = 'https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1';
 
 async function testFullIntegration() {
   console.log('🔄 Testing Full Frontend-Edge Worker Integration\n');
@@ -86,7 +86,7 @@ async function testFullIntegration() {
 
     console.log('\n🎉 ALL INTEGRATION TESTS PASSED!');
     console.log('\n📋 Summary:');
-    console.log('- Edge Worker deployed at: https://ubasfintrust.jcrish4eva.workers.dev');
+    console.log('- Edge Worker deployed at: https://ubasfintrust-api.jcrish4eva.workers.dev');
     console.log('- Frontend running at: http://localhost:8080');
     console.log('- API endpoints working correctly');
     console.log('- Authentication flow complete');

@@ -3,7 +3,7 @@
 # Comprehensive Edge Worker API Testing Script
 # Tests all major banking endpoints
 
-WORKER_URL="https://ubasfintrust.jcrish4eva.workers.dev"
+WORKER_URL="https://ubasfintrust-api.jcrish4eva.workers.dev"
 TEST_EMAIL="test@example.com"
 TEST_PASSWORD="TestPassword123!"
 JWT_TOKEN=""
