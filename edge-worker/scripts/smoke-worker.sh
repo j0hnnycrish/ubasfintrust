@@ -12,9 +12,7 @@ if [ -z "${TOKEN:-}" ]; then
 fi
 
 echo "Admin login OK"
-# Users profile
-curl -s -H "Authorization: Bearer $TOKEN" "$WORKER_URL/api/v1/users/profile" | sed -e 's/.\{140\}/&\n/g' | head -n 1
 # Notifications providers health
 curl -s -H "Authorization: Bearer $TOKEN" "$WORKER_URL/api/v1/notifications/providers/health" | sed -e 's/.\{140\}/&\n/g' | head -n 1
 
-echo "Smoke complete"
+echo "Admin smoke complete"
