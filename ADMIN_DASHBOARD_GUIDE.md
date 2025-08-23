@@ -6,7 +6,6 @@ Email: admin@ubasfintrust.com
 Password: StrongPass123!
 API Base URL: https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1
 ```
-
 ## 🔐 **Available Admin Functionalities**
 
 ### **1. Authentication & Access Control**
@@ -46,7 +45,6 @@ curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/login \
     "password": "StrongPass123!"
   }'
 ```
-
 ### **Step 2: Use Admin Token**
 ```bash
 # Save the token from login response
@@ -56,7 +54,6 @@ ADMIN_TOKEN="your_jwt_token_here"
 curl -X GET https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/ping \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 ```
-
 ### **Step 3: Manage Users**
 ```bash
 # List all users
@@ -75,7 +72,6 @@ curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/users 
     "role": "user"
   }'
 ```
-
 ### **Step 4: Manage KYC Applications**
 ```bash
 # List KYC applications
@@ -91,7 +87,6 @@ curl -X PUT https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/admin/kyc/APP
     "notes": "Documents verified successfully"
   }'
 ```
-
 ### **Step 5: Reset User Passwords**
 ```bash
 curl -X POST https://ubasfintrust-api.jcrish4eva.workers.dev/api/v1/auth/admin/reset-password \
