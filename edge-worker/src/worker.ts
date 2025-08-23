@@ -649,6 +649,64 @@ app.get('/api/v1/notifications/providers/health', async (c: Context<{ Bindings: 
   }
 });
 
+// ===== USER AUTHENTICATION ENDPOINTS =====
+// User login endpoint
+app.post('/api/v1/auth/login', async (c: Context<{ Bindings: Env }>) => {
+  try {
+    const { identifier, password } = await c.req.json().catch(() => ({}))
+    if (!identifier || !password) {
+      return c.json({ success: false, message: 'Identifier and password required' }, 400)
+    }
+
+    // Find user by email (username field doesn't exist in current schema)
+    const env = c.env as Env;
+    const user = await env.DB.prepare(
+      `SELECT * FROM users WHERE email = ? LIMIT 1`
+    ).bind(identifier).first()
+    if (!user) {
+      return c.json({ success: false, message: 'User not found' }, 404)
+    }
+
+    // Verify password
+    const ok = await bcryptjs.compare(password, (user as any).password_hash)
+    if (!ok) {
+      return c.json({ success: false, message: 'Invalid password' }, 401)
+    }
+
+    // Issue JWT
+  const jwtSecret = env.JWT_SECRET || 'fallback-secret-for-development'
+    if (!jwtSecret) {
+      return c.json({ success: false, message: 'JWT secret not configured' }, 500)
+    }
+    const { SignJWT } = await import('jose')
+    const key = new TextEncoder().encode(jwtSecret)
+    const token = await new SignJWT({
+      id: (user as any).id,
+      email: (user as any).email,
+      aud: env.JWT_AUD
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(key)
+
+    return c.json({
+      success: true,
+      token,
+      user: {
+        id: (user as any).id,
+        email: (user as any).email,
+        first_name: (user as any).first_name,
+        last_name: (user as any).last_name,
+        is_verified: (user as any).is_verified
+      }
+    })
+  } catch (e) {
+    const error = e instanceof Error ? e.message : 'Unknown error'
+    return c.json({ success: false, message: 'Login failed', error }, 500)
+  }
+});
+
 // ===== ADMIN ENDPOINTS =====
 // Admin login endpoint
 app.post('/api/v1/auth/admin/login', async (c: Context<{ Bindings: Env }>) => {
