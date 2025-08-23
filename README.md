@@ -11,3 +11,8 @@
 ## Edge-native starter
 
 If you want a Cloudflare Workers + Hono scaffold (always-on, zero sleeping), see `edge-worker/` and follow `edge-worker/README.md`.
+
+## Canonical URLs
+
+- **API (Workers)**: https://ubasfintrust-api.jcrish4eva.workers.dev
+- **Frontend (Cloudflare Pages)**: https://ubasfintrust-frontend.pages.dev
