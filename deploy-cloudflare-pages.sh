@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cloudflare Pages Deployment Script
-# This script deploys the frontend to Cloudflare Pages without building
+# This script builds and deploys the frontend to Cloudflare Pages
 
 set -e
 
@@ -13,13 +13,24 @@ if [ ! -f "package.json" ]; then
     exit 1
 fi
 
-# Install dependencies (skip if already installed)
+# Install dependencies
 echo "📦 Installing dependencies..."
 npm install
 
-# Deploy to Cloudflare Pages without building
+# Build the project
+echo "🔨 Building project for production..."
+npm run build
+
+# Check if dist directory exists
+if [ ! -d "dist" ]; then
+    echo "❌ Error: Build failed - dist directory not found."
+    exit 1
+fi
+
+# Deploy to Cloudflare Pages
 echo "🚀 Deploying to Cloudflare Pages..."
-npx wrangler pages deploy .
+npx wrangler pages deploy dist --project-name ubas-financial-trust --compatibility-date 2024-01-01
 
 echo "🎉 Deployment completed!"
-echo "📝 Your site should be available at: https://pages.cloudflare.com/$(basename $(pwd))"
+echo "📝 Your site should be available at: https://ubas-financial-trust.pages.dev"
+echo "💡 To set environment variables, visit: https://dash.cloudflare.com/pages"

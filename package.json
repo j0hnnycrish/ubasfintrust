@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": ["edge-worker"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +15,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "system:test": "node scripts/system-check.mjs",
-    "deploy:cloudflare": "wrangler pages deploy dist"
+    "deploy:cloudflare": "npm run build && wrangler pages deploy dist --project-name ubasfintrust-frontend --commit-dirty=true",
+    "deploy:cloudflare:prod": "npm run build && wrangler pages deploy dist --project-name ubasfintrust-frontend --branch main --commit-dirty=true",
+    "deploy:worker": "cd edge-worker && wrangler deploy",
+    "dev:worker": "cd edge-worker && wrangler dev",
+    "pages:deploy:worker": "npm ci --prefix edge-worker && npx wrangler deploy --config edge-worker/wrangler.toml"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

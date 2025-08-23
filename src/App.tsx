@@ -58,6 +58,7 @@ import PrivateWealth from "./pages/private/Wealth";
 import PrivateAdvisory from "./pages/private/Advisory";
 import PrivateBankingPage from "./pages/private/Banking";
 import { lazy, Suspense } from "react";
+import SmartsuppChat from "./components/SmartsuppChat";
 const Investors = lazy(() => import("./pages/investors/Index"));
 const Media = lazy(() => import("./pages/media/Index"));
 const CSR = lazy(() => import("./pages/csr/Index"));
@@ -167,9 +168,10 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>
-            {/* SmartsuppChatWidget replaces AIChatbot globally */}
+            {/* Smartsupp Chat loads only in production */}
+            <SmartsuppChat />
+            {/* Onboarding modal */}
             <OnboardingModal />
-            {/* SmartsuppChatWidget is already loaded in index.html */}
           </BrowserRouter>
           </TooltipProvider>
           </OnboardingProvider>

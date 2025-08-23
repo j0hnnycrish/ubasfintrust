@@ -59,6 +59,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   // Cloudflare Pages specific configuration
-  base: './',
+  // Use absolute root path in production to avoid asset 404s
+  base: mode === 'production' ? '/' : './',
   publicDir: 'public',
 }));

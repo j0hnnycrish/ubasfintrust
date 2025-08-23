@@ -1,0 +1,16 @@
+# Cloudflare Pages configuration for frontend
+name = "ubasfintrust-frontend"
+pages_build_output_dir = "dist"
+
+[build]
+command = "npm run build"
+
+[vars]
+# Define non-sensitive defaults here if needed; prefer using the Dashboard for secrets
+# VITE_API_URL = ""
+# VITE_SOCKET_URL = ""
+# VITE_APP_NAME = "UBAS Financial Trust"
+# VITE_SIMULATE_PAYMENTS = "true"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
